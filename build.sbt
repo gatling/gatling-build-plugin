@@ -16,3 +16,21 @@ scalacOptions := Seq(
 )
 
 releaseSettings
+
+// ------------------ //
+// -- DEPENDENCIES -- //
+// ------------------ //
+
+addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.7.4")
+
+addSbtPlugin("com.typesafe.sbt" % "sbt-scalariform" % "1.3.0")
+
+addSbtPlugin("com.github.gseitz" % "sbt-release" % "0.8.5")
+
+addSbtPlugin("com.jsuereth" % "sbt-pgp" % "1.0.0")
+
+addSbtPlugin("no.arktekk.sbt" % "aether-deploy" % "0.13")
+
+addSbtPlugin("org.scoverage" %% "sbt-scoverage" % "1.0.4")
+
+addSbtPlugin("me.lessis" % "bintray-sbt" % "0.1.2")
