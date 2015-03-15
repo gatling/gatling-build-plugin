@@ -33,4 +33,4 @@ addSbtPlugin("no.arktekk.sbt" % "aether-deploy" % "0.13")
 
 addSbtPlugin("org.scoverage" %% "sbt-scoverage" % "1.0.4")
 
-addSbtPlugin("me.lessis" % "bintray-sbt" % "0.1.2")
+addSbtPlugin("me.lessis" % "bintray-sbt" % "0.2.0")
