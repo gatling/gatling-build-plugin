@@ -7,7 +7,7 @@ import aether.Aether.aetherPublishSettings
 
 object MavenPublishPlugin extends AutoPlugin {
 
-  override def requires = SonatypeReleasePlugin
+  override def requires = plugins.JvmPlugin && SonatypeReleasePlugin
   override def trigger = allRequirements
   override def projectSettings = baseSettings
 

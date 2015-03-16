@@ -11,6 +11,7 @@ import sbtrelease.ReleasePlugin.ReleaseKeys._
 
 object SonatypeReleasePlugin extends AutoPlugin {
 
+  override def requires = plugins.JvmPlugin
   override def projectSettings = baseSettings
 
   private val baseSettings = releaseSettings ++ Seq(

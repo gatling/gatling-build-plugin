@@ -13,6 +13,7 @@ import sbtrelease.ReleasePlugin.ReleaseKeys._
 
 object BintrayReleasePlugin extends AutoPlugin {
 
+  override def requires = plugins.JvmPlugin
   override def projectSettings = baseSettings
 
   val baseSettings = bintrayPublishSettings ++ releaseSettings ++ Seq(
