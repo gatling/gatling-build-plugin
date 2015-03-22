@@ -3,8 +3,6 @@ package io.gatling.build
 import sbt._
 import sbt.Keys._
 
-import aether.Aether.aetherPublishSettings
-
 object MavenPublishPlugin extends AutoPlugin {
 
   override def requires = plugins.JvmPlugin && SonatypeReleasePlugin
@@ -21,7 +19,7 @@ object MavenPublishPlugin extends AutoPlugin {
   import autoImport._
 
 
-  private val baseSettings = aetherPublishSettings ++ Seq(
+  private val baseSettings = Seq(
     crossPaths           := false,
     pomExtra             := mavenScmBlock(githubPath.value) ++ developersXml(projectDevelopers.value),
     publishMavenStyle    := true,
