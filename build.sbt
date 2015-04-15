@@ -32,3 +32,5 @@ addSbtPlugin("com.jsuereth" % "sbt-pgp" % "1.0.0")
 addSbtPlugin("org.scoverage" %% "sbt-scoverage" % "1.0.4")
 
 addSbtPlugin("me.lessis" % "bintray-sbt" % "0.2.0")
+
+addSbtPlugin("de.heikoseeberger" % "sbt-header" % "1.5.0")
