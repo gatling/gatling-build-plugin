@@ -3,21 +3,21 @@ package io.gatling.build
 import sbt._
 import sbt.Keys._
 
+object MavenPublishKeys {
+  val githubPath = settingKey[String]("Project path on Github")
+  val projectDevelopers = settingKey[Seq[GatlingDeveloper]]("List of contributors for this project")
+
+  case class GatlingDeveloper(emailAddress: String, name: String, isEbiz: Boolean)
+}
 object MavenPublishPlugin extends AutoPlugin {
 
   override def requires = plugins.JvmPlugin && SonatypeReleasePlugin
   override def trigger = allRequirements
   override def projectSettings = baseSettings
 
-  object autoImport {
-    case class GatlingDeveloper(emailAddress: String, name: String, isEbiz: Boolean)
-
-    val githubPath = settingKey[String]("Project path on Github")
-    val projectDevelopers = settingKey[Seq[GatlingDeveloper]]("List of contributors for this project")
-  }
+  val autoImport = MavenPublishKeys
 
   import autoImport._
-
 
   private val baseSettings = Seq(
     crossPaths           := false,
