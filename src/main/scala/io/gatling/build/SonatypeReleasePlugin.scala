@@ -1,23 +1,20 @@
 package io.gatling.build
 
-import scala.util.Properties.propOrEmpty
-
 import sbt._
 
 import com.typesafe.sbt.pgp.PgpKeys._
-import sbtrelease.ReleasePlugin.ReleaseKeys.releaseVersion
-import sbtrelease.ReleasePlugin._
 import sbtrelease.ReleasePlugin.ReleaseKeys._
 
 object SonatypeReleasePlugin extends AutoPlugin {
 
   override def requires = plugins.JvmPlugin
+  val autoImport = ReleaseProcessKeys
   override def projectSettings = baseSettings
 
-  private val baseSettings = releaseSettings ++ Seq(
+  import autoImport._
+
+  private val baseSettings = gatlingReleaseSettings ++ Seq(
     crossBuild := false,
-    publishArtifactsAction := publishSigned.value,
-    releaseVersion := { _ => propOrEmpty("releaseVersion") },
-    nextVersion := { _ => propOrEmpty("developmentVersion") }
+    publishArtifactsAction := publishSigned.value
   )
 }
