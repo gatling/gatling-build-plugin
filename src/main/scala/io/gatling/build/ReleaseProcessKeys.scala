@@ -52,6 +52,6 @@ object ReleaseProcessKeys {
       }
     )
 
-    if(mavenStyle) releaseSteps :+ sonatypeReleaseStep else releaseSteps
+    if (mavenStyle) releaseSteps :+ sonatypeReleaseStep else releaseSteps
   }
 }
