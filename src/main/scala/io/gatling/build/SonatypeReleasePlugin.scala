@@ -4,6 +4,7 @@ import sbt._
 
 import com.typesafe.sbt.pgp.PgpKeys._
 import sbtrelease.ReleasePlugin.ReleaseKeys._
+import xerial.sbt.Sonatype.SonatypeKeys._
 
 object SonatypeReleasePlugin extends AutoPlugin {
 
@@ -15,6 +16,7 @@ object SonatypeReleasePlugin extends AutoPlugin {
 
   private val baseSettings = gatlingReleaseSettings ++ Seq(
     crossBuild := false,
+    sonatypeProfileName := "io.gatling",
     publishArtifactsAction := publishSigned.value
   )
 }

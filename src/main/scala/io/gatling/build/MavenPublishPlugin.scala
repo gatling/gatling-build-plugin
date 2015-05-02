@@ -26,9 +26,6 @@ object MavenPublishPlugin extends AutoPlugin {
     useSonatypeRepositories := false,
     crossPaths              := false,
     pomExtra                := mavenScmBlock(githubPath.value) ++ developersXml(projectDevelopers.value),
-    publishMavenStyle       := true,
-    pomIncludeRepository    := { _ => false },
-    publishTo               := Some(if(isSnapshot.value) Opts.resolver.sonatypeSnapshots else Opts.resolver.sonatypeStaging),
     resolvers               ++= (if(useSonatypeRepositories.value) sonatypeRepositories else Seq.empty) :+ Resolver.mavenLocal,
     credentials             += Credentials(Path.userHome / ".sbt" / ".credentials")
   )

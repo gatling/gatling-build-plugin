@@ -2,7 +2,6 @@ package io.gatling.build
 
 import scala.util.Properties._
 
-import com.typesafe.sbt.pgp.PgpKeys._
 import sbt.Keys._
 import sbt._
 import sbtrelease.ReleasePlugin.ReleaseKeys.releaseVersion

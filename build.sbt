@@ -34,3 +34,5 @@ addSbtPlugin("org.scoverage" %% "sbt-scoverage" % "1.0.4")
 addSbtPlugin("me.lessis" % "bintray-sbt" % "0.2.0")
 
 addSbtPlugin("de.heikoseeberger" % "sbt-header" % "1.5.0")
+
+addSbtPlugin("org.xerial.sbt" % "sbt-sonatype" % "0.3.0")
