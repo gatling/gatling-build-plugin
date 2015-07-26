@@ -1,58 +1,34 @@
 package io.gatling.build
 
-import scala.util.Properties._
+import scala.util.Properties
 
 import sbt.Keys._
 import sbt._
-import sbtrelease.ReleasePlugin.ReleaseKeys.releaseVersion
-import sbtrelease.ReleaseStep
-import sbtrelease.ReleasePlugin._
-import sbtrelease.ReleasePlugin.ReleaseKeys._
+import sbtrelease.ReleasePlugin.autoImport._
 import sbtrelease.ReleaseStateTransformations._
-import xerial.sbt.Sonatype.SonatypeKeys.sonatypeReleaseAll
 
 object ReleaseProcessKeys {
-  val skipSnapshotDepsCheck = settingKey[Boolean]("Skip snapshot dependencies chech during release")
+  val skipSnapshotDepsCheck = settingKey[Boolean]("Skip snapshot dependencies check during release")
 
-  val gatlingReleaseSettings = releaseSettings ++ Seq(
+  val gatlingReleaseSettings = Seq(
     skipSnapshotDepsCheck := false,
-    releaseVersion := { _ => propOrEmpty("releaseVersion") },
-    nextVersion := { _ => propOrEmpty("developmentVersion") },
-    releaseProcess := addSonatypeReleaseStepIfRequired(if (skipSnapshotDepsCheck.value) noSnapshotsCheckReleaseProcess else releaseProcess.value, publishMavenStyle.value)
+    releaseVersion := propToVersionFunOrDefault("releaseVersion", releaseVersion.value),
+    releaseNextVersion := propToVersionFunOrDefault("developmentVersion", releaseNextVersion.value),
+    releaseProcess := fullReleaseProcess(skipSnapshotDepsCheck.value, publishMavenStyle.value)
   )
 
-  private def noSnapshotsCheckReleaseProcess = {
-    val publishStep = ReleaseStep(
-      action = st => {
-      val extracted = Project.extract(st)
-      val ref = extracted.get(thisProjectRef)
-      extracted.runAggregated(publishArtifactsAction in Global in ref, st)
-    }
+  private def fullReleaseProcess(skipSnapshotDepsCheck: Boolean, releaseOnSonatype: Boolean) = {
+    val checkSnapshotDeps = if (!skipSnapshotDepsCheck) Seq(checkSnapshotDependencies) else Seq.empty
+    val publishStep = ReleaseStep(action = Command.process("publishSigned", _))
+    val sonatypeRelease = if (releaseOnSonatype) Seq(ReleaseStep(Command.process("sonatypeReleaseAll", _))) else Seq.empty
+    val commonProcess = Seq(
+      inquireVersions, runClean, runTest, setReleaseVersion, commitReleaseVersion,
+      tagRelease, publishStep, setNextVersion, commitNextVersion, pushChanges
     )
 
-    Seq[ReleaseStep](
-      inquireVersions,
-      runClean,
-      runTest,
-      setReleaseVersion,
-      commitReleaseVersion,
-      tagRelease,
-      publishStep,
-      setNextVersion,
-      commitNextVersion,
-      pushChanges
-    )
+    checkSnapshotDeps ++ commonProcess ++ sonatypeRelease
   }
 
-  private def addSonatypeReleaseStepIfRequired(releaseSteps: Seq[ReleaseStep], mavenStyle: Boolean) = {
-    val sonatypeReleaseStep = ReleaseStep(
-      action = st => {
-      val extracted = Project.extract(st)
-      val ref = extracted.get(thisProjectRef)
-      extracted.runAggregated(sonatypeReleaseAll in Global in ref, st)
-    }
-    )
-
-    if (mavenStyle) releaseSteps :+ sonatypeReleaseStep else releaseSteps
-  }
+  private def propToVersionFunOrDefault(propName: String, default: String => String) =
+    Properties.propOrNone(propName).map(s => { (_: String) => s }) getOrElse default
 }
