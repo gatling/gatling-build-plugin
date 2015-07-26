@@ -8,7 +8,8 @@ object ApacheV2 extends License {
   override val url = new URL("http://www.apache.org/licenses/LICENSE-2.0.html")
   override val headers = Map("scala" -> scalaHeader)
 
-  def scalaHeader = (javaStyleBlockComment,
+  def scalaHeader = (
+    javaStyleBlockComment,
     s"""/**
        | * Copyright 2011-$currentYear eBusiness Information, Groupe Excilys (www.ebusinessinformation.fr)
        | *
@@ -24,5 +25,6 @@ object ApacheV2 extends License {
        | * See the License for the specific language governing permissions and
        | * limitations under the License.
        | */
-       |""".stripMargin)
+       |""".stripMargin
+  )
 }

@@ -24,10 +24,11 @@ object ReleaseProcessKeys {
   private def noSnapshotsCheckReleaseProcess = {
     val publishStep = ReleaseStep(
       action = st => {
-        val extracted = Project.extract(st)
-        val ref = extracted.get(thisProjectRef)
-        extracted.runAggregated(publishArtifactsAction in Global in ref, st)
-      })
+      val extracted = Project.extract(st)
+      val ref = extracted.get(thisProjectRef)
+      extracted.runAggregated(publishArtifactsAction in Global in ref, st)
+    }
+    )
 
     Seq[ReleaseStep](
       inquireVersions,
@@ -46,10 +47,10 @@ object ReleaseProcessKeys {
   private def addSonatypeReleaseStepIfRequired(releaseSteps: Seq[ReleaseStep], mavenStyle: Boolean) = {
     val sonatypeReleaseStep = ReleaseStep(
       action = st => {
-        val extracted = Project.extract(st)
-        val ref = extracted.get(thisProjectRef)
-        extracted.runAggregated(sonatypeReleaseAll in Global in ref, st)
-      }
+      val extracted = Project.extract(st)
+      val ref = extracted.get(thisProjectRef)
+      extracted.runAggregated(sonatypeReleaseAll in Global in ref, st)
+    }
     )
 
     if (mavenStyle) releaseSteps :+ sonatypeReleaseStep else releaseSteps

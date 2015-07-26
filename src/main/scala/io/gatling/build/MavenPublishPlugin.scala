@@ -24,10 +24,10 @@ object MavenPublishPlugin extends AutoPlugin {
 
   private val baseSettings = Seq(
     useSonatypeRepositories := false,
-    crossPaths              := false,
-    pomExtra                := mavenScmBlock(githubPath.value) ++ developersXml(projectDevelopers.value),
-    resolvers               ++= (if(useSonatypeRepositories.value) sonatypeRepositories else Seq.empty) :+ Resolver.mavenLocal,
-    credentials             += Credentials(Path.userHome / ".sbt" / ".credentials")
+    crossPaths := false,
+    pomExtra := mavenScmBlock(githubPath.value) ++ developersXml(projectDevelopers.value),
+    resolvers ++= (if (useSonatypeRepositories.value) sonatypeRepositories else Seq.empty) :+ Resolver.mavenLocal,
+    credentials += Credentials(Path.userHome / ".sbt" / ".credentials")
   )
 
   private def sonatypeRepositories: Seq[Resolver] = Seq(
@@ -37,23 +37,22 @@ object MavenPublishPlugin extends AutoPlugin {
 
   private def mavenScmBlock(githubPath: String) =
     <scm>
-      <connection>scm:git:git@github.com:{githubPath}.git</connection>
-      <developerConnection>scm:git:git@github.com:{githubPath}.git</developerConnection>
-      <url>https://github.com/{githubPath}</url>
+      <connection>scm:git:git@github.com:{ githubPath }.git</connection>
+      <developerConnection>scm:git:git@github.com:{ githubPath }.git</developerConnection>
+      <url>https://github.com/{ githubPath }</url>
       <tag>HEAD</tag>
     </scm>
 
   private def developersXml(devs: Seq[GatlingDeveloper]) = {
     <developers>
       {
-      for(dev <- devs)
-      yield {
-        <developer>
-          <id>{dev.emailAddress}</id>
-          <name>{dev.name}</name>
-          { if (dev.isEbiz) <organization>eBusiness Information, Excilys Group</organization> }
-        </developer>
-      }
+        for (dev <- devs) yield {
+          <developer>
+            <id>{ dev.emailAddress }</id>
+            <name>{ dev.name }</name>
+            { if (dev.isEbiz) <organization>eBusiness Information, Excilys Group</organization> }
+          </developer>
+        }
       }
     </developers>
   }

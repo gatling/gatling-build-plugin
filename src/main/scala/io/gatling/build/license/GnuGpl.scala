@@ -8,7 +8,8 @@ object GnuGpl extends License {
   override val url = new URL("http://www.gnu.org/licenses/gpl-2.0.html")
   override val headers = Map("scala" -> scalaHeader)
 
-  def scalaHeader = (javaStyleBlockComment,
+  def scalaHeader = (
+    javaStyleBlockComment,
     s"""/**
        | * Copyright 2011-$currentYear eBusiness Information, Groupe Excilys (www.excilys.com)
        | *
@@ -26,6 +27,7 @@ object GnuGpl extends License {
        | * along with this program; if not, write to the Free Software
        | * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
        | */
-       |""".stripMargin)
+       |""".stripMargin
+  )
 
 }
