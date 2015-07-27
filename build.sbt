@@ -15,8 +15,6 @@ scalacOptions := Seq(
   "-unchecked"
 )
 
-releaseSettings
-
 resolvers += Resolver.url("scoverage",url("http://dl.bintray.com/sksamuel/sbt-plugins"))(Resolver.ivyStylePatterns)
 
 // ------------------ //
