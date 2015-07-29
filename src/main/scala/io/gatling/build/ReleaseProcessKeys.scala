@@ -14,12 +14,12 @@ object ReleaseProcessKeys {
     skipSnapshotDepsCheck := false,
     releaseVersion := propToVersionFunOrDefault("releaseVersion", releaseVersion.value),
     releaseNextVersion := propToVersionFunOrDefault("developmentVersion", releaseNextVersion.value),
-    releaseProcess := fullReleaseProcess(skipSnapshotDepsCheck.value, publishMavenStyle.value)
+    releaseProcess := fullReleaseProcess(thisProjectRef.value, skipSnapshotDepsCheck.value, publishMavenStyle.value)
   )
 
-  private def fullReleaseProcess(skipSnapshotDepsCheck: Boolean, releaseOnSonatype: Boolean) = {
+  private def fullReleaseProcess(ref: ProjectRef, skipSnapshotDepsCheck: Boolean, releaseOnSonatype: Boolean) = {
     val checkSnapshotDeps = if (!skipSnapshotDepsCheck) Seq(checkSnapshotDependencies) else Seq.empty
-    val publishStep = ReleaseStep(action = Command.process("publishSigned", _))
+    val publishStep = ReleaseStep(releaseStepTaskAggregated(releasePublishArtifactsAction in Global in ref))
     val sonatypeRelease = if (releaseOnSonatype) Seq(ReleaseStep(Command.process("sonatypeReleaseAll", _))) else Seq.empty
     val commonProcess = Seq(
       inquireVersions, runClean, runTest, setReleaseVersion, commitReleaseVersion,
