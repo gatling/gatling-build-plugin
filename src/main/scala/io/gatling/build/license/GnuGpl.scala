@@ -11,7 +11,7 @@ object GnuGpl extends License {
   def scalaHeader = (
     javaStyleBlockComment,
     s"""/**
-       | * Copyright 2011-$currentYear eBusiness Information, Groupe Excilys (www.excilys.com)
+       | * Copyright 2011-$currentYear GatlingCorp (http://gatling.io)
        | *
        | * This program is free software; you can redistribute it and/or modify
        | * it under the terms of the GNU General Public License as published by
