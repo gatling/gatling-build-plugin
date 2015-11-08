@@ -6,6 +6,7 @@ import sbt.Keys._
 import sbt._
 import sbtrelease.ReleasePlugin.autoImport._
 import sbtrelease.ReleaseStateTransformations._
+import io.gatling.build.MavenPublishKeys.pushToPrivateNexus
 
 object ReleaseProcessKeys {
   val skipSnapshotDepsCheck = settingKey[Boolean]("Skip snapshot dependencies check during release")
@@ -14,7 +15,10 @@ object ReleaseProcessKeys {
     skipSnapshotDepsCheck := false,
     releaseVersion := propToVersionFunOrDefault("releaseVersion", releaseVersion.value),
     releaseNextVersion := propToVersionFunOrDefault("developmentVersion", releaseNextVersion.value),
-    releaseProcess := fullReleaseProcess(thisProjectRef.value, skipSnapshotDepsCheck.value, publishMavenStyle.value)
+    releaseProcess := {
+      val releaseOnSonatype = (publishMavenStyle.value && !(pushToPrivateNexus ?? false).value)
+      fullReleaseProcess(thisProjectRef.value, skipSnapshotDepsCheck.value, releaseOnSonatype)
+    }
   )
 
   private def fullReleaseProcess(ref: ProjectRef, skipSnapshotDepsCheck: Boolean, releaseOnSonatype: Boolean) = {

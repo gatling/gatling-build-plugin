@@ -6,9 +6,14 @@ import sbt._
 import sbt.Keys._
 
 object MavenPublishKeys {
+  private val PrivateNexusRoot = sys.env("PRIVATE_NEXUS_BASE_URL")
+  private[build] val PrivateNexusReleases = "Private Nexus Releases" at PrivateNexusRoot + "content/repositories/releases/"
+  private[build] val PrivateNexusSnapshots = "Private Nexus Snapshots" at PrivateNexusRoot + "content/repositories/snapshots/"
+
   val githubPath = settingKey[String]("Project path on Github")
   val projectDevelopers = settingKey[Seq[GatlingDeveloper]]("List of contributors for this project")
   var useSonatypeRepositories = settingKey[Boolean]("Use Sonatype repositories for CI or during release process")
+  val pushToPrivateNexus = settingKey[Boolean]("Should this project's artifacts be pushed to our private Nexus ?")
 
   case class GatlingDeveloper(emailAddress: String, name: String, isEbiz: Boolean)
 }
@@ -25,9 +30,11 @@ object MavenPublishPlugin extends AutoPlugin {
   private val baseSettings = Seq(
     useSonatypeRepositories := false,
     crossPaths := false,
+    pushToPrivateNexus := false,
+    publishTo := (if (pushToPrivateNexus.value) Some(privateNexusRepository(isSnapshot.value)) else publishTo.value),
     pomExtra := mavenScmBlock(githubPath.value) ++ developersXml(projectDevelopers.value),
     resolvers ++= (if (useSonatypeRepositories.value) sonatypeRepositories else Seq.empty) :+ Resolver.mavenLocal,
-    credentials += Credentials(Path.userHome / ".sbt" / ".credentials")
+    credentials += Credentials(Path.userHome / ".sbt" / (if (pushToPrivateNexus.value) ".private-nexus-credentials" else ".credentials"))
   )
 
   private def sonatypeRepositories: Seq[Resolver] = Seq(
@@ -56,4 +63,7 @@ object MavenPublishPlugin extends AutoPlugin {
       }
     </developers>
   }
+
+  private def privateNexusRepository(isSnapshot: Boolean) =
+    if (isSnapshot) PrivateNexusSnapshots else PrivateNexusReleases
 }
