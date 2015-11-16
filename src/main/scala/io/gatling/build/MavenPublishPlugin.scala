@@ -15,7 +15,7 @@ object MavenPublishKeys {
   var useSonatypeRepositories = settingKey[Boolean]("Use Sonatype repositories for CI or during release process")
   val pushToPrivateNexus = settingKey[Boolean]("Should this project's artifacts be pushed to our private Nexus ?")
 
-  case class GatlingDeveloper(emailAddress: String, name: String, isEbiz: Boolean)
+  case class GatlingDeveloper(emailAddress: String, name: String, isGatlingCorp: Boolean)
 }
 object MavenPublishPlugin extends AutoPlugin {
 
@@ -57,7 +57,7 @@ object MavenPublishPlugin extends AutoPlugin {
           <developer>
             <id>{ dev.emailAddress }</id>
             <name>{ dev.name }</name>
-            { if (dev.isEbiz) <organization>eBusiness Information, Excilys Group</organization> }
+            { if (dev.isGatlingCorp) <organization>Gatling Corp</organization> }
           </developer>
         }
       }
