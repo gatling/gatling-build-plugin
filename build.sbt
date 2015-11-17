@@ -23,7 +23,7 @@ resolvers += Resolver.url("scoverage",url("http://dl.bintray.com/sksamuel/sbt-pl
 
 addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.7.5")
 
-addSbtPlugin("org.scalariform" % "sbt-scalariform" % "1.5.1")
+addSbtPlugin("org.scalariform" % "sbt-scalariform" % "1.4.0")
 
 addSbtPlugin("com.github.gseitz" % "sbt-release" % "1.0.0")
 
