@@ -17,6 +17,7 @@ object BaseSettingsPlugin extends AutoPlugin {
     scalaVersion := "2.11.7",
     updateOptions := updateOptions.value.withCachedResolution(true),
     javacOptions := Seq("-Xlint:-options", "-source", "1.8", "-target", "1.8"),
+    resolvers := Seq(DefaultMavenRepository, Resolver.jcenterRepo),
     scalacOptions := Seq(
       "-encoding", "UTF-8",
       "-target:jvm-1.7",
