@@ -15,8 +15,6 @@ scalacOptions := Seq(
   "-unchecked"
 )
 
-resolvers += Resolver.url("scoverage",url("http://dl.bintray.com/sksamuel/sbt-plugins"))(Resolver.ivyStylePatterns)
-
 // ------------------ //
 // -- DEPENDENCIES -- //
 // ------------------ //
@@ -28,8 +26,6 @@ addSbtPlugin("org.scalariform" % "sbt-scalariform" % "1.4.0")
 addSbtPlugin("com.github.gseitz" % "sbt-release" % "1.0.0")
 
 addSbtPlugin("com.jsuereth" % "sbt-pgp" % "1.0.0")
-
-addSbtPlugin("org.scoverage" %% "sbt-scoverage" % "1.3.0")
 
 addSbtPlugin("me.lessis" % "bintray-sbt" % "0.2.0")
 
