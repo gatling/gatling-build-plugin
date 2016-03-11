@@ -14,7 +14,7 @@ object BaseSettingsPlugin extends AutoPlugin {
     organization := "io.gatling",
     organizationHomepage := Some(url("http://gatling.io")),
     startYear := Some(2011),
-    scalaVersion := "2.11.7",
+    scalaVersion := "2.11.8",
     updateOptions := updateOptions.value.withCachedResolution(true),
     javacOptions := Seq("-Xlint:-options", "-source", "1.8", "-target", "1.8"),
     resolvers := Seq(DefaultMavenRepository, Resolver.jcenterRepo),
