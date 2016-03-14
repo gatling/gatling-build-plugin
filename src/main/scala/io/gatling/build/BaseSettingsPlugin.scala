@@ -9,6 +9,8 @@ object BaseSettingsPlugin extends AutoPlugin {
   override def trigger = allRequirements
   override def projectSettings = baseSettings
 
+  import ScalaCompilerKeys._
+
   val baseSettings = Seq(
     homepage := Some(url("http://gatling.io")),
     organization := "io.gatling",
@@ -18,7 +20,7 @@ object BaseSettingsPlugin extends AutoPlugin {
     updateOptions := updateOptions.value.withCachedResolution(true),
     javacOptions := Seq("-Xlint:-options", "-source", "1.8", "-target", "1.8"),
     resolvers := Seq(DefaultMavenRepository, Resolver.jcenterRepo),
-    scalacOptions := Seq(
+    defaultScalacOptions := Seq(
       "-encoding", "UTF-8",
       "-target:jvm-1.7",
       "-deprecation",
@@ -27,6 +29,7 @@ object BaseSettingsPlugin extends AutoPlugin {
       "-language:implicitConversions",
       "-language:postfixOps",
       "-Xfuture"
-    )
+    ),
+    scalacOptions := defaultScalacOptions.value ++ Seq("-target:jvm-1.8", "-Ybackend:GenBCode", "-Ydelambdafy:method")
   )
 }
