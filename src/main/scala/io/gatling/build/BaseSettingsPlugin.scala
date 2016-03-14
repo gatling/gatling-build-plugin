@@ -9,7 +9,19 @@ object BaseSettingsPlugin extends AutoPlugin {
   override def trigger = allRequirements
   override def projectSettings = baseSettings
 
-  import ScalaCompilerKeys._
+  def scalacOptionsVersion(v: String) = {
+    Seq(
+      "-encoding", "UTF-8",
+      "-deprecation",
+      "-feature",
+      "-unchecked",
+      "-language:implicitConversions",
+      "-language:postfixOps",
+      "-Xfuture"
+    ) ++ (
+        if (v.startsWith("2.10")) Seq("-target:jvm-1.7") else Seq("-target:jvm-1.8", "-Ybackend:GenBCode", "-Ydelambdafy:method")
+      )
+  }
 
   val baseSettings = Seq(
     homepage := Some(url("http://gatling.io")),
@@ -20,7 +32,7 @@ object BaseSettingsPlugin extends AutoPlugin {
     updateOptions := updateOptions.value.withCachedResolution(true),
     javacOptions := Seq("-Xlint:-options", "-source", "1.8", "-target", "1.8"),
     resolvers := Seq(DefaultMavenRepository, Resolver.jcenterRepo),
-    defaultScalacOptions := Seq(
+    scalacOptions := Seq(
       "-encoding", "UTF-8",
       "-target:jvm-1.7",
       "-deprecation",
@@ -30,6 +42,6 @@ object BaseSettingsPlugin extends AutoPlugin {
       "-language:postfixOps",
       "-Xfuture"
     ),
-    scalacOptions := defaultScalacOptions.value ++ Seq("-target:jvm-1.8", "-Ybackend:GenBCode", "-Ydelambdafy:method")
+    scalacOptions := scalacOptionsVersion(scalaVersion.value)
   )
 }
