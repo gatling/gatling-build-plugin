@@ -3,8 +3,8 @@ package io.gatling.build
 import sbt._
 import sbt.Keys._
 
-import bintray.Plugin._
-import bintray.Keys._
+import bintray.BintrayPlugin._
+import bintray.BintrayKeys._
 
 object BintrayReleasePlugin extends AutoPlugin {
 
@@ -17,6 +17,6 @@ object BintrayReleasePlugin extends AutoPlugin {
   val baseSettings = bintrayPublishSettings ++ gatlingReleaseSettings ++ Seq(
     publishMavenStyle := false,
     bintrayOrganization in bintray := None,
-    repository in bintray := "sbt-plugins"
+    bintrayRepository in bintray := "sbt-plugins"
   )
 }
