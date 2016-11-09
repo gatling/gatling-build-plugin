@@ -19,7 +19,12 @@ object BaseSettingsPlugin extends AutoPlugin {
       "-language:postfixOps",
       "-Xfuture"
     ) ++ (
-        if (v.startsWith("2.10")) Seq("-target:jvm-1.7") else Seq("-target:jvm-1.8", "-Ybackend:GenBCode", "-Ydelambdafy:method")
+        if (v.startsWith("2.10"))
+          Seq("-target:jvm-1.7")
+        else if (v.startsWith("2.11"))
+          Seq("-target:jvm-1.8", "-Ybackend:GenBCode", "-Ydelambdafy:method")
+        else
+          Seq("-target:jvm-1.8")
       )
   }
 
