@@ -21,7 +21,7 @@ scalacOptions := Seq(
 
 addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.7.5")
 
-addSbtPlugin("org.scalariform" % "sbt-scalariform" % "1.4.0")
+addSbtPlugin("org.scalariform" % "sbt-scalariform" % "1.8.0")
 
 addSbtPlugin("com.github.gseitz" % "sbt-release" % "1.0.4")
 

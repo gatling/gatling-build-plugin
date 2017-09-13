@@ -1,9 +1,9 @@
+import com.typesafe.sbt.SbtScalariform.ScalariformKeys
 import scalariform.formatter.preferences._
 
-scalariformSettings
-
-ScalariformKeys.preferences := FormattingPreferences()
+ScalariformKeys.preferences := ScalariformKeys.preferences.value
+  .setPreference(DoubleIndentConstructorArguments, true)
   .setPreference(AlignParameters, true)
   .setPreference(AlignSingleLineCaseStatements, true)
-  .setPreference(DoubleIndentClassDeclaration, true)
-  .setPreference(PreserveDanglingCloseParenthesis, true)
+  .setPreference(IndentLocalDefs, true)
+  .setPreference(DanglingCloseParenthesis, Preserve)
