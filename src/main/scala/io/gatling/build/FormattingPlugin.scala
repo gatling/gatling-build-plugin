@@ -21,7 +21,6 @@ object FormattingPlugin extends AutoPlugin {
       .setPreference(DoubleIndentConstructorArguments, true)
       .setPreference(AlignParameters, true)
       .setPreference(AlignSingleLineCaseStatements, true)
-      .setPreference(IndentLocalDefs, true)
       .setPreference(DanglingCloseParenthesis, Preserve)
       .setPreference(NewlineAtEndOfFile, true)
 }
