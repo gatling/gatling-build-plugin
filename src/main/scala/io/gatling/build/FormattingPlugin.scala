@@ -20,7 +20,7 @@ object FormattingPlugin extends AutoPlugin {
     FormattingPreferences()
       .setPreference(AlignParameters, true)
       .setPreference(AlignSingleLineCaseStatements, true)
-      .setPreference(DanglingCloseParenthesis, Preserve)
+      .setPreference(DanglingCloseParenthesis, Force)
       .setPreference(DoubleIndentConstructorArguments, true)
       .setPreference(NewlineAtEndOfFile, true)
 }
