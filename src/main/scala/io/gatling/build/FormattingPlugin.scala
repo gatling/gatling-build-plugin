@@ -18,9 +18,9 @@ object FormattingPlugin extends AutoPlugin {
 
   private def formattingPreferences =
     FormattingPreferences()
-      .setPreference(DoubleIndentConstructorArguments, true)
       .setPreference(AlignParameters, true)
       .setPreference(AlignSingleLineCaseStatements, true)
       .setPreference(DanglingCloseParenthesis, Preserve)
+      .setPreference(DoubleIndentConstructorArguments, true)
       .setPreference(NewlineAtEndOfFile, true)
 }
