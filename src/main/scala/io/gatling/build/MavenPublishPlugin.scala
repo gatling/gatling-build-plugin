@@ -1,15 +1,44 @@
 package io.gatling.build
 
+import java.io.FileInputStream
+import java.util.Properties
+
+import scala.collection.JavaConverters._
 import scala.util.Properties._
 
 import sbt._
 import sbt.Keys._
 
 object MavenPublishKeys {
-  private val PrivateNexusRoot = sys.env.get("PRIVATE_NEXUS_BASE_URL")
-  private[build] val PrivateNexusReleases = PrivateNexusRoot.map("Private Nexus Releases" at _ + "content/repositories/releases/")
-  private[build] val PrivateNexusSnapshots = PrivateNexusRoot.map("Private Nexus Snapshots" at _ + "content/repositories/snapshots/")
-  private[build] def privateNexusRepository(version: String) = if (version.endsWith("-SNAPSHOT")) PrivateNexusSnapshots else PrivateNexusReleases
+
+  private[build] val SbtHome = Path.userHome / ".sbt"
+  private[build] val PrivateNexusCredentialsFile = SbtHome / ".private-nexus-credentials"
+
+  private val PrivateNexusRepositoriesRoot: Option[String] = {
+    if (PrivateNexusCredentialsFile.exists) {
+      val is = new FileInputStream(PrivateNexusCredentialsFile)
+      val credProps: Map[String, String] =
+        try {
+          val props = new Properties
+          props.load(is)
+          props.asScala.map { case (k, v) => (k.toString, v.toString.trim) }.toMap
+        } finally {
+          is.close()
+        }
+
+      for {
+        scheme <- credProps.get("scheme")
+        host <- credProps.get("host")
+      } yield s"$scheme://$host/content/repositories"
+
+    } else {
+      None
+    }
+  }
+
+  private[build] val PrivateNexusReleases: Option[MavenRepository] = PrivateNexusRepositoriesRoot.map("Private Nexus Releases" at _ + "/releases/")
+  private[build] val PrivateNexusSnapshots: Option[MavenRepository] = PrivateNexusRepositoriesRoot.map("Private Nexus Snapshots" at _ + "/snapshots/")
+  private[build] def privateNexusRepository(version: String): Option[MavenRepository] = if (version.endsWith("-SNAPSHOT")) PrivateNexusSnapshots else PrivateNexusReleases
 
   val githubPath = settingKey[String]("Project path on Github")
   val projectDevelopers = settingKey[Seq[GatlingDeveloper]]("List of contributors for this project")
@@ -35,7 +64,7 @@ object MavenPublishPlugin extends AutoPlugin {
     publishTo := (if (pushToPrivateNexus.value) privateNexusRepository(version.value) else publishTo.value),
     pomExtra := mavenScmBlock(githubPath.value) ++ developersXml(projectDevelopers.value),
     resolvers ++= (if (useSonatypeRepositories.value) sonatypeRepositories else Seq.empty) :+ Resolver.mavenLocal,
-    credentials += Credentials(Path.userHome / ".sbt" / (if (pushToPrivateNexus.value) ".private-nexus-credentials" else ".credentials"))
+    credentials += Credentials(if (pushToPrivateNexus.value) PrivateNexusCredentialsFile else SbtHome / ".credentials")
   )
 
   private def sonatypeRepositories: Seq[Resolver] = Seq(
