@@ -2,7 +2,7 @@ package io.gatling.build
 
 import sbt._
 
-import net.virtualvoid.sbt.graph.Plugin.graphSettings
+import net.virtualvoid.sbt.graph.DependencyGraphSettings.graphSettings
 
 object DependencyGraphPlugin extends AutoPlugin {
 
