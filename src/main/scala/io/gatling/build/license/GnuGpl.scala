@@ -10,7 +10,7 @@ object GnuGpl extends License {
 
   def scalaHeader = (
     javaStyleBlockComment,
-    s"""/**
+    s"""/*
        | * Copyright 2011-$currentYear GatlingCorp (http://gatling.io)
        | *
        | * This program is free software; you can redistribute it and/or modify

@@ -10,7 +10,7 @@ object ApacheV2 extends License {
 
   def scalaHeader = (
     javaStyleBlockComment,
-    s"""/**
+    s"""/*
        | * Copyright 2011-$currentYear GatlingCorp (http://gatling.io)
        | *
        | * Licensed under the Apache License, Version 2.0 (the "License");

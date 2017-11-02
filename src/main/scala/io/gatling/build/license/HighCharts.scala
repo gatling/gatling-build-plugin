@@ -10,7 +10,7 @@ object HighCharts extends License {
 
   def scalaHeader = (
     javaStyleBlockComment,
-    s"""/**
+    s"""/*
        | * Copyright 2011-$currentYear GatlingCorp (http://gatling.io)
        | *
        | * Licensed under the Gatling Highcharts License
