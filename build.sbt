@@ -9,7 +9,7 @@ sbtPlugin := true
 scalacOptions := Seq(
   "-encoding",
   "UTF-8",
-  "-target:jvm-1.6",
+  "-target:jvm-1.8",
   "-deprecation",
   "-feature",
   "-unchecked"
@@ -19,14 +19,14 @@ scalacOptions := Seq(
 // -- DEPENDENCIES -- //
 // ------------------ //
 
-addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.8.2")
+addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.9.0")
 
-addSbtPlugin("org.scalariform" % "sbt-scalariform" % "1.8.0")
+addSbtPlugin("org.scalariform" % "sbt-scalariform" % "1.8.2")
 
-addSbtPlugin("com.github.gseitz" % "sbt-release" % "1.0.4")
+addSbtPlugin("com.github.gseitz" % "sbt-release" % "1.0.6")
 
-addSbtPlugin("com.jsuereth" % "sbt-pgp" % "1.0.0")
+addSbtPlugin("com.jsuereth" % "sbt-pgp" % "1.1.0")
 
-addSbtPlugin("de.heikoseeberger" % "sbt-header" % "1.8.0")
+addSbtPlugin("de.heikoseeberger" % "sbt-header" % "4.0.0")
 
-addSbtPlugin("org.xerial.sbt" % "sbt-sonatype" % "0.3.0")
+addSbtPlugin("org.xerial.sbt" % "sbt-sonatype" % "2.0")

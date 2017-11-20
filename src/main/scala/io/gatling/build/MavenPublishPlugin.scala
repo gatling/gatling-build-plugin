@@ -47,6 +47,7 @@ object MavenPublishKeys {
 
   case class GatlingDeveloper(emailAddress: String, name: String, isGatlingCorp: Boolean)
 }
+
 object MavenPublishPlugin extends AutoPlugin {
 
   override def requires = plugins.JvmPlugin && SonatypeReleasePlugin
@@ -61,7 +62,11 @@ object MavenPublishPlugin extends AutoPlugin {
     useSonatypeRepositories := false,
     crossPaths := false,
     pushToPrivateNexus := false,
-    publishTo := (if (pushToPrivateNexus.value) privateNexusRepository(version.value) else publishTo.value),
+    publishTo := {
+      val privateRepo = privateNexusRepository(version.value)
+      val defaultRepo = publishTo.value
+      if (pushToPrivateNexus.value) privateRepo else defaultRepo
+    },
     pomExtra := mavenScmBlock(githubPath.value) ++ developersXml(projectDevelopers.value),
     resolvers ++= (if (useSonatypeRepositories.value) sonatypeRepositories else Seq.empty) :+ Resolver.mavenLocal,
     credentials += Credentials(if (pushToPrivateNexus.value) PrivateNexusCredentialsFile else SbtHome / ".credentials")

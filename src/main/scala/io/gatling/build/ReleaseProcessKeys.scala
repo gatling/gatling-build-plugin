@@ -2,11 +2,12 @@ package io.gatling.build
 
 import scala.util.Properties
 
+import io.gatling.build.MavenPublishKeys.pushToPrivateNexus
+
 import sbt.Keys._
 import sbt._
 import sbtrelease.ReleasePlugin.autoImport._
 import sbtrelease.ReleaseStateTransformations._
-import io.gatling.build.MavenPublishKeys.pushToPrivateNexus
 
 object ReleaseProcessKeys {
   val skipSnapshotDepsCheck = settingKey[Boolean]("Skip snapshot dependencies check during release")
@@ -24,7 +25,7 @@ object ReleaseProcessKeys {
   private def fullReleaseProcess(ref: ProjectRef, skipSnapshotDepsCheck: Boolean, releaseOnSonatype: Boolean) = {
     val checkSnapshotDeps = if (!skipSnapshotDepsCheck) Seq(checkSnapshotDependencies) else Seq.empty
     val publishStep = ReleaseStep(releaseStepTaskAggregated(releasePublishArtifactsAction in Global in ref))
-    val sonatypeRelease = if (releaseOnSonatype) Seq(ReleaseStep(Command.process("sonatypeReleaseAll", _))) else Seq.empty
+    val sonatypeRelease = if (releaseOnSonatype) Seq(ReleaseStep(identity)) else Seq.empty
     val commonProcess = Seq(
       inquireVersions, runClean, runTest, setReleaseVersion, commitReleaseVersion,
       tagRelease, publishStep, setNextVersion, commitNextVersion, pushChanges

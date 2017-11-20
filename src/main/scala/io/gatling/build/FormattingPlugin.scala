@@ -10,10 +10,9 @@ object FormattingPlugin extends AutoPlugin {
   override def trigger = allRequirements
   override def projectSettings = baseSettings
 
-  import autoImport._
-
-  val baseSettings = scalariformSettings(autoformat = true) ++ Seq(
-    ScalariformKeys.preferences := formattingPreferences
+  val baseSettings = Seq(
+    ScalariformKeys.preferences := formattingPreferences,
+    ScalariformKeys.autoformat := true
   )
 
   private def formattingPreferences =
