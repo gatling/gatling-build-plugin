@@ -38,7 +38,7 @@ object MavenPublishKeys {
 
   private[build] val PrivateNexusReleases: Option[MavenRepository] = PrivateNexusRepositoriesRoot.map("Private Nexus Releases" at _ + "/releases/")
   private[build] val PrivateNexusSnapshots: Option[MavenRepository] = PrivateNexusRepositoriesRoot.map("Private Nexus Snapshots" at _ + "/snapshots/")
-  private[build] def publicNexusResository(isSnapshot: Boolean): Option[MavenRepository] = if (isSnapshot) Some(Opts.resolver.sonatypeSnapshots) else Some(Opts.resolver.sonatypeStaging)
+  private[build] def publicNexusResository(isSnapshot: Boolean): MavenRepository = if (isSnapshot) Opts.resolver.sonatypeSnapshots else Opts.resolver.sonatypeStaging
   private[build] def privateNexusRepository(isSnapshot: Boolean): Option[MavenRepository] = if (isSnapshot) PrivateNexusSnapshots else PrivateNexusReleases
 
   val githubPath = settingKey[String]("Project path on Github")
@@ -64,7 +64,7 @@ object MavenPublishPlugin extends AutoPlugin {
     publishTo := {
       val privateRepo = privateNexusRepository(isSnapshot.value)
       val publicRepo = publicNexusResository(isSnapshot.value)
-      if (pushToPrivateNexus.value) privateRepo else publicRepo
+      if (pushToPrivateNexus.value) privateRepo else Some(publicRepo)
     },
     pomExtra := mavenScmBlock(githubPath.value) ++ developersXml(projectDevelopers.value),
     resolvers ++= (if (useSonatypeRepositories.value) sonatypeRepositories else Seq.empty) :+ Resolver.mavenLocal,

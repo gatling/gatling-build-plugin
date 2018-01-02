@@ -9,10 +9,9 @@ import com.typesafe.sbt.pgp.PgpKeys.publishSigned
 object SonatypeReleasePlugin extends AutoPlugin {
 
   override def requires = plugins.JvmPlugin
-  val autoImport = ReleaseProcessKeys
   override def projectSettings = baseSettings
 
-  import autoImport._
+  import ReleaseProcessKeys._
 
   private val baseSettings = gatlingReleaseSettings ++ Seq(
     releaseCrossBuild := false,
