@@ -8,6 +8,7 @@ import sbt.Keys._
 import sbt._
 import sbtrelease.ReleasePlugin.autoImport._
 import sbtrelease.ReleaseStateTransformations._
+import xerial.sbt.Sonatype.SonatypeCommand.sonatypeReleaseAll
 
 object ReleaseProcessKeys {
   val skipSnapshotDepsCheck = settingKey[Boolean]("Skip snapshot dependencies check during release")
@@ -17,7 +18,7 @@ object ReleaseProcessKeys {
     releaseVersion := propToVersionFunOrDefault("releaseVersion", releaseVersion.value),
     releaseNextVersion := propToVersionFunOrDefault("developmentVersion", releaseNextVersion.value),
     releaseProcess := {
-      val releaseOnSonatype = (publishMavenStyle.value && !(pushToPrivateNexus ?? false).value)
+      val releaseOnSonatype = publishMavenStyle.value && !(pushToPrivateNexus ?? false).value
       fullReleaseProcess(thisProjectRef.value, skipSnapshotDepsCheck.value, releaseOnSonatype)
     }
   )
@@ -25,7 +26,7 @@ object ReleaseProcessKeys {
   private def fullReleaseProcess(ref: ProjectRef, skipSnapshotDepsCheck: Boolean, releaseOnSonatype: Boolean) = {
     val checkSnapshotDeps = if (!skipSnapshotDepsCheck) Seq(checkSnapshotDependencies) else Seq.empty
     val publishStep = ReleaseStep(releaseStepTaskAggregated(releasePublishArtifactsAction in Global in ref))
-    val sonatypeRelease = if (releaseOnSonatype) Seq(ReleaseStep(identity)) else Seq.empty
+    val sonatypeRelease = if (releaseOnSonatype) Seq(ReleaseStep(releaseStepCommand(sonatypeReleaseAll))) else Seq.empty
     val commonProcess = Seq(
       inquireVersions, runClean, runTest, setReleaseVersion, commitReleaseVersion,
       tagRelease, publishStep, setNextVersion, commitNextVersion, pushChanges
