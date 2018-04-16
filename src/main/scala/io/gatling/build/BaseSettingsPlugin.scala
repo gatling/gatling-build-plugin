@@ -7,9 +7,7 @@ object BaseSettingsPlugin extends AutoPlugin {
 
   override def requires = plugins.JvmPlugin
   override def trigger = allRequirements
-  override def projectSettings = baseSettings
-
-  val baseSettings = Seq(
+  override def projectSettings = Seq(
     homepage := Some(url("https://gatling.io")),
     organization := "io.gatling",
     organizationHomepage := Some(url("https://gatling.io")),

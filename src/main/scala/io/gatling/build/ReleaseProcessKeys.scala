@@ -11,6 +11,7 @@ import sbtrelease.ReleaseStateTransformations._
 import xerial.sbt.Sonatype.SonatypeCommand.sonatypeReleaseAll
 
 object ReleaseProcessKeys {
+
   val skipSnapshotDepsCheck = settingKey[Boolean]("Skip snapshot dependencies check during release")
 
   val gatlingReleaseSettings = Seq(

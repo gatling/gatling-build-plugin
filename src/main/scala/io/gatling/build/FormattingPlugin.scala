@@ -8,9 +8,7 @@ object FormattingPlugin extends AutoPlugin {
 
   override def requires = plugins.JvmPlugin
   override def trigger = allRequirements
-  override def projectSettings = baseSettings
-
-  val baseSettings = Seq(
+  override def projectSettings = Seq(
     ScalariformKeys.preferences := formattingPreferences,
     ScalariformKeys.autoformat := true
   )
