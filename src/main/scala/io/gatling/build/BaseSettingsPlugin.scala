@@ -10,9 +10,9 @@ object BaseSettingsPlugin extends AutoPlugin {
   override def projectSettings = baseSettings
 
   val baseSettings = Seq(
-    homepage := Some(url("http://gatling.io")),
+    homepage := Some(url("https://gatling.io")),
     organization := "io.gatling",
-    organizationHomepage := Some(url("http://gatling.io")),
+    organizationHomepage := Some(url("https://gatling.io")),
     startYear := Some(2011),
     scalaVersion := "2.12.5",
     updateOptions := updateOptions.value.withCachedResolution(true),

@@ -1,6 +1,6 @@
-homepage             := Some(new URL("http://gatling.io"))
+homepage             := Some(new URL("https://gatling.io"))
 organization         := "io.gatling"
-organizationHomepage := Some(new URL("http://gatling.io"))
+organizationHomepage := Some(new URL("https://gatling.io"))
 startYear            := Some(2011)
 licenses             := Seq("Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0.html"))
 
