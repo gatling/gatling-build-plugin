@@ -9,7 +9,7 @@ package object license {
   private def currentYear = Calendar.getInstance.get(Calendar.YEAR)
 
   val ApacheV2License = Some(License.Custom(
-    s"""|Copyright 2011-$currentYear GatlingCorp (http://gatling.io)
+    s"""|Copyright 2011-$currentYear GatlingCorp (https://gatling.io)
         |
         |Licensed under the Apache License, Version 2.0 (the "License");
         |you may not use this file except in compliance with the License.
@@ -25,13 +25,13 @@ package object license {
   ))
 
   val GatlingHighChartsLicense = Some(License.Custom(
-    s"""|Copyright 2011-$currentYear GatlingCorp (http://gatling.io)
+    s"""|Copyright 2011-$currentYear GatlingCorp (https://gatling.io)
         |
         |Licensed under the Gatling Highcharts License""".stripMargin
   ))
 
   val AllRightsReservedLicense = Some(License.Custom(
-    s"""|Copyright 2011-$currentYear GatlingCorp (http://gatling.io)
+    s"""|Copyright 2011-$currentYear GatlingCorp (https://gatling.io)
         |
         |All rights reserved.""".stripMargin
   ))
