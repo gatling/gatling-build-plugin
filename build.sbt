@@ -15,6 +15,8 @@ scalacOptions := Seq(
   "-unchecked"
 )
 
+resolvers += Resolver.jcenterRepo
+
 // ------------------ //
 // -- DEPENDENCIES -- //
 // ------------------ //
