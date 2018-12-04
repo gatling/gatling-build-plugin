@@ -12,7 +12,7 @@ object BaseSettingsPlugin extends AutoPlugin {
     organization := "io.gatling",
     organizationHomepage := Some(url("https://gatling.io")),
     startYear := Some(2011),
-    scalaVersion := "2.12.7",
+    scalaVersion := "2.12.8",
     updateOptions := updateOptions.value.withCachedResolution(true),
     javacOptions := Seq(
       "-Xlint:-options",
