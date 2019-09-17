@@ -2,6 +2,7 @@ package io.gatling.build
 
 import sbt.Keys._
 import sbt._
+import org.scalafmt.sbt.ScalafmtPlugin.autoImport.scalafmtOnCompile
 
 object BaseSettingsPlugin extends AutoPlugin {
 
@@ -14,14 +15,18 @@ object BaseSettingsPlugin extends AutoPlugin {
     startYear := Some(2011),
     scalaVersion := "2.12.10",
     updateOptions := updateOptions.value.withCachedResolution(true),
+    scalafmtOnCompile := true,
     javacOptions := Seq(
       "-Xlint:-options",
-      "-source", "1.8",
-      "-target", "1.8"
+      "-source",
+      "1.8",
+      "-target",
+      "1.8"
     ),
     resolvers := Seq(DefaultMavenRepository, Resolver.jcenterRepo),
     scalacOptions := Seq(
-      "-encoding", "UTF-8",
+      "-encoding",
+      "UTF-8",
       "-deprecation",
       "-feature",
       "-unchecked",

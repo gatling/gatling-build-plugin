@@ -29,8 +29,16 @@ object ReleaseProcessKeys {
     val publishStep = ReleaseStep(releaseStepTaskAggregated(releasePublishArtifactsAction in Global in ref))
     val sonatypeRelease = if (releaseOnSonatype) Seq(ReleaseStep(releaseStepCommand(sonatypeReleaseAll))) else Seq.empty
     val commonProcess = Seq(
-      inquireVersions, runClean, runTest, setReleaseVersion, commitReleaseVersion,
-      tagRelease, publishStep, setNextVersion, commitNextVersion, pushChanges
+      inquireVersions,
+      runClean,
+      runTest,
+      setReleaseVersion,
+      commitReleaseVersion,
+      tagRelease,
+      publishStep,
+      setNextVersion,
+      commitNextVersion,
+      pushChanges
     )
 
     checkSnapshotDeps ++ commonProcess ++ sonatypeRelease

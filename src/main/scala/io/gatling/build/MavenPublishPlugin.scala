@@ -38,7 +38,8 @@ object MavenPublishKeys {
 
   private[build] val PrivateNexusReleases: Option[MavenRepository] = PrivateNexusRepositoriesRoot.map("Private Nexus Releases" at _ + "/releases/")
   private[build] val PrivateNexusSnapshots: Option[MavenRepository] = PrivateNexusRepositoriesRoot.map("Private Nexus Snapshots" at _ + "/snapshots/")
-  private[build] def publicNexusResository(isSnapshot: Boolean): MavenRepository = if (isSnapshot) Opts.resolver.sonatypeSnapshots else Opts.resolver.sonatypeStaging
+  private[build] def publicNexusResository(isSnapshot: Boolean): MavenRepository =
+    if (isSnapshot) Opts.resolver.sonatypeSnapshots else Opts.resolver.sonatypeStaging
   private[build] def privateNexusRepository(isSnapshot: Boolean): Option[MavenRepository] = if (isSnapshot) PrivateNexusSnapshots else PrivateNexusReleases
 
   val githubPath = settingKey[String]("Project path on Github")
@@ -71,30 +72,31 @@ object MavenPublishPlugin extends AutoPlugin {
     credentials += Credentials(if (pushToPrivateNexus.value) PrivateNexusCredentialsFile else SbtHome / ".credentials")
   )
 
-  private def sonatypeRepositories: Seq[Resolver] = Seq(
-    envOrNone("CI").map(_ => Opts.resolver.sonatypeSnapshots),
-    propOrNone("release").map(_ => Opts.resolver.sonatypeReleases)
-  ).flatten
+  private def sonatypeRepositories: Seq[Resolver] =
+    Seq(
+      envOrNone("CI").map(_ => Opts.resolver.sonatypeSnapshots),
+      propOrNone("release").map(_ => Opts.resolver.sonatypeReleases)
+    ).flatten
 
   private def mavenScmBlock(githubPath: String) =
     <scm>
-      <connection>scm:git:git@github.com:{ githubPath }.git</connection>
-      <developerConnection>scm:git:git@github.com:{ githubPath }.git</developerConnection>
-      <url>https://github.com/{ githubPath }</url>
+      <connection>scm:git:git@github.com:{githubPath}.git</connection>
+      <developerConnection>scm:git:git@github.com:{githubPath}.git</developerConnection>
+      <url>https://github.com/{githubPath}</url>
       <tag>HEAD</tag>
     </scm>
 
   private def developersXml(devs: Seq[GatlingDeveloper]) = {
     <developers>
       {
-        for (dev <- devs) yield {
-          <developer>
-            <id>{ dev.emailAddress }</id>
-            <name>{ dev.name }</name>
-            { if (dev.isGatlingCorp) <organization>Gatling Corp</organization> }
+      for (dev <- devs) yield {
+        <developer>
+            <id>{dev.emailAddress}</id>
+            <name>{dev.name}</name>
+            {if (dev.isGatlingCorp) <organization>Gatling Corp</organization>}
           </developer>
-        }
       }
+    }
     </developers>
   }
 }
