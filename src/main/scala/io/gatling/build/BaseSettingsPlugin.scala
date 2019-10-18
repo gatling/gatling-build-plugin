@@ -38,6 +38,9 @@ object BaseSettingsPlugin extends AutoPlugin {
   )
 
   private def configureUpdateOptions(options: UpdateOptions): UpdateOptions =
-    options.withCachedResolution(true).withGigahorse(false).withLatestSnapshots(true)
+    options
+      .withCachedResolution(true)
+      .withGigahorse(false)
+      .withLatestSnapshots(false)
 
 }

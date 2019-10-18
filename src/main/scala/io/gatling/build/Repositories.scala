@@ -22,8 +22,8 @@ object Repositories {
     } yield s"$scheme://$host/content/repositories"
   }
 
-  private val PrivateNexusReleases = PrivateNexusRepositoriesRoot.map("Private Nexus Releases" at _ + "/releases/")
-  private val PrivateNexusSnapshots = PrivateNexusRepositoriesRoot.map("Private Nexus Snapshots" at _ + "/snapshots/")
+  private val PrivateNexusReleases = PrivateNexusRepositoriesRoot.map("Private Nexus Releases" at _ + "/releases/" withAllowInsecureProtocol true)
+  private val PrivateNexusSnapshots = PrivateNexusRepositoriesRoot.map("Private Nexus Snapshots" at _ + "/snapshots/" withAllowInsecureProtocol true)
 
   private def publicNexusRepository(isSnapshot: Boolean) =
     if (isSnapshot) Opts.resolver.sonatypeSnapshots else Opts.resolver.sonatypeStaging
