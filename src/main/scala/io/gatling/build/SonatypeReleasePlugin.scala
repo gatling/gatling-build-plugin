@@ -4,7 +4,7 @@ import sbt._
 
 import sbtrelease.ReleasePlugin.autoImport._
 import xerial.sbt.Sonatype.SonatypeKeys._
-import com.typesafe.sbt.pgp.PgpKeys.publishSigned
+import com.jsuereth.sbtpgp.PgpKeys.publishSigned
 
 object SonatypeReleasePlugin extends AutoPlugin {
 
