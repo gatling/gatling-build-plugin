@@ -17,7 +17,7 @@ object BaseSettingsPlugin extends AutoPlugin {
     scalafmtOnCompile := true,
     updateOptions := configureUpdateOptions(updateOptions.value),
     javacOptions := Seq(
-      "-Xlint:-options",
+      "-Xlint:none",
       "-source",
       "1.8",
       "-target",
