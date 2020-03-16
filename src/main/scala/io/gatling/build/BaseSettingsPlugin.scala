@@ -22,6 +22,10 @@ object BaseSettingsPlugin extends AutoPlugin {
       "-target",
       "1.8"
     ),
+    javacOptions in (Compile, doc) := Seq(
+      "-source",
+      "1.8"
+    ),
     resolvers := Seq(DefaultMavenRepository, Resolver.jcenterRepo),
     scalacOptions := Seq(
       "-encoding",
