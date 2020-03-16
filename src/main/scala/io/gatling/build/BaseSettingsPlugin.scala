@@ -17,10 +17,13 @@ object BaseSettingsPlugin extends AutoPlugin {
     scalafmtOnCompile := true,
     updateOptions := configureUpdateOptions(updateOptions.value),
     javacOptions := Seq(
-      "-Xlint:-options",
       "-source",
       "1.8",
       "-target",
+      "1.8"
+    ),
+    javacOptions in (Compile, doc) := Seq(
+      "-source",
       "1.8"
     ),
     resolvers := Seq(DefaultMavenRepository, Resolver.jcenterRepo),
