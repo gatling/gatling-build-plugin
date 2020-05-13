@@ -44,15 +44,18 @@ object BaseSettingsPlugin extends AutoPlugin {
         "-Xfuture",
         "-target:jvm-1.8"
       ),
-      scalafixDependencies += "com.nequissimus" %% "sort-imports" % "0.5.0",
-      (compile in Compile) := (compile in Compile).dependsOn((scalafix in Compile).toTask("")).value,
-      compile in Test := (compile in Test).dependsOn((scalafix in Test).toTask("")).value
-    ) ++ scalafixCheckSettings
+      scalafixDependencies in ThisBuild += "com.nequissimus" %% "sort-imports" % "0.5.0"
+    ) ++ scalafixSettings
 
-  private val scalafixCheckSettings = {
-    val scalafixCheckTask = (scalafixCheck := scalafix.toTask(" --check").value)
-    inConfig(Compile)(scalafixCheckTask) ++ inConfig(Test)(scalafixCheckTask)
-  }
+  private val scalafixSettings =
+    scalafixBeforeCompile(Compile) ++ scalafixBeforeCompile(Test) ++
+      scalafixCheckTask(Compile) ++ scalafixCheckTask(Test)
+
+  def scalafixBeforeCompile(config: Configuration) =
+    inConfig(config)(compile := compile.dependsOn(scalafix.toTask("")).value)
+
+  def scalafixCheckTask(config: Configuration) =
+    inConfig(config)(scalafixCheck := scalafix.toTask(" --check").value)
 
   private def configureUpdateOptions(options: UpdateOptions): UpdateOptions =
     options
