@@ -13,40 +13,41 @@ object BaseSettingsPlugin extends AutoPlugin {
 
   override def trigger = allRequirements
 
-  override def projectSettings = Seq(
-    homepage := Some(url("https://gatling.io")),
-    organization := "io.gatling",
-    organizationHomepage := Some(url("https://gatling.io")),
-    startYear := Some(2011),
-    scalaVersion := "2.12.11",
-    scalafmtOnCompile := true,
-    updateOptions := configureUpdateOptions(updateOptions.value),
-    javacOptions := Seq(
-      "-source",
-      "1.8",
-      "-target",
-      "1.8"
-    ),
-    javacOptions in (Compile, doc) := Seq(
-      "-source",
-      "1.8"
-    ),
-    resolvers := Seq(DefaultMavenRepository, Resolver.jcenterRepo),
-    scalacOptions := Seq(
-      "-encoding",
-      "UTF-8",
-      "-deprecation",
-      "-feature",
-      "-unchecked",
-      "-language:implicitConversions",
-      "-language:postfixOps",
-      "-Xfuture",
-      "-target:jvm-1.8"
-    ),
-    scalafixDependencies += "com.nequissimus" %% "sort-imports" % "0.5.0",
-    (compile in Compile) := (compile in Compile).dependsOn((scalafix in Compile).toTask("")).value,
-    compile in Test := (compile in Test).dependsOn((scalafix in Test).toTask("")).value,
-  ) ++ scalafixCheckSettings
+  override def projectSettings =
+    Seq(
+      homepage := Some(url("https://gatling.io")),
+      organization := "io.gatling",
+      organizationHomepage := Some(url("https://gatling.io")),
+      startYear := Some(2011),
+      scalaVersion := "2.12.11",
+      scalafmtOnCompile := true,
+      updateOptions := configureUpdateOptions(updateOptions.value),
+      javacOptions := Seq(
+        "-source",
+        "1.8",
+        "-target",
+        "1.8"
+      ),
+      javacOptions in (Compile, doc) := Seq(
+        "-source",
+        "1.8"
+      ),
+      resolvers := Seq(DefaultMavenRepository, Resolver.jcenterRepo),
+      scalacOptions := Seq(
+        "-encoding",
+        "UTF-8",
+        "-deprecation",
+        "-feature",
+        "-unchecked",
+        "-language:implicitConversions",
+        "-language:postfixOps",
+        "-Xfuture",
+        "-target:jvm-1.8"
+      ),
+      scalafixDependencies += "com.nequissimus" %% "sort-imports" % "0.5.0",
+      (compile in Compile) := (compile in Compile).dependsOn((scalafix in Compile).toTask("")).value,
+      compile in Test := (compile in Test).dependsOn((scalafix in Test).toTask("")).value
+    ) ++ scalafixCheckSettings
 
   private val scalafixCheckSettings = {
     val scalafixCheckTask = (scalafixCheck := scalafix.toTask(" --check").value)
