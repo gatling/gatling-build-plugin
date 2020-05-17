@@ -14,7 +14,7 @@ scalacOptions := Seq(
   "-deprecation",
   "-feature",
   "-unchecked"
-)
+) ++ (if (scala.util.Properties.javaVersion.startsWith("1.8")) Nil else Seq("-release", "8"))
 
 // ------------------ //
 // -- DEPENDENCIES -- //

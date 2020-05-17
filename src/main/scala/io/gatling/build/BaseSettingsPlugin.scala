@@ -13,27 +13,18 @@ object BaseSettingsPlugin extends AutoPlugin {
 
   override def trigger = allRequirements
 
-  override def projectSettings =
-    Seq(
-      homepage := Some(url("https://gatling.io")),
-      organization := "io.gatling",
-      organizationHomepage := Some(url("https://gatling.io")),
-      startYear := Some(2011),
-      scalaVersion := "2.12.11",
-      scalafmtOnCompile := true,
-      updateOptions := configureUpdateOptions(updateOptions.value),
-      javacOptions := Seq(
-        "-source",
-        "1.8",
-        "-target",
-        "1.8"
-      ),
-      javacOptions in (Compile, doc) := Seq(
-        "-source",
-        "1.8"
-      ),
-      resolvers := Seq(DefaultMavenRepository, Resolver.jcenterRepo),
-      scalacOptions := Seq(
+  private val isJava8 = scala.util.Properties.javaVersion.startsWith("1.8")
+
+  private val JavacOptions =
+    if (isJava8) {
+      Seq("-source", "1.8", "-target", "1.8")
+    } else {
+      Seq("--release", "8")
+    }
+
+  private val ScalacOptions = {
+    val base =
+      Seq(
         "-encoding",
         "UTF-8",
         "-deprecation",
@@ -43,7 +34,28 @@ object BaseSettingsPlugin extends AutoPlugin {
         "-language:postfixOps",
         "-Xfuture",
         "-target:jvm-1.8"
-      ),
+      )
+
+    if (isJava8) {
+      base
+    } else {
+      base ++ Seq("-release", "8")
+    }
+  }
+
+  override def projectSettings =
+    Seq(
+      homepage := Some(url("https://gatling.io")),
+      organization := "io.gatling",
+      organizationHomepage := Some(url("https://gatling.io")),
+      startYear := Some(2011),
+      scalaVersion := "2.12.11",
+      scalafmtOnCompile := true,
+      updateOptions := configureUpdateOptions(updateOptions.value),
+      javacOptions := JavacOptions,
+      javacOptions in (Compile, doc) := JavacOptions,
+      resolvers := Seq(DefaultMavenRepository, Resolver.jcenterRepo),
+      scalacOptions := ScalacOptions,
       scalafixDependencies in ThisBuild += "com.nequissimus" %% "sort-imports" % "0.5.0"
     ) ++ scalafixSettings
 
@@ -62,5 +74,4 @@ object BaseSettingsPlugin extends AutoPlugin {
       .withCachedResolution(true)
       .withGigahorse(false)
       .withLatestSnapshots(false)
-
 }
