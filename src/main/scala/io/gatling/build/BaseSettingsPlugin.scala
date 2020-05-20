@@ -53,7 +53,10 @@ object BaseSettingsPlugin extends AutoPlugin {
       scalafmtOnCompile := true,
       updateOptions := configureUpdateOptions(updateOptions.value),
       javacOptions := JavacOptions,
-      javacOptions in (Compile, doc) := JavacOptions,
+      javacOptions in (Compile, doc) := Seq(
+        "-source",
+        "1.8"
+      ),
       resolvers := Seq(DefaultMavenRepository, Resolver.jcenterRepo),
       scalacOptions := ScalacOptions,
       scalafixDependencies in ThisBuild += "com.nequissimus" %% "sort-imports" % "0.5.0"
