@@ -59,7 +59,7 @@ object BaseSettingsPlugin extends AutoPlugin {
       ),
       resolvers := Seq(DefaultMavenRepository, Resolver.jcenterRepo),
       scalacOptions := ScalacOptions,
-      scalafixDependencies in ThisBuild += "com.nequissimus" %% "sort-imports" % "0.5.0"
+      scalafixDependencies in ThisBuild += "com.nequissimus" %% "sort-imports" % "0.5.2"
     ) ++ scalafixSettings
 
   private val scalafixSettings =
