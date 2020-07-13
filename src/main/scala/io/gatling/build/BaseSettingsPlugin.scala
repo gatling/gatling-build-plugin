@@ -49,7 +49,7 @@ object BaseSettingsPlugin extends AutoPlugin {
       organization := "io.gatling",
       organizationHomepage := Some(url("https://gatling.io")),
       startYear := Some(2011),
-      scalaVersion := "2.12.11",
+      scalaVersion := "2.12.12",
       scalafmtOnCompile := true,
       updateOptions := configureUpdateOptions(updateOptions.value),
       javacOptions := JavacOptions,
