@@ -32,7 +32,6 @@ object BaseSettingsPlugin extends AutoPlugin {
         "-unchecked",
         "-language:implicitConversions",
         "-language:postfixOps",
-        "-Xfuture",
         "-target:jvm-1.8"
       )
 
@@ -49,7 +48,7 @@ object BaseSettingsPlugin extends AutoPlugin {
       organization := "io.gatling",
       organizationHomepage := Some(url("https://gatling.io")),
       startYear := Some(2011),
-      scalaVersion := "2.12.12",
+      scalaVersion := "2.13.3",
       scalafmtOnCompile := true,
       updateOptions := configureUpdateOptions(updateOptions.value),
       javacOptions := JavacOptions,
