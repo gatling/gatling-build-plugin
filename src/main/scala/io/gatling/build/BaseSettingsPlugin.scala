@@ -2,11 +2,8 @@ package io.gatling.build
 
 import sbt.Keys._
 import sbt._
-import scalafix.sbt.ScalafixPlugin.autoImport.{ scalafix, scalafixDependencies }
 
 object BaseSettingsPlugin extends AutoPlugin {
-
-  val scalafixCheck = taskKey[Unit]("Check that scalafix rules have been applied")
 
   override def requires = plugins.JvmPlugin
 
@@ -53,19 +50,8 @@ object BaseSettingsPlugin extends AutoPlugin {
         "1.8"
       ),
       resolvers := Seq(DefaultMavenRepository, Resolver.jcenterRepo),
-      scalacOptions := ScalacOptions,
-      scalafixDependencies in ThisBuild += "com.nequissimus" %% "sort-imports" % "0.5.4"
-    ) ++ scalafixSettings
-
-  private val scalafixSettings =
-    scalafixBeforeCompile(Compile) ++ scalafixBeforeCompile(Test) ++
-      scalafixCheckTask(Compile) ++ scalafixCheckTask(Test)
-
-  def scalafixBeforeCompile(config: Configuration) =
-    inConfig(config)(compile := compile.dependsOn(scalafix.toTask("")).value)
-
-  def scalafixCheckTask(config: Configuration) =
-    inConfig(config)(scalafixCheck := scalafix.toTask(" --check").value)
+      scalacOptions := ScalacOptions
+    )
 
   private def configureUpdateOptions(options: UpdateOptions): UpdateOptions =
     options
