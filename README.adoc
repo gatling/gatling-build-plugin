@@ -1,0 +1,58 @@
+= gatling-build-plugin
+
+image::https://github.com/gatling/gatling-build-plugin/workflows/test/badge.svg?branch=master[branch=master]
+
+SBT plugins to share common settings across Gatling's projects' builds.
+
+== GatlingOssPlugin
+
+Common settings for OSS project in `io.gatling` group.
+
+=== How to use
+
+.build.sbt
+[source,sbt]
+----
+inScope(Global) {
+  Seq(
+    githubPath := "gatling/my-awesome-project", // <1>
+    gatlingDevelopers := Seq( // <2>
+      GatlingDeveloper("jsmith@gatling.io", "John Smith", isGatlingCorp = false)
+    )
+  )
+}
+
+lazy val root = (project in file("."))
+  .enablePlugins(GatlingOssPlugin)
+  .settings(
+    name := "my-awesome-project" // <3>
+  )
+----
+
+<1> github path for `pom.xml` SCM info
+<2> developers and contributors for `pom.xml` developers
+<3> artifact name
+
+.version.sbt
+[source,sbt]
+----
+version := "0.0.1-SNAPSHOT"
+----
+
+=== New commands
+
+==== sbt gatling-release <release-type>
+
+release-type:
+
+ - `minor`: only `master`, create a minor branch (`x.y`)
+ - `patch`: only on minor branches (`x.y`)
+ - `milestone`: on any branch, only a tag and a release on link:./CONTRIBUTORS.adoc#other_maven_repo[configured repository].
+
+== GatlingCorpPlugin
+
+The purpose is internal only.
+
+== License
+
+This project is licensed under Apache License version 2, see link:./LICENSE.txt[LICENSE.txt].
