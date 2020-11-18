@@ -1,0 +1,3 @@
+object Hello extends App {
+  implicit final val a: Long = 0L
+}
