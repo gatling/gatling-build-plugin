@@ -2,7 +2,6 @@ package io.gatling.build
 
 import sbt.Keys._
 import sbt._
-import org.scalafmt.sbt.ScalafmtPlugin.autoImport.scalafmtOnCompile
 import scalafix.sbt.ScalafixPlugin.autoImport.{ scalafix, scalafixDependencies }
 
 object BaseSettingsPlugin extends AutoPlugin {
@@ -47,7 +46,6 @@ object BaseSettingsPlugin extends AutoPlugin {
       organization := "io.gatling",
       organizationHomepage := Some(url("https://gatling.io")),
       startYear := Some(2011),
-      scalafmtOnCompile := true,
       updateOptions := configureUpdateOptions(updateOptions.value),
       javacOptions := JavacOptions,
       javacOptions in (Compile, doc) := Seq(
