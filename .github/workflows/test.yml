@@ -1,0 +1,33 @@
+name: test
+
+on:
+  push:
+    paths-ignore:
+      - README.adoc
+      - .gitignore
+    branches:
+      - master
+  pull_request:
+    paths-ignore:
+      - README.adoc
+      - .gitignore
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        scala:
+          - { version: "2.13.3", binary-version: "2.13" }
+    steps:
+      - uses: actions/checkout@v2
+      - name: Cache SBT
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.ivy2/cache
+            ~/.sbt
+          key: ${{ runner.os }}-sbt-${{ hashFiles('**/*.sbt') }}-${{ hashFiles('**/build.properties') }}
+      - uses: olafurpg/setup-scala@v10
+      - name: sbt scripted
+        run: sbt scripted
