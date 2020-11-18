@@ -1,0 +1,2 @@
+> compile
+$ must-mirror src/main/scala/Hello.scala Hello.scala.expected
