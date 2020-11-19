@@ -3,7 +3,7 @@ package io.gatling.build
 import sbt.Keys._
 import sbt._
 
-object BaseSettingsPlugin extends AutoPlugin {
+object GatlingCompilerSettingsPlugin extends AutoPlugin {
 
   override def requires = plugins.JvmPlugin
 
@@ -39,10 +39,6 @@ object BaseSettingsPlugin extends AutoPlugin {
 
   override def projectSettings =
     Seq(
-      homepage := Some(url("https://gatling.io")),
-      organization := "io.gatling",
-      organizationHomepage := Some(url("https://gatling.io")),
-      startYear := Some(2011),
       updateOptions := configureUpdateOptions(updateOptions.value),
       javacOptions := JavacOptions,
       javacOptions in (Compile, doc) := Seq(
