@@ -31,7 +31,6 @@ object BaseSettingsPlugin extends AutoPlugin {
         "-feature",
         "-unchecked",
         "-language:implicitConversions",
-        "-language:postfixOps",
         "-target:jvm-1.8"
       )
 
