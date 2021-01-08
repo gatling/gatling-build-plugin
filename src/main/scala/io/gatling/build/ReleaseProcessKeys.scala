@@ -45,5 +45,5 @@ object ReleaseProcessKeys {
   }
 
   private def propToVersionFunOrDefault(propName: String, default: String => String) =
-    Properties.propOrNone(propName).map(s => { (_: String) => s }) getOrElse default
+    Properties.propOrNone(propName).map(Function.const) getOrElse default
 }
