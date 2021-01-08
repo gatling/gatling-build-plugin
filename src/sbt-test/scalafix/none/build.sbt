@@ -20,19 +20,5 @@ def assertContentsEqual(file: File, expected: String): Unit = {
 lazy val root = (project in file("."))
   .settings(
     version := "0.1",
-    TaskKey[Unit]("check") := {
-      // imports should NOT have be sorted
-      assertContentsEqual(file("src/main/scala/Hello.scala"),
-        """
-          |import scala.io.Source
-          |import java.util.Random
-          |
-          |object Hello extends App {
-          |  val src = Source.fromString("Hello").mkString("\n")
-          |  val random = (new Random()).nextInt(100)
-          |  println(src + random)
-          |}
-          |
-          |""".stripMargin)
-    }
+    name := "scalafix/none"
   )
