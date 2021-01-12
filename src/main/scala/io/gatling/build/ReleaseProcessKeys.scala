@@ -1,49 +1,159 @@
 package io.gatling.build
 
-import scala.util.Properties
-
+import _root_.io.gatling.build.GatlingReleasePlugin.autoimport._
 import io.gatling.build.MavenPublishKeys.pushToPrivateNexus
-
 import sbt.Keys._
 import sbt._
+import _root_.io.gatling.build.Milestone._
+import sbtrelease.ReleasePlugin.autoImport.ReleaseKeys._
 import sbtrelease.ReleasePlugin.autoImport._
 import sbtrelease.ReleaseStateTransformations._
+import sbtrelease.Utilities._
+import sbtrelease.Version.Bump
+import sbtrelease.{Git, Version, versionFormatError}
 import xerial.sbt.Sonatype.SonatypeCommand.sonatypeReleaseAll
+
+import scala.sys.process.ProcessLogger
 
 object ReleaseProcessKeys {
 
-  val skipSnapshotDepsCheck = settingKey[Boolean]("Skip snapshot dependencies check during release")
+  def stdErrorToStdOut(delegate: ProcessLogger): ProcessLogger = new ProcessLogger {
+    override def out(s: => String): Unit = delegate.out(s)
+    override def err(s: => String): Unit = delegate.out(s)
+    override def buffer[T](f: => T): T = delegate.buffer(f)
+  }
+
+  sealed trait GatlingReleaseProcess {
+    def bump: Option[Bump]
+  }
+  object GatlingReleaseProcess {
+    case object Minor extends GatlingReleaseProcess {
+      override def bump: Option[Bump] = Some(Bump.Minor)
+      override def toString: String = "minor"
+    }
+    case object Patch extends GatlingReleaseProcess {
+      override def bump: Option[Bump] = Some(Bump.Bugfix)
+      override def toString: String = "patch"
+    }
+    case object Milestone extends GatlingReleaseProcess {
+      override def bump: Option[Bump] = None
+      override def toString: String = "milestone"
+    }
+  }
 
   val gatlingReleaseSettings = Seq(
     skipSnapshotDepsCheck := false,
-    releaseVersion := propToVersionFunOrDefault("releaseVersion", releaseVersion.value),
-    releaseNextVersion := propToVersionFunOrDefault("developmentVersion", releaseNextVersion.value),
+    gatlingReleaseProcessSetting := GatlingReleaseProcess.Patch,
+    pushToPrivateNexus := isMilestone.value || pushToPrivateNexus.value,
     releaseProcess := {
       val releaseOnSonatype = publishMavenStyle.value && !(pushToPrivateNexus ?? false).value
-      fullReleaseProcess(thisProjectRef.value, skipSnapshotDepsCheck.value, releaseOnSonatype)
+      fullReleaseProcess(
+        thisProjectRef.value,
+        skipSnapshotDepsCheck.value,
+        releaseOnSonatype,
+        gatlingReleaseProcessSetting.value)
     }
   )
 
-  private def fullReleaseProcess(ref: ProjectRef, skipSnapshotDepsCheck: Boolean, releaseOnSonatype: Boolean) = {
+  private def extractGitVcs(st: State): Git = {
+    val vcs = st.extract.get(releaseVcs)
+      .getOrElse(sys.error("Aborting release. Working directory is not a repository of a recognized VCS."))
+
+    vcs match {
+      case git: Git => git
+      case _ => sys.error("Aborting release. VCS is not a Git repository")
+    }
+  }
+
+  private lazy val createBugfixBranch: ReleaseStep = { st: State =>
+    val git = extractGitVcs(st)
+    val masterVersions = st.get(versions).getOrElse(sys.error("Versions should have already been inquired"))
+    val extracted = st.extract
+
+    val rawModuleVersion = extracted.get(version)
+    val moduleVersion = Version(rawModuleVersion).getOrElse(versionFormatError(rawModuleVersion))
+    val branchName = moduleVersion.withoutQualifier.string
+
+    val minorBugFixBranchState = extracted.appendWithSession(Seq(
+      releaseVersionBump := Bump.Bugfix
+    ), st)
+    val inquireBugFixState = inquireVersions.action(minorBugFixBranchState)
+    val bugFixState = setNextVersion.action(inquireBugFixState)
+
+    val gitLog = stdErrorToStdOut(st.log) // Git outputs to standard error, so use a logger that redirects stderr to info
+    val originBranch = git.currentBranch
+    git.cmd("branch", branchName) ! gitLog
+    git.cmd("checkout", branchName) ! gitLog
+
+    val committedBugFixState = commitNextVersion.action(bugFixState)
+
+    git.cmd("push", "--set-upstream" , "origin", s"$branchName:$branchName") ! gitLog
+
+    git.cmd("checkout", originBranch) ! gitLog
+    committedBugFixState.put(versions, masterVersions)
+  }
+
+  private lazy val setMilestoneReleaseVersion: ReleaseStep = { st: State =>
+    st.extract.appendWithSession(Seq(
+      releaseVersion := { rawCurrentVersion: String =>
+        val currentVersion = Version(rawCurrentVersion).getOrElse(sys.error(s"Invalid version format ($rawCurrentVersion)"))
+        currentVersion.asMilestone.string
+      },
+    ), st)
+  }
+
+  private def checkVersion(validate: Version => Boolean, error: Version => String): ReleaseStep =
+    ReleaseStep(identity, { st: State =>
+      val rawCurrentVersion = st.extract.get(version)
+      val currentVersion = Version(rawCurrentVersion).getOrElse(sys.error(s"Invalid version format $rawCurrentVersion"))
+      if (validate(currentVersion)) {
+        sys.error(error(currentVersion))
+      }
+      st
+    })
+
+  private def fullReleaseProcess(
+    ref: ProjectRef,
+    skipSnapshotDepsCheck: Boolean,
+    releaseOnSonatype: Boolean,
+    gatlingReleaseProcess: GatlingReleaseProcess
+  ): Seq[ReleaseStep] = {
     val checkSnapshotDeps = if (!skipSnapshotDepsCheck) Seq(checkSnapshotDependencies) else Seq.empty
     val publishStep = ReleaseStep(releaseStepTaskAggregated(releasePublishArtifactsAction in Global in ref))
     val sonatypeRelease = if (releaseOnSonatype) Seq(ReleaseStep(releaseStepCommand(sonatypeReleaseAll))) else Seq.empty
-    val commonProcess = Seq(
-      inquireVersions,
-      runClean,
-      runTest,
-      setReleaseVersion,
-      commitReleaseVersion,
-      tagRelease,
-      publishStep,
-      setNextVersion,
-      commitNextVersion,
-      pushChanges
-    )
+
+    def commonReleaseSteps(commitVersion: Boolean): Seq[ReleaseStep] = {
+      val commonSteps = Seq(inquireVersions, runClean, runTest, setReleaseVersion)
+      val commonInterSteps = Seq(tagRelease, publishStep)
+
+      if (commitVersion) (commonSteps :+ commitReleaseVersion) ++ commonInterSteps :+ pushChanges
+      else commonSteps ++ commonInterSteps
+    }
+
+    val commonProcess = gatlingReleaseProcess match {
+      case GatlingReleaseProcess.Minor =>
+        (checkVersion(
+          version => version.subversions.isDefinedAt(1) && version.subversions(1) != 0,
+          version => s"Cannot release a minor version when current version is patch (${version.string})"
+        ) +: commonReleaseSteps(commitVersion = true)) ++ Seq(
+          createBugfixBranch,
+          setNextVersion,
+          commitNextVersion,
+          pushChanges
+        )
+      case GatlingReleaseProcess.Patch =>
+        (checkVersion(
+          version => version.subversions.isDefinedAt(1) && version.subversions(1) == 0,
+          version => s"Cannot release a patch version when current version is minor (${version.string})"
+        ) +: commonReleaseSteps(commitVersion = true)) ++ Seq(
+          setNextVersion,
+          commitNextVersion,
+          pushChanges
+        )
+      case GatlingReleaseProcess.Milestone =>
+        setMilestoneReleaseVersion +: commonReleaseSteps(commitVersion = false)
+    }
 
     checkSnapshotDeps ++ commonProcess ++ sonatypeRelease
   }
-
-  private def propToVersionFunOrDefault(propName: String, default: String => String) =
-    Properties.propOrNone(propName).map(Function.const) getOrElse default
 }

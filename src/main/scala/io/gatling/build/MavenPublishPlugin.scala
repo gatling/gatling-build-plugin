@@ -1,9 +1,10 @@
 package io.gatling.build
 
 import scala.util.Properties._
-
 import sbt._
 import sbt.Keys._
+import GatlingReleasePlugin.autoimport._
+import Repositories.ReleaseStatus
 
 object MavenPublishKeys {
   val githubPath = settingKey[String]("Project path on Github")
@@ -16,9 +17,9 @@ object MavenPublishKeys {
 
 object MavenPublishPlugin extends AutoPlugin {
 
-  override def requires = plugins.JvmPlugin && SonatypeReleasePlugin
-  override def trigger = allRequirements
-  override def projectSettings = baseSettings
+  override def requires: Plugins = plugins.JvmPlugin && GatlingReleasePlugin
+  override def trigger: PluginTrigger = allRequirements
+  override def projectSettings: Seq[Setting[_]] = baseSettings
 
   import MavenPublishKeys._
 
@@ -26,7 +27,13 @@ object MavenPublishPlugin extends AutoPlugin {
     useSonatypeRepositories := false,
     crossPaths := false,
     pushToPrivateNexus := false,
-    publishTo := Repositories.nexusRepository(isSnapshot.value, pushToPrivateNexus.value),
+    publishTo := {
+      val status =
+        if (isSnapshot.value) ReleaseStatus.Snapshot
+        else if (isMilestone.value) ReleaseStatus.Milestone
+        else ReleaseStatus.Release
+      Repositories.nexusRepository(status, pushToPrivateNexus.value)
+    },
     pomExtra := mavenScmBlock(githubPath.value) ++ developersXml(projectDevelopers.value),
     resolvers ++= (if (useSonatypeRepositories.value) sonatypeRepositories else Seq.empty) :+ Resolver.mavenLocal,
     credentials += Repositories.credentials(pushToPrivateNexus.value)
@@ -54,7 +61,7 @@ object MavenPublishPlugin extends AutoPlugin {
             <id>{dev.emailAddress}</id>
             <name>{dev.name}</name>
             {if (dev.isGatlingCorp) <organization>Gatling Corp</organization>}
-          </developer>
+        </developer>
       }
     }
     </developers>

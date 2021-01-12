@@ -8,6 +8,13 @@ import sbt._
 
 object Repositories {
 
+  sealed abstract class ReleaseStatus(val status: String)
+  object ReleaseStatus {
+    case object Release extends ReleaseStatus("releases")
+    case object Snapshot extends ReleaseStatus("snapshots")
+    case object Milestone extends ReleaseStatus("milestones")
+  }
+
   private val SbtHome = Path.userHome / ".sbt"
   private val PublicNexusCredentialsFile = SbtHome / ".credentials"
   private val PrivateNexusCredentialsFile = SbtHome / ".private-nexus-credentials"
@@ -22,17 +29,15 @@ object Repositories {
     } yield s"$scheme://$host/content/repositories"
   }
 
-  private val PrivateNexusReleases = PrivateNexusRepositoriesRoot.map("Private Nexus Releases" at _ + "/releases/" withAllowInsecureProtocol true)
-  private val PrivateNexusSnapshots = PrivateNexusRepositoriesRoot.map("Private Nexus Snapshots" at _ + "/snapshots/" withAllowInsecureProtocol true)
+  private def publicNexusRepository(status: ReleaseStatus) =
+    Resolver.sonatypeRepo(status.status)
 
-  private def publicNexusRepository(isSnapshot: Boolean) =
-    if (isSnapshot) Opts.resolver.sonatypeSnapshots else Opts.resolver.sonatypeStaging
+  private def privateNexusRepository(status: ReleaseStatus) =
+    PrivateNexusRepositoriesRoot.map(s"Private Nexus ${status.status.capitalize}" at _ + s"/${status.status}/" withAllowInsecureProtocol true)
 
-  private def privateNexusRepository(isSnapshot: Boolean) =
-    if (isSnapshot) PrivateNexusSnapshots else PrivateNexusReleases
 
-  def nexusRepository(isSnapshot: Boolean, usePrivate: Boolean): Option[MavenRepository] =
-    if (usePrivate) privateNexusRepository(isSnapshot) else Some(publicNexusRepository(isSnapshot))
+  def nexusRepository(kind: ReleaseStatus, usePrivate: Boolean): Option[MavenRepository] =
+    if (usePrivate) privateNexusRepository(kind) else Some(publicNexusRepository(kind))
 
   def credentials(usePrivate: Boolean): Credentials =
     Credentials(if (usePrivate) PrivateNexusCredentialsFile else PublicNexusCredentialsFile)
