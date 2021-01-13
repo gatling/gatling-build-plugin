@@ -3,13 +3,13 @@ name: test
 on:
   push:
     paths-ignore:
-      - README.adoc
+      - README.md
       - .gitignore
     branches:
       - master
   pull_request:
     paths-ignore:
-      - README.adoc
+      - README.md
       - .gitignore
 
 jobs:

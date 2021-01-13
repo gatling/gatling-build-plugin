@@ -1,10 +1,10 @@
 package io.gatling.build
 
 import _root_.io.gatling.build.GatlingReleasePlugin.autoimport._
+import _root_.io.gatling.build.Milestone._
 import io.gatling.build.MavenPublishKeys.pushToPrivateNexus
 import sbt.Keys._
 import sbt._
-import _root_.io.gatling.build.Milestone._
 import sbtrelease.ReleasePlugin.autoImport.ReleaseKeys._
 import sbtrelease.ReleasePlugin.autoImport._
 import sbtrelease.ReleaseStateTransformations._
@@ -93,6 +93,15 @@ object ReleaseProcessKeys {
     committedBugFixState.put(versions, masterVersions)
   }
 
+  private lazy val pushTagAndReset: ReleaseStep = { st: State =>
+    val git = extractGitVcs(st)
+    val gitLog = stdErrorToStdOut(st.log) // Git outputs to standard error, so use a logger that redirects stderr to info
+    val (releaseTagNameState, tagName) = st.extract.runTask(releaseTagName, st)
+    git.cmd("push", "origin", tagName) ! gitLog
+    git.cmd("reset", "--hard", s"origin/${git.currentBranch}") ! gitLog
+    releaseTagNameState
+  }
+
   private lazy val setMilestoneReleaseVersion: ReleaseStep = { st: State =>
     st.extract.appendWithSession(Seq(
       releaseVersion := { rawCurrentVersion: String =>
@@ -102,7 +111,7 @@ object ReleaseProcessKeys {
     ), st)
   }
 
-  private def checkVersion(validate: Version => Boolean, error: Version => String): ReleaseStep =
+  private def checkVersionStep(validate: Version => Boolean, error: Version => String): ReleaseStep =
     ReleaseStep(identity, { st: State =>
       val rawCurrentVersion = st.extract.get(version)
       val currentVersion = Version(rawCurrentVersion).getOrElse(sys.error(s"Invalid version format $rawCurrentVersion"))
@@ -122,36 +131,47 @@ object ReleaseProcessKeys {
     val publishStep = ReleaseStep(releaseStepTaskAggregated(releasePublishArtifactsAction in Global in ref))
     val sonatypeRelease = if (releaseOnSonatype) Seq(ReleaseStep(releaseStepCommand(sonatypeReleaseAll))) else Seq.empty
 
-    def commonReleaseSteps(commitVersion: Boolean): Seq[ReleaseStep] = {
-      val commonSteps = Seq(inquireVersions, runClean, runTest, setReleaseVersion)
-      val commonInterSteps = Seq(tagRelease, publishStep)
 
-      if (commitVersion) (commonSteps :+ commitReleaseVersion) ++ commonInterSteps :+ pushChanges
-      else commonSteps ++ commonInterSteps
-    }
+    val inquireTagPublish = Seq(
+      inquireVersions,
+      runClean,
+      runTest,
+      setReleaseVersion,
+      commitReleaseVersion,
+      tagRelease,
+      publishStep,
+    )
 
     val commonProcess = gatlingReleaseProcess match {
       case GatlingReleaseProcess.Minor =>
-        (checkVersion(
+        val checkVersion = checkVersionStep(
           version => version.subversions.isDefinedAt(1) && version.subversions(1) != 0,
           version => s"Cannot release a minor version when current version is patch (${version.string})"
-        ) +: commonReleaseSteps(commitVersion = true)) ++ Seq(
+        )
+
+        (checkVersion +: inquireTagPublish) ++ Seq(
+          pushChanges,
           createBugfixBranch,
           setNextVersion,
           commitNextVersion,
           pushChanges
         )
       case GatlingReleaseProcess.Patch =>
-        (checkVersion(
+        val checkVersion = checkVersionStep(
           version => version.subversions.isDefinedAt(1) && version.subversions(1) == 0,
           version => s"Cannot release a patch version when current version is minor (${version.string})"
-        ) +: commonReleaseSteps(commitVersion = true)) ++ Seq(
+        )
+
+        (checkVersion +: inquireTagPublish) ++ Seq(
+          pushChanges,
           setNextVersion,
           commitNextVersion,
           pushChanges
         )
       case GatlingReleaseProcess.Milestone =>
-        setMilestoneReleaseVersion +: commonReleaseSteps(commitVersion = false)
+        (setMilestoneReleaseVersion +: inquireTagPublish) ++ Seq(
+          pushTagAndReset
+        )
     }
 
     checkSnapshotDeps ++ commonProcess ++ sonatypeRelease

@@ -10,24 +10,21 @@ import scala.util.Try
 
 object Milestone {
 
-  lazy val milestoneQualifierPrefix = "-M"
-  lazy val milestoneFormatterPattern = "yyyyMMddhhmmss"
-  lazy val milestoneFormatter = new SimpleDateFormat(milestoneFormatterPattern)
+  lazy val MilestoneQualifierPrefix = "-M"
+  lazy val MilestoneFormatterPattern = "yyyyMMddhhmmss"
+  lazy val MilestoneFormatter = new SimpleDateFormat(MilestoneFormatterPattern)
 
-  class MilestoneVersion(version: Version) {
+  implicit class MilestoneVersion(version: Version) {
     def isMilestone: Boolean =
       version.qualifier.exists { qualifier =>
-        qualifier.length == milestoneFormatterPattern.length + milestoneQualifierPrefix.length &&
-          qualifier.startsWith(milestoneQualifierPrefix) &&
-          Try(milestoneFormatter.parse(qualifier.substring(2))).isSuccess
+        qualifier.length == MilestoneFormatterPattern.length + MilestoneQualifierPrefix.length &&
+          qualifier.startsWith(MilestoneQualifierPrefix) &&
+          Try(MilestoneFormatter.parse(qualifier.substring(MilestoneQualifierPrefix.length))).isSuccess
       }
 
     def asMilestone: Version = {
-      val qualifier = milestoneQualifierPrefix + milestoneFormatter.format(new Date())
+      val qualifier = MilestoneQualifierPrefix + MilestoneFormatter.format(new Date())
       version.copy(qualifier = Some(qualifier))
     }
   }
-
-  implicit def milestoneVersion(version: Version): MilestoneVersion =
-    new MilestoneVersion(version)
 }

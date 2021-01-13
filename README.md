@@ -14,5 +14,5 @@ Add each module as a project:
 
 Then, IntelliJ doesn't reach plugin.version property, go to the SBT tab on the right:
 - Click on `sbt Settings` (wrench)
-- Set VM parameters to `-Dplugin.version=[version in root version.sbt]`
+- Set VM parameters to `-Dplugin.version=X.Y.Z-SNAPSHOT` where `X.Y.Z-SNAPSHOT` is the version in root `version.sbt`
 - Reload
