@@ -20,7 +20,7 @@ scalacOptions := Seq(
 // -- DEPENDENCIES -- //
 // ------------------ //
 
-addSbtPlugin("ch.epfl.scala"     % "sbt-scalafix" % "0.9.15")
+addSbtPlugin("ch.epfl.scala"     % "sbt-scalafix" % "0.9.25")
 addSbtPlugin("org.scalameta"     % "sbt-scalafmt" % "2.3.2")
 addSbtPlugin("com.github.gseitz" % "sbt-release"  % "1.0.11")
 addSbtPlugin("com.jsuereth"      % "sbt-pgp"      % "2.0.0")
