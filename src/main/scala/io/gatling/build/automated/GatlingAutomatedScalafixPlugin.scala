@@ -54,7 +54,7 @@ object GatlingAutomatedScalafixPlugin extends AutoPlugin {
   override def projectSettings: Seq[sbt.Setting[_]] =
     automateScalafixBeforeCompile(Test, Compile) ++
       Seq(
-        ThisBuild / scalafixDependencies += "com.nequissimus" %% "sort-imports" % "0.5.4",
+        ThisBuild / scalafixDependencies += "com.nequissimus" %% "sort-imports" % "0.5.5",
         scalafixConfig := Some(scalafixConfigFileSetting.value),
         gatlingScalafixCheck := scalafixAll.toTask(" --check").dependsOn(scalafixWriteConfigFile).value
       )
