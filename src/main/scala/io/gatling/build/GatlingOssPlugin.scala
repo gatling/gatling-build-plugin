@@ -49,32 +49,44 @@ object GatlingOssPlugin extends AutoPlugin {
       AutomateHeaderPlugin &&
       Sonatype
 
+  trait GatlingOssKeys {
+    val gatlingPublishToSonatype = settingKey[Boolean]("true to publish to sonatype")
+  }
+  object GatlingOssKeys extends GatlingOssKeys
+  object autoImport extends GatlingOssKeys
+
+  import autoImport._
+
+  override def globalSettings: Seq[Def.Setting[_]] = Seq(
+    gatlingPublishToSonatype := !GatlingVersion(version.value).exists(_.isMilestone)
+  )
+
   override def projectSettings: Seq[Def.Setting[_]] = Seq(
     licenses := Seq("Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0.html")),
     headerLicense := ApacheV2License,
     publishTo := {
-      if (GatlingVersion(version.value).exists(_.isMilestone)) {
-        publishTo.value
-      } else {
+      if (gatlingPublishToSonatype.value) {
         sonatypePublishTo.value
+      } else {
+        publishTo.value
       }
     },
     sonatypeSessionName := s"[sbt-sonatype] ${githubPath.value} ${version.value}",
     releasePublishArtifactsAction := {
-      if (GatlingVersion(version.value).exists(_.isMilestone)) {
-        Keys.publish.value
-      } else {
+      if (gatlingPublishToSonatype.value) {
         publishSigned.value
+      } else {
+        Keys.publish.value
       }
     },
     gatlingReleasePublishStep := conditionalPublishStep
   )
 
   val conditionalPublishStep: ReleaseStep = { state: State =>
-    if (GatlingVersion(Project.extract(state).get(version)).exists(_.isMilestone)) {
-      GatlingReleasePlugin.publishStep(state)
-    } else {
+    if (Project.extract(state).get(gatlingPublishToSonatype)) {
       publishStep(state)
+    } else {
+      GatlingReleasePlugin.publishStep(state)
     }
   }
 
