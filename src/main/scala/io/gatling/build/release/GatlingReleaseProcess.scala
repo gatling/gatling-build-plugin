@@ -16,6 +16,10 @@
 
 package io.gatling.build.release
 
+import java.time.{ ZoneId, ZoneOffset, ZonedDateTime }
+import java.time.temporal.WeekFields
+
+import io.gatling.build.publish.GatlingVersion
 import io.gatling.build.release.GatlingReleaseStep._
 
 import GatlingReleasePlugin.GatlingReleaseKeys._
@@ -103,6 +107,40 @@ object GatlingReleaseProcess {
         writeCurrentVersion,
         pushChanges,
         setNextVersion
+      )
+    }
+  }
+
+  case object CalVer extends GatlingReleaseProcess {
+    override val releaseVersion: String => String = gatlingVersion { version =>
+      val now = ZonedDateTime.now(ZoneOffset.UTC)
+      val year = now.getYear
+      val week = now.get(WeekFields.ISO.weekOfYear())
+
+      if (version.major == year && version.minor == week) {
+        version.withoutQualifier
+      } else {
+        GatlingVersion(year, week, 0, version.marker, None)
+      }
+    }
+    override val releaseNextVersion: String => String = gatlingVersion(_.bumpPatch.asSnapshot)
+    override def toString: String = "calver"
+
+    override val releaseSteps: Def.Initialize[Seq[ReleaseStep]] = Def.setting {
+      Seq(
+        checkSnapshotDeps.value,
+        inquireVersions,
+        runClean,
+        runTest,
+        setReleaseVersion,
+        commitReleaseVersion,
+        tagRelease,
+        gatlingReleasePublishStep.value,
+        writeCurrentVersion,
+        pushChanges,
+        setNextVersion,
+        commitNextVersion,
+        pushChanges
       )
     }
   }
