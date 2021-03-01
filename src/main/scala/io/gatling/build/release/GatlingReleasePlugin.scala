@@ -48,22 +48,26 @@ object GatlingReleasePlugin extends AutoPlugin {
   private lazy val milestoneParser: Parser[GatlingReleaseProcess] =
     (Space ~> token("milestone")) ^^^ GatlingReleaseProcess.Milestone
 
-  private lazy val releaseProcessParser: Parser[GatlingReleaseProcess] = minorParser | patchParser | milestoneParser
+  private lazy val calverParser: Parser[GatlingReleaseProcess] =
+    (Space ~> token("calver")) ^^^ GatlingReleaseProcess.CalVer
+
+  private lazy val releaseProcessParser: Parser[GatlingReleaseProcess] = minorParser | patchParser | milestoneParser | calverParser
 
   def gatlingRelease =
-    Command("gatling-release", ("gatling-release <minor|patch|milestone>", "release in Gatling way"), "release in Gatling way")(_ => releaseProcessParser) {
-      (state, gatlingReleaseProcess) =>
-        val extracted = Project.extract(state)
-        val stateWithReleaseVersionBump = extracted.appendWithSession(
-          Seq(
-            releaseVersion := gatlingReleaseProcess.releaseVersion,
-            releaseNextVersion := gatlingReleaseProcess.releaseNextVersion,
-            releaseProcess := gatlingReleaseProcess.releaseSteps.value
-          ),
-          state
-        )
+    Command("gatling-release", ("gatling-release <minor|patch|milestone|calver>", "release in Gatling way"), "release in Gatling way")(_ =>
+      releaseProcessParser
+    ) { (state, gatlingReleaseProcess) =>
+      val extracted = Project.extract(state)
+      val stateWithReleaseVersionBump = extracted.appendWithSession(
+        Seq(
+          releaseVersion := gatlingReleaseProcess.releaseVersion,
+          releaseNextVersion := gatlingReleaseProcess.releaseNextVersion,
+          releaseProcess := gatlingReleaseProcess.releaseSteps.value
+        ),
+        state
+      )
 
-        Command.process("release with-defaults", stateWithReleaseVersionBump)
+      Command.process("release with-defaults", stateWithReleaseVersionBump)
     }
 
   override def projectSettings: Seq[Setting[_]] = Seq(
