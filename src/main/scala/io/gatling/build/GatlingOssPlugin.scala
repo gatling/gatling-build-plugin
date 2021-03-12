@@ -64,6 +64,7 @@ object GatlingOssPlugin extends AutoPlugin {
   override def projectSettings: Seq[Def.Setting[_]] = Seq(
     licenses := Seq("Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0.html")),
     headerLicense := ApacheV2License,
+    sonatypeProfileName := "io.gatling",
     publishTo := {
       if (gatlingPublishToSonatype.value) {
         sonatypePublishTo.value
