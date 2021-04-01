@@ -4,6 +4,7 @@
 -$ must-mirror src/main/scala/Hello.scala Hello.scala.expected
 
 # compile task should be dependent to our Scalafix configuration
+> set Seq(scalafixOnCompile := true)
 > compile
 # Ensure that scalafix was applied
 $ must-mirror src/main/scala/Hello.scala Hello.scala.expected

@@ -1,2 +1,3 @@
+> set Seq(scalafmtOnCompile := true)
 > compile
 $ must-mirror Hello.scala Hello.scala.expected
