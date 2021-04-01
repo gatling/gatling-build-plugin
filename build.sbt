@@ -43,7 +43,8 @@ lazy val root = (project in file("."))
 addCommandAlias(
   "ci-checks",
   List(
-    "all clean scalafmtSbtCheck scalafmtCheckAll",
+    "all clean",
+    "all scalafmtSbtCheck scalafmtCheckAll",
     "all gatlingScalafixCheck",
     "test",
     "scripted"

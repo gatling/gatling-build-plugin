@@ -25,6 +25,7 @@ import sbt._
 import sbt.Keys._
 
 object GatlingAutomatedScalafixPlugin extends AutoPlugin {
+
   override def requires: Plugins = ScalafixPlugin && GatlingBuildConfigPlugin
 
   trait GatlingAutomatedScalafixKeys {
@@ -34,7 +35,13 @@ object GatlingAutomatedScalafixPlugin extends AutoPlugin {
       configurations.foldLeft(List.empty[Setting[_]]) {
         _ ++ inConfig(_)(
           Seq(
-            compile := compile.dependsOn(scalafix.toTask("").dependsOn(scalafixWriteConfigFile)).value
+            compile := {
+              if (scalafixOnCompile.value) {
+                compile.dependsOn(scalafix.toTask("").dependsOn(scalafixWriteConfigFile)).value
+              } else {
+                compile.value
+              }
+            }
           )
         )
       }
@@ -54,6 +61,7 @@ object GatlingAutomatedScalafixPlugin extends AutoPlugin {
   override def projectSettings: Seq[sbt.Setting[_]] =
     automateScalafixBeforeCompile(Test, Compile) ++
       Seq(
+        scalafixOnCompile := !sys.env.getOrElse("CI", "false").toBoolean,
         ThisBuild / scalafixDependencies += "com.nequissimus" %% "sort-imports" % "0.5.5",
         scalafixConfig := Some(scalafixConfigFileSetting.value),
         gatlingScalafixCheck := scalafixAll.toTask(" --check").dependsOn(scalafixWriteConfigFile).value

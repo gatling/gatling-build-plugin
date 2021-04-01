@@ -27,10 +27,6 @@ object GatlingAutomatedScalafmtPlugin extends AutoPlugin {
 
   override def requires: Plugins = ScalafmtPlugin && GatlingBuildConfigPlugin
 
-  override def globalSettings: Seq[Def.Setting[_]] = Seq(
-    scalafmtOnCompile := true
-  )
-
   import GatlingBuildConfigPlugin.GatlingBuildConfigKeys._
 
   private lazy val scalafmtConfigFileSetting = Def.setting { gatlingBuildConfigDirectory.value / ".scalafmt.conf" }
@@ -40,6 +36,7 @@ object GatlingAutomatedScalafmtPlugin extends AutoPlugin {
   )
 
   override def projectSettings: Seq[Def.Setting[_]] = Seq(
+    scalafmtOnCompile := !sys.env.getOrElse("CI", "false").toBoolean,
     scalafmtConfig := scalafmtWriteConfigFile.value
   )
 }
