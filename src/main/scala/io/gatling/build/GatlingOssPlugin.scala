@@ -26,6 +26,7 @@ import io.gatling.build.publish.GatlingPublishPlugin
 import io.gatling.build.publish.GatlingVersion
 import io.gatling.build.release.GatlingReleasePlugin
 import io.gatling.build.release.GatlingReleasePlugin.GatlingReleaseKeys._
+import io.gatling.build.versioning.GatlingVersioningPlugin
 
 import com.jsuereth.sbtpgp.PgpKeys.publishSigned
 import de.heikoseeberger.sbtheader.AutomateHeaderPlugin
@@ -47,6 +48,7 @@ object GatlingOssPlugin extends AutoPlugin {
       GatlingPublishPlugin &&
       GatlingReleasePlugin &&
       AutomateHeaderPlugin &&
+      GatlingVersioningPlugin &&
       Sonatype
 
   trait GatlingOssKeys {
@@ -120,7 +122,7 @@ object GatlingOssPlugin extends AutoPlugin {
     val endState = {
       val extracted = Project.extract(startStateWithSonatypeConf)
       extracted.runAggregated(
-        releasePublishArtifactsAction in Global in extracted.currentRef,
+        extracted.currentRef / releasePublishArtifactsAction,
         startStateWithSonatypeConf
       )
     }

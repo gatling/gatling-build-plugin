@@ -79,6 +79,6 @@ object GatlingReleasePlugin extends AutoPlugin {
 
   val publishStep: ReleaseStep = ReleaseStep { state: State =>
     val extracted = Project.extract(state)
-    extracted.runAggregated(releasePublishArtifactsAction in Global in extracted.currentRef, state)
+    extracted.runAggregated(extracted.currentRef / releasePublishArtifactsAction, state)
   }
 }
