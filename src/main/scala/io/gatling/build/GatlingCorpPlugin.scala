@@ -20,7 +20,7 @@ import io.gatling.build.automated.{ GatlingAutomatedScalafixPlugin, GatlingAutom
 import io.gatling.build.basic.GatlingBasicInfoPlugin
 import io.gatling.build.compile.GatlingCompilerSettingsPlugin
 import io.gatling.build.license._
-import io.gatling.build.publish.GatlingPublishPlugin
+import io.gatling.build.publish.{ GatlingPublishPlugin, GatlingVersion }
 import io.gatling.build.release.GatlingReleasePlugin
 import io.gatling.build.versioning.GatlingVersioningPlugin
 
@@ -29,16 +29,17 @@ import de.heikoseeberger.sbtheader.HeaderPlugin.autoImport.headerLicense
 import sbtrelease.ReleasePlugin.autoImport.releasePublishArtifactsAction
 
 import sbt._
+import sbt.Keys._
 
 object GatlingCorpPlugin extends AutoPlugin {
   override def requires =
     GatlingAutomatedScalafixPlugin &&
       GatlingAutomatedScalafmtPlugin &&
+      GatlingVersioningPlugin &&
       GatlingBasicInfoPlugin &&
       GatlingCompilerSettingsPlugin &&
       GatlingPublishPlugin &&
       GatlingReleasePlugin &&
-      GatlingVersioningPlugin &&
       AutomateHeaderPlugin
 
   override def projectSettings: Seq[Def.Setting[_]] = Seq(

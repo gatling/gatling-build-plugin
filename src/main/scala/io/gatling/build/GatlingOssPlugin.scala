@@ -43,12 +43,12 @@ object GatlingOssPlugin extends AutoPlugin {
   override def requires =
     GatlingAutomatedScalafixPlugin &&
       GatlingAutomatedScalafmtPlugin &&
+      GatlingVersioningPlugin &&
       GatlingBasicInfoPlugin &&
       GatlingCompilerSettingsPlugin &&
       GatlingPublishPlugin &&
       GatlingReleasePlugin &&
       AutomateHeaderPlugin &&
-      GatlingVersioningPlugin &&
       Sonatype
 
   trait GatlingOssKeys {
@@ -59,7 +59,7 @@ object GatlingOssPlugin extends AutoPlugin {
 
   import autoImport._
 
-  override def globalSettings: Seq[Def.Setting[_]] = Seq(
+  override def buildSettings: Seq[Def.Setting[_]] = Seq(
     gatlingPublishToSonatype := !GatlingVersion(version.value).exists(_.isMilestone)
   )
 
