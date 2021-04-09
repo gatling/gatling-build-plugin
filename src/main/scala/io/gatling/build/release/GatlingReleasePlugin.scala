@@ -20,17 +20,14 @@ import io.gatling.build.publish.GatlingPublishPlugin
 
 import sbtrelease.ReleasePlugin
 import sbtrelease.ReleasePlugin.autoImport._
+import sbtrelease.ReleaseStateTransformations.{ checkSnapshotDependencies, inquireVersions, runClean, runTest }
 
 import sbt._
-import sbt.Keys._
-import sbt.complete.DefaultParsers._
-import sbt.complete.Parser
 
 object GatlingReleasePlugin extends AutoPlugin {
   override def requires: Plugins = GatlingPublishPlugin && ReleasePlugin
 
   trait GatlingReleaseKeys {
-    lazy val skipSnapshotDepsCheck = settingKey[Boolean]("Skip snapshot dependencies check during release")
     lazy val gatlingReleasePublishStep = settingKey[ReleaseStep]("releaseStep to execute")
   }
 
@@ -39,46 +36,25 @@ object GatlingReleasePlugin extends AutoPlugin {
 
   import autoImport._
 
-  private lazy val minorParser: Parser[GatlingReleaseProcess] =
-    (Space ~> token("minor")) ^^^ GatlingReleaseProcess.Minor
-
-  private lazy val patchParser: Parser[GatlingReleaseProcess] =
-    (Space ~> token("patch")) ^^^ GatlingReleaseProcess.Patch
-
-  private lazy val milestoneParser: Parser[GatlingReleaseProcess] =
-    (Space ~> token("milestone")) ^^^ GatlingReleaseProcess.Milestone
-
-  private lazy val calverParser: Parser[GatlingReleaseProcess] =
-    (Space ~> token("calver")) ^^^ GatlingReleaseProcess.CalVer
-
-  private lazy val releaseProcessParser: Parser[GatlingReleaseProcess] = minorParser | patchParser | milestoneParser | calverParser
-
-  def gatlingRelease =
-    Command("gatling-release", ("gatling-release <minor|patch|milestone|calver>", "release in Gatling way"), "release in Gatling way")(_ =>
-      releaseProcessParser
-    ) { (state, gatlingReleaseProcess) =>
-      val extracted = Project.extract(state)
-      val stateWithReleaseVersionBump = extracted.appendWithSession(
-        Seq(
-          releaseVersion := gatlingReleaseProcess.releaseVersion,
-          releaseNextVersion := gatlingReleaseProcess.releaseNextVersion,
-          releaseProcess := gatlingReleaseProcess.releaseSteps.value
-        ),
-        state
-      )
-
-      Command.process("release with-defaults", stateWithReleaseVersionBump)
-    }
-
   override def projectSettings: Seq[Setting[_]] = Seq(
-    skipSnapshotDepsCheck := false,
     releaseCrossBuild := false,
-    commands += gatlingRelease,
-    gatlingReleasePublishStep := publishStep
+    gatlingReleasePublishStep := publishStep,
+    releaseProcess := gatlingReleaseProcess.value,
+    releaseVersion := identity
   )
 
   val publishStep: ReleaseStep = ReleaseStep { state: State =>
     val extracted = Project.extract(state)
     extracted.runAggregated(extracted.currentRef / releasePublishArtifactsAction, state)
+  }
+
+  val gatlingReleaseProcess: Def.Initialize[Seq[ReleaseStep]] = Def.setting {
+    Seq(
+      checkSnapshotDependencies,
+      inquireVersions,
+      runClean,
+      runTest,
+      gatlingReleasePublishStep.value
+    )
   }
 }
