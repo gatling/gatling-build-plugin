@@ -22,7 +22,7 @@ import java.util.Date
 import scala.util.Try
 
 object GatlingVersion {
-  private[GatlingVersion] lazy val MilestoneFormatterPattern = "'-M'yyyyMMddhhmmss"
+  private[GatlingVersion] lazy val MilestoneFormatterPattern = "'-M'yyyyMMddHHmmss"
   // def as SimpleDateFormat is not Thread safe
   private[GatlingVersion] def milestoneFormatter = new SimpleDateFormat(MilestoneFormatterPattern)
   private[this] val GatlingVersionR = "(\\d+)\\.(\\d+)\\.(\\d+)(\\..*?)?(-.*)?".r
