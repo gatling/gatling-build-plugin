@@ -2,7 +2,7 @@ val SCALA_VERSION = "2.12.3"
 
 githubPath := "user/repository"
 
-scalaVersion in Global := SCALA_VERSION
+Global / scalaVersion := SCALA_VERSION
 
 def assertEquals[T](msg: => String, expected: T, current: T) = if (current != expected) sys.error(msg + s" [expected: '$expected', current: '$current']")
 
