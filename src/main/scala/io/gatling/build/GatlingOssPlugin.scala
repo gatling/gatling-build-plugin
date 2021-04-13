@@ -23,7 +23,6 @@ import io.gatling.build.basic.GatlingBasicInfoPlugin.GatlingBasicInfoKeys._
 import io.gatling.build.compile.GatlingCompilerSettingsPlugin
 import io.gatling.build.license._
 import io.gatling.build.publish.GatlingPublishPlugin
-import io.gatling.build.publish.GatlingVersion
 import io.gatling.build.release.GatlingReleasePlugin
 import io.gatling.build.release.GatlingReleasePlugin.GatlingReleaseKeys._
 import io.gatling.build.versioning.GatlingVersioningPlugin
@@ -57,10 +56,11 @@ object GatlingOssPlugin extends AutoPlugin {
   object GatlingOssKeys extends GatlingOssKeys
   object autoImport extends GatlingOssKeys
 
+  import GatlingVersioningPlugin.autoimport.isMilestone
   import autoImport._
 
   override def buildSettings: Seq[Def.Setting[_]] = Seq(
-    gatlingPublishToSonatype := !GatlingVersion(version.value).exists(_.isMilestone)
+    gatlingPublishToSonatype := !isMilestone.value
   )
 
   override def projectSettings: Seq[Def.Setting[_]] = Seq(

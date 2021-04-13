@@ -26,9 +26,6 @@ object GatlingPublishPlugin extends AutoPlugin {
 
   trait GatlingPublishKeys {
     val gatlingPublishAddSonatypeResolvers = settingKey[Boolean]("Use Sonatype repositories for CI or during release process")
-    val isMilestone = settingKey[Boolean]("Indicate if release process is milestone")
-
-    type GatlingVersion = _root_.io.gatling.build.publish.GatlingVersion
   }
 
   object GatlingPublishKeys extends GatlingPublishKeys
@@ -40,7 +37,6 @@ object GatlingPublishPlugin extends AutoPlugin {
     publishMavenStyle := true,
     gatlingPublishAddSonatypeResolvers := false,
     crossPaths := false,
-    isMilestone := version(GatlingVersion(_).exists(_.isMilestone)).value,
     resolvers ++= (if (gatlingPublishAddSonatypeResolvers.value) sonatypeRepositories else Seq.empty) :+ Resolver.mavenLocal
   )
 

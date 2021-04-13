@@ -21,9 +21,21 @@ import com.typesafe.sbt.SbtGit.git
 
 import sbt._
 import sbt.Keys._
+import sbt.complete.DefaultParsers._
+import sbt.complete.Parser
 
 object GatlingVersioningPlugin extends AutoPlugin {
   override def requires: Plugins = GitVersioning
+
+  trait GatlingVersioningKeys {
+    val gatlingBumpVersion = inputKey[String]("What will be the version")
+    val isMilestone = settingKey[Boolean]("Indicate if release process is milestone")
+    type GatlingVersion = _root_.io.gatling.build.versioning.GatlingVersion
+  }
+  object GatlingVersioningKeys extends GatlingVersioningKeys
+  object autoimport extends GatlingVersioningKeys
+
+  import autoimport._
 
   override def buildSettings: Seq[Def.Setting[_]] = Seq(
     git.gitDescribePatterns := Seq("v*"),
@@ -31,6 +43,29 @@ object GatlingVersioningPlugin extends AutoPlugin {
     git.uncommittedSignifier := Some("dirty"),
     version := {
       if (isSnapshot.value) s"${version.value}-SNAPSHOT" else version.value
-    }
+    },
+    isMilestone := version(GatlingVersion(_).exists(_.isMilestone)).value,
+    gatlingBumpVersion := defaultBumpVersion.evaluated
   )
+
+  private lazy val minorParser: Parser[GatlingBump] =
+    (Space ~> token("minor")) ^^^ GatlingBump.Minor
+
+  private lazy val patchParser: Parser[GatlingBump] =
+    (Space ~> token("patch")) ^^^ GatlingBump.Patch
+
+  private lazy val milestoneParser: Parser[GatlingBump] =
+    (Space ~> token("milestone")) ^^^ GatlingBump.Milestone
+
+  private lazy val calverParser: Parser[GatlingBump] =
+    (Space ~> token("calver")) ^^^ GatlingBump.CalVer
+
+  private lazy val bumpParser: Parser[GatlingBump] = minorParser | patchParser | milestoneParser | calverParser
+
+  val defaultBumpVersion = Def.inputTaskDyn {
+    val bump = bumpParser.parsed
+    Def.task[String] {
+      GatlingVersion(version.value).map(bump.bump).map(_.string).getOrElse(throw new IllegalStateException("Cannot bump unparsable version"))
+    }
+  }
 }
