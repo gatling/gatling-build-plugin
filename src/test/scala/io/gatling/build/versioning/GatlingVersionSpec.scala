@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.gatling.build.publish
+package io.gatling.build.versioning
 
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
