@@ -19,6 +19,9 @@ jobs:
           github.event.inputs.releaseType != 'milestone'
 
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0 # indicates all history for all branches and tags
+          token: ${{ secrets.GATLING_CI_TOKEN }} # for tag to trigger other workflows (release)
 
       - name: Setup Scala
         uses: olafurpg/setup-scala@v10
@@ -32,15 +35,22 @@ jobs:
             ~/.m2/repository
             ~/.ivy2/cache
             ~/.cache/coursier
+            ~/.sbt/launchers
+            ~/.sbt/boot
+            ~/.sbt/preloaded
           key: ${{ runner.os }}-sbt-${{ hashFiles('**/build.sbt', '**/plugins.sbt', '**/build.properties') }}
 
       - name: Next version
         id: tag
         run: |
-          export CURRENT_TAG="v$(sbt -no-colors -Dsbt.supershell=false -error 'print gatlingBumpVersion ${{ github.event.inputs.releaseType }}')"
-          git tag "$CURRENT_TAG" -m "Version $CURRENT_TAG"
-          git push origin "$CURRENT_TAG"
+          sbt "gatlingWriteBumpVersion ${{ github.event.inputs.releaseType }}"
+          export CURRENT_TAG="v$(cat target/gatlingNextVersion)"
+          echo "tag='$CURRENT_TAG'"
           echo "::set-output name=tag::$CURRENT_TAG"
 
-    outputs:
-      tag: ${{ steps.tag.outputs.tag }}
+      - name: Git tag
+        run: |
+          git config user.name "${{ secrets.GATLING_CI_NAME }}"
+          git config user.email "${{ secrets.GATLING_CI_EMAIL }}"
+          git tag "${{ steps.tag.outputs.tag }}" -m "Version ${{ steps.tag.outputs.tag }}"
+          git push origin "${{ steps.tag.outputs.tag }}"
