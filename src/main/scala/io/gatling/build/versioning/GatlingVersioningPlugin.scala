@@ -29,6 +29,7 @@ object GatlingVersioningPlugin extends AutoPlugin {
 
   trait GatlingVersioningKeys {
     val gatlingBumpVersion = inputKey[String]("What will be the version")
+    val gatlingWriteBumpVersion = inputKey[File]("Write what will be the version in target/gatlingNextVersion")
     val isMilestone = settingKey[Boolean]("Indicate if release process is milestone")
     type GatlingVersion = _root_.io.gatling.build.versioning.GatlingVersion
   }
@@ -44,28 +45,35 @@ object GatlingVersioningPlugin extends AutoPlugin {
     version := {
       if (isSnapshot.value) s"${version.value}-SNAPSHOT" else version.value
     },
-    isMilestone := version(GatlingVersion(_).exists(_.isMilestone)).value,
-    gatlingBumpVersion := defaultBumpVersion.evaluated
+    isMilestone := version(GatlingVersion(_).exists(_.isMilestone)).value
   )
 
-  private lazy val minorParser: Parser[GatlingBump] =
-    (Space ~> token("minor")) ^^^ GatlingBump.Minor
+  override def projectSettings: Seq[Def.Setting[_]] = Seq(
+    gatlingBumpVersion := defaultBumpVersion.evaluated,
+    gatlingWriteBumpVersion := defaultWriteBumpVersion.evaluated
+  )
 
-  private lazy val patchParser: Parser[GatlingBump] =
-    (Space ~> token("patch")) ^^^ GatlingBump.Patch
-
-  private lazy val milestoneParser: Parser[GatlingBump] =
-    (Space ~> token("milestone")) ^^^ GatlingBump.Milestone
-
-  private lazy val calverParser: Parser[GatlingBump] =
-    (Space ~> token("calver")) ^^^ GatlingBump.CalVer
-
-  private lazy val bumpParser: Parser[GatlingBump] = minorParser | patchParser | milestoneParser | calverParser
+  private lazy val bumpParser: Parser[GatlingBump] =
+    Space ~> (token("minor") ^^^ GatlingBump.Minor |
+      token("patch") ^^^ GatlingBump.Patch |
+      token("milestone") ^^^ GatlingBump.Milestone |
+      token("calver") ^^^ GatlingBump.CalVer)
 
   val defaultBumpVersion = Def.inputTaskDyn {
     val bump = bumpParser.parsed
     Def.task[String] {
-      GatlingVersion(version.value).map(bump.bump).map(_.string).getOrElse(throw new IllegalStateException("Cannot bump unparsable version"))
+      val currentVersion = (ThisBuild / version).value
+      GatlingVersion(currentVersion)
+        .map(bump.bump)
+        .map(_.string)
+        .getOrElse(throw new IllegalStateException(s"Cannot bump unparsable version (got: '$currentVersion')"))
     }
+  }
+
+  val defaultWriteBumpVersion = Def.inputTask {
+    val nextVersion = defaultBumpVersion.evaluated
+    val versionFile = target.value / "gatlingNextVersion"
+    IO.write(versionFile, nextVersion)
+    versionFile
   }
 }
