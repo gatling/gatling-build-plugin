@@ -60,7 +60,7 @@ object GatlingOssPlugin extends AutoPlugin {
   import autoImport._
 
   override def buildSettings: Seq[Def.Setting[_]] = Seq(
-    gatlingPublishToSonatype := !isMilestone.value
+    gatlingPublishToSonatype := ensureStableVersion(version.value)
   )
 
   override def projectSettings: Seq[Def.Setting[_]] = Seq(
@@ -131,4 +131,6 @@ object GatlingOssPlugin extends AutoPlugin {
     Def.unit(releaseStepCommandAndRemaining("sonatypeClose")(sonatypeOpenState))
     endState
   }
+
+  def ensureStableVersion(str: String): Boolean = str.matches("\\d+\\.\\d+\\.\\d+")
 }
