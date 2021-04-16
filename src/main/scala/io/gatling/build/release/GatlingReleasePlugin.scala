@@ -21,8 +21,10 @@ import io.gatling.build.publish.GatlingPublishPlugin
 import sbtrelease.ReleasePlugin
 import sbtrelease.ReleasePlugin.autoImport._
 import sbtrelease.ReleaseStateTransformations.{ checkSnapshotDependencies, inquireVersions, runClean, runTest }
+import sbtrelease.Utilities._
 
 import sbt._
+import sbt.Keys._
 
 object GatlingReleasePlugin extends AutoPlugin {
   override def requires: Plugins = GatlingPublishPlugin && ReleasePlugin
@@ -48,12 +50,18 @@ object GatlingReleasePlugin extends AutoPlugin {
     extracted.runAggregated(extracted.currentRef / releasePublishArtifactsAction, state)
   }
 
+  lazy val writeCurrentVersion: ReleaseStep = { st: State =>
+    IO.write(st.extract.get(target) / "release-info", st.extract.get(version))
+    st
+  }
+
   val gatlingReleaseProcess: Def.Initialize[Seq[ReleaseStep]] = Def.setting {
     Seq(
       checkSnapshotDependencies,
       inquireVersions,
       runClean,
       runTest,
+      writeCurrentVersion,
       gatlingReleasePublishStep.value
     )
   }
