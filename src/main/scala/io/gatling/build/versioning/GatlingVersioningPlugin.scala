@@ -34,9 +34,9 @@ object GatlingVersioningPlugin extends AutoPlugin {
     type GatlingVersion = _root_.io.gatling.build.versioning.GatlingVersion
   }
   object GatlingVersioningKeys extends GatlingVersioningKeys
-  object autoimport extends GatlingVersioningKeys
+  object autoImport extends GatlingVersioningKeys
 
-  import autoimport._
+  import autoImport._
 
   override def buildSettings: Seq[Def.Setting[_]] = Seq(
     git.gitDescribePatterns := Seq("v*"),

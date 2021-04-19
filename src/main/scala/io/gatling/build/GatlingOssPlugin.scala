@@ -56,7 +56,6 @@ object GatlingOssPlugin extends AutoPlugin {
   object GatlingOssKeys extends GatlingOssKeys
   object autoImport extends GatlingOssKeys
 
-  import GatlingVersioningPlugin.autoimport.isMilestone
   import autoImport._
 
   override def buildSettings: Seq[Def.Setting[_]] = Seq(
@@ -74,7 +73,7 @@ object GatlingOssPlugin extends AutoPlugin {
         publishTo.value
       }
     },
-    sonatypeSessionName := s"[sbt-sonatype] ${githubPath.value} ${version.value}",
+    sonatypeSessionName := s"[sbt-sonatype] ${githubPath.value} ${(ThisBuild / version).value}",
     releasePublishArtifactsAction := {
       if (gatlingPublishToSonatype.value) {
         publishSigned.value
