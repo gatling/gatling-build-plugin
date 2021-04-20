@@ -5,9 +5,14 @@ on:
     tags:
       - 'v*'
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   release:
     runs-on: ubuntu-latest
+    timeout-minutes: 60
     env:
       JVM_OPTS: "-Xmx6G"
       SBT_OPTS: "-Dsbt.ci=true"
