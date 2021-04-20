@@ -10,6 +10,9 @@ on:
 jobs:
   create-release:
     runs-on: ubuntu-latest
+    env:
+      JVM_OPTS: "-Xmx6G"
+      SBT_OPTS: "-Dsbt.ci=true"
     steps:
       - name: Validate inputs
         run: exit 1
@@ -52,5 +55,9 @@ jobs:
         run: |
           git config user.name "${{ secrets.GATLING_CI_NAME }}"
           git config user.email "${{ secrets.GATLING_CI_EMAIL }}"
-          git tag "${{ steps.tag.outputs.tag }}" -m "Version ${{ steps.tag.outputs.tag }}"
+          if [ "${{github.event.inputs.releaseType}}" = "milestone" ]; then
+            git tag "${{ steps.tag.outputs.tag }}"
+          else
+            git tag "${{ steps.tag.outputs.tag }}" -m "Version ${{ steps.tag.outputs.tag }}"
+          fi
           git push origin "${{ steps.tag.outputs.tag }}"

@@ -10,6 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       JVM_OPTS: "-Xmx6G"
+      SBT_OPTS: "-Dsbt.ci=true"
     steps:
       - uses: actions/checkout@v2
 
