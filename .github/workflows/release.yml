@@ -34,17 +34,38 @@ jobs:
       - name: Prepare environment
         env:
           PRIVATE_REPOSITORY_SBT: ${{ secrets.PRIVATE_REPOSITORY_SBT }}
-          SONATYPE_FILE: ${{ secrets.SONATYPE_FILE }}
-          PGP_SECRET: ${{ secrets.PGP_SECRET }}
+          SONATYPE_SBT: ${{ secrets.SONATYPE_SBT }}
+          SONATYPE_PGP_SECRET: ${{ secrets.SONATYPE_PGP_SECRET }}
         run: |
           mkdir --parents ~/.sbt/1.0 || true
           echo "$PRIVATE_REPOSITORY_SBT" > ~/.sbt/1.0/privateRepository.sbt
-          echo "$SONATYPE_FILE" > ~/.sbt/1.0/sonatype.sbt
-          echo "$PGP_SECRET" | base64 --decode | gpg --batch --import
+          echo "$SONATYPE_SBT" > ~/.sbt/1.0/sonatype.sbt
+          echo -n "$SONATYPE_PGP_SECRET" | base64 --decode | gpg --batch --import
 
 #     - name: Cache
 #       No cache for release! We want clean and full release!
 
-      - run: sbt "release with-defaults"
+      - name: Release
+        id: release
         env:
-          PGP_PASSPHRASE: ${{ secrets.PGP_PASSPHRASE }}
+          PGP_PASSPHRASE: ${{ secrets.SONATYPE_PGP_PASSPHRASE }}
+        run: |
+          sbt "release with-defaults"
+          echo "version=$(cat target/release-info)" # DO NOT REMOVE, because of bad parsing for outputs
+          echo "::set-output name=version::$(cat target/release-info)"
+
+      - name: Publish on CodeArtifact
+        run: |
+          if [[ "${{ steps.release.outputs.version }}" =~ .*-M[0-9]+ ]]; then
+            aws \
+              --region us-east-1 \
+              codeartifact update-package-versions-status \
+              --domain ${{ secrets.AWS_CODEARTIFACT_DOMAIN }} \
+              --domain-owner ${{ secrets.AWS_CODEARTIFACT_OWNER }} \
+              --repository milestones \
+              --format maven \
+              --namespace io.gatling \
+              --package gatling-build-plugin_2.12_1.0 \
+              --versions "${{ steps.release.outputs.version }}" \
+              --target-status Published
+          fi
