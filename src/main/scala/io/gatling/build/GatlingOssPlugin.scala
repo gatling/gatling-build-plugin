@@ -59,7 +59,7 @@ object GatlingOssPlugin extends AutoPlugin {
   import autoImport._
 
   override def buildSettings: Seq[Def.Setting[_]] = Seq(
-    gatlingPublishToSonatype := ensureStableVersion(version.value)
+    gatlingPublishToSonatype := ensurePublishableVersion(version.value)
   )
 
   override def projectSettings: Seq[Def.Setting[_]] = Seq(
@@ -131,5 +131,5 @@ object GatlingOssPlugin extends AutoPlugin {
     endState
   }
 
-  def ensureStableVersion(str: String): Boolean = str.matches("\\d+\\.\\d+\\.\\d+")
+  def ensurePublishableVersion(str: String): Boolean = str.matches("\\d+\\.\\d+\\.\\d+(-M\\d+)?")
 }
