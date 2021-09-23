@@ -21,24 +21,35 @@ import org.scalatest.wordspec.AnyWordSpec
 
 class GatlingOssPluginSpec extends AnyWordSpec with Matchers {
   "GatlingOssPlugin" when {
-    "ensure stable version" should {
-      "agree 4.0.0" in {
-        GatlingOssPlugin.ensureStableVersion("4.0.0") should be(true)
+    "ensure publishable version" should {
+      "accept 4.0.0" in {
+        GatlingOssPlugin.ensurePublishableVersion("4.0.0") should be(true)
       }
-      "disagree milestone" in {
-        GatlingOssPlugin.ensureStableVersion("4.0.0-M20210401223248") should be(false)
+      "accept simple milestone" in {
+        GatlingOssPlugin.ensurePublishableVersion("4.0.0-M1") should be(true)
       }
-      "disagree snapshot" in {
-        GatlingOssPlugin.ensureStableVersion("4.0.0-SNAPSHOT") should be(false)
+      "accept dated milestone" in {
+        GatlingOssPlugin.ensurePublishableVersion("4.0.0-M20210401223248") should be(true)
       }
-      "disagree committed" in {
-        GatlingOssPlugin.ensureStableVersion("4.0.0-2-abcdef12") should be(false)
+
+      "refuse milestone without date" in {
+        GatlingOssPlugin.ensurePublishableVersion("4.0.0-M") should be(false)
       }
-      "disagree dirty" in {
-        GatlingOssPlugin.ensureStableVersion("4.0.0-dirty-SNAPSHOT") should be(false)
+
+      "refuse milestone like" in {
+        GatlingOssPlugin.ensurePublishableVersion("4.0.0-M20210401223248abc") should be(false)
       }
-      "disagree private marker" in {
-        GatlingOssPlugin.ensureStableVersion("4.0.0.PV") should be(false)
+      "refuse snapshot" in {
+        GatlingOssPlugin.ensurePublishableVersion("4.0.0-SNAPSHOT") should be(false)
+      }
+      "refuse committed" in {
+        GatlingOssPlugin.ensurePublishableVersion("4.0.0-2-abcdef12") should be(false)
+      }
+      "refuse dirty" in {
+        GatlingOssPlugin.ensurePublishableVersion("4.0.0-dirty-SNAPSHOT") should be(false)
+      }
+      "refuse private marker" in {
+        GatlingOssPlugin.ensurePublishableVersion("4.0.0.PV") should be(false)
       }
     }
   }
