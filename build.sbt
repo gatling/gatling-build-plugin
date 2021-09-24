@@ -24,7 +24,7 @@ lazy val root = (project in file("."))
     githubPath := "gatling/gatling-build-plugin",
     gatlingDevelopers := Seq(
       GatlingDeveloper("slandelle@gatling.io", "Stéphane Landelle", true),
-      GatlingDeveloper("pdalpra@gatling.io", "Pierre Dal-Pra", true),
+      GatlingDeveloper("pdalpra@xxxx.yy", "Pierre Dal-Pra", false),
       GatlingDeveloper("gcorre@gatling.io", "Guillaume Corre", true),
       GatlingDeveloper("tpetillot@gatling.io", "Thomas Petillot", true),
       GatlingDeveloper("sbrevet@gatling.io", "Sébastien Brevet", true)
