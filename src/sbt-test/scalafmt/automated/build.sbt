@@ -1,4 +1,4 @@
-scalaVersion := "2.12.3"
+scalaVersion := "2.13.7"
 ThisBuild / scalafixDependencies += "org.scalameta" % "sbt-scalafmt" % "2.3.4"
 githubPath := "user/repository"
 
