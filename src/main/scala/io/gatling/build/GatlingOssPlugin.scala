@@ -18,7 +18,6 @@ package io.gatling.build
 
 import io.gatling.build.automated.GatlingAutomatedScalafixPlugin
 import io.gatling.build.automated.GatlingAutomatedScalafmtPlugin
-import io.gatling.build.automated.GatlingAutomatedSpotlessPlugin
 import io.gatling.build.basic.GatlingBasicInfoPlugin
 import io.gatling.build.basic.GatlingBasicInfoPlugin.GatlingBasicInfoKeys._
 import io.gatling.build.compile.GatlingCompilerSettingsPlugin
@@ -43,7 +42,6 @@ object GatlingOssPlugin extends AutoPlugin {
   override def requires =
     GatlingAutomatedScalafixPlugin &&
       GatlingAutomatedScalafmtPlugin &&
-      GatlingAutomatedSpotlessPlugin &&
       GatlingVersioningPlugin &&
       GatlingBasicInfoPlugin &&
       GatlingCompilerSettingsPlugin &&
