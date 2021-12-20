@@ -1,3 +1,5 @@
+ThisBuild / sonatypeCredentialHost := "s01.oss.sonatype.org"
+
 lazy val root = (project in file("."))
   .enablePlugins(SbtPlugin, GatlingOssPlugin)
   .settings(
