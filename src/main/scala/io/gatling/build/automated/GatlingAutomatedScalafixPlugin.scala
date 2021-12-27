@@ -62,7 +62,7 @@ object GatlingAutomatedScalafixPlugin extends AutoPlugin {
     automateScalafixBeforeCompile(Test, Compile) ++
       Seq(
         scalafixOnCompile := !sys.env.getOrElse("CI", "false").toBoolean,
-        ThisBuild / scalafixDependencies += "com.nequissimus" %% "sort-imports" % "0.5.5",
+        ThisBuild / scalafixDependencies += "com.nequissimus" %% "sort-imports" % "0.6.1",
         scalafixConfig := Some(scalafixConfigFileSetting.value),
         gatlingScalafixCheck := scalafixAll.toTask(" --check").dependsOn(scalafixWriteConfigFile).value
       )
