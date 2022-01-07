@@ -16,15 +16,15 @@
 
 package io.gatling.build.versioning
 
-import java.text.SimpleDateFormat
-import java.util.Date
+import java.time.{ Clock, LocalDateTime, ZoneOffset }
+import java.time.format.DateTimeFormatter
 
 import scala.util.Try
 
 object GatlingVersion {
   private[GatlingVersion] lazy val MilestoneFormatterPattern = "'-M'yyyyMMddHHmmss"
   // def as SimpleDateFormat is not Thread safe
-  private[GatlingVersion] def milestoneFormatter = new SimpleDateFormat(MilestoneFormatterPattern)
+  private[GatlingVersion] def milestoneFormatter = DateTimeFormatter.ofPattern(MilestoneFormatterPattern)
   private[this] val GatlingVersionR = "(\\d+)\\.(\\d+)\\.(\\d+)(\\..*?)?(-.*)?".r
 
   def apply(str: String): Option[GatlingVersion] = {
@@ -41,7 +41,8 @@ case class GatlingVersion(major: Int, minor: Int, patch: Int, marker: Option[Str
 
   def isMilestone: Boolean = qualifier.exists(qual => Try(milestoneFormatter.parse(qual)).isSuccess)
 
-  def asMilestone: GatlingVersion = copy(qualifier = Some(milestoneFormatter.format(new Date())))
+  def asMilestone(implicit clock: Clock): GatlingVersion =
+    copy(qualifier = Some(milestoneFormatter.format(LocalDateTime.ofInstant(clock.instant(), ZoneOffset.UTC))))
 
   def isSnapshot: Boolean = qualifier.contains("-SNAPSHOT")
 

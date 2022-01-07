@@ -16,34 +16,43 @@
 
 package io.gatling.build.versioning
 
-import java.time.{ ZoneOffset, ZonedDateTime }
+import java.time.{ Clock, ZoneId, ZonedDateTime }
 import java.time.temporal.WeekFields
 
 object GatlingBump {
   object Minor extends GatlingBump {
-    override def bump(gatlingVersion: GatlingVersion): GatlingVersion = gatlingVersion.bumpMinor.withoutQualifier
+    override def bump(gatlingVersion: GatlingVersion)(implicit clock: Clock): GatlingVersion =
+      if (gatlingVersion.qualifier.isDefined && gatlingVersion.patch == 0)
+        gatlingVersion.withoutQualifier
+      else
+        gatlingVersion.bumpMinor.withoutQualifier
   }
+
   object Patch extends GatlingBump {
-    override def bump(gatlingVersion: GatlingVersion): GatlingVersion = gatlingVersion.bumpPatch.withoutQualifier
+    override def bump(gatlingVersion: GatlingVersion)(implicit clock: Clock): GatlingVersion =
+      if (gatlingVersion.qualifier.isDefined)
+        gatlingVersion.withoutQualifier
+      else gatlingVersion.bumpPatch
   }
+
   object CalVer extends GatlingBump {
-    override def bump(gatlingVersion: GatlingVersion): GatlingVersion = {
-      val now = ZonedDateTime.now(ZoneOffset.UTC)
-      val year = now.getYear
-      val week = now.get(WeekFields.ISO.weekOfYear())
+    override def bump(gatlingVersion: GatlingVersion)(implicit clock: Clock): GatlingVersion = {
+      val year = ZonedDateTime.ofInstant(clock.instant(), ZoneId.of("UTC")).getYear
+      val week = ZonedDateTime.ofInstant(clock.instant(), ZoneId.of("UTC")).get(WeekFields.ISO.weekOfYear())
 
       if (gatlingVersion.major == year && gatlingVersion.minor == week) {
-        gatlingVersion.bumpPatch.withoutQualifier
+        Patch.bump(gatlingVersion)
       } else {
         GatlingVersion(year, week, 0, gatlingVersion.marker, None)
       }
     }
   }
-  object Milestone extends GatlingBump {
-    override def bump(gatlingVersion: GatlingVersion): GatlingVersion = gatlingVersion.asMilestone
+
+  def milestone(original: GatlingBump): GatlingBump = new GatlingBump {
+    override def bump(gatlingVersion: GatlingVersion)(implicit clock: Clock): GatlingVersion = original.bump(gatlingVersion).asMilestone
   }
 }
 
 trait GatlingBump {
-  def bump(gatlingVersion: GatlingVersion): GatlingVersion
+  def bump(gatlingVersion: GatlingVersion)(implicit clock: Clock): GatlingVersion
 }
