@@ -19,7 +19,7 @@ package io.gatling.build.versioning
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
-class GatlingVersionSpec extends AnyWordSpec with Matchers {
+class GatlingVersionSpec extends AnyWordSpec with Matchers with FixedClock {
   "A version" when {
     "minor" should {
       val version = GatlingVersion("1.12.0").get
@@ -77,7 +77,7 @@ class GatlingVersionSpec extends AnyWordSpec with Matchers {
       }
 
       "asMilestone" in {
-        version.asMilestone.string should startWith("3.4.0.CUSTOMER-M")
+        version.asMilestone.string shouldBe s"3.4.0.CUSTOMER-M$YYYYMMDDHHMMSS"
       }
     }
 
