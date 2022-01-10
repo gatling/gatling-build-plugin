@@ -62,7 +62,7 @@ jobs:
         run: |
           git config user.name "${{ secrets.GATLING_CI_NAME }}"
           git config user.email "${{ secrets.GATLING_CI_EMAIL }}"
-          if [ "${{github.event.inputs.releaseType}}" = "milestone" ]; then
+          if [ "${{github.event.inputs.releaseType}}" = "patch-milestone" || "${{github.event.inputs.releaseType}}" = "minor-milestone" ]; then
             git tag "${{ steps.tag.outputs.tag }}"
           else
             git tag "${{ steps.tag.outputs.tag }}" -m "Version ${{ steps.tag.outputs.tag }}"

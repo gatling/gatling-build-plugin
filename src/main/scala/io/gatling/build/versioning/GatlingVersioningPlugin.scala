@@ -58,10 +58,10 @@ object GatlingVersioningPlugin extends AutoPlugin {
   private lazy val bumpParser: Parser[GatlingBump] =
     Space ~> (token("minor") ^^^ GatlingBump.Minor |
       token("patch") ^^^ GatlingBump.Patch |
-      token("calver") ^^^ GatlingBump.CalVer) |
+      token("calver") ^^^ GatlingBump.CalVer |
       token("patch-milestone") ^^^ GatlingBump.milestone(GatlingBump.Patch) |
       token("minor-milestone") ^^^ GatlingBump.milestone(GatlingBump.Minor) |
-      token("calver-milestone") ^^^ GatlingBump.milestone(GatlingBump.CalVer)
+      token("calver-milestone") ^^^ GatlingBump.milestone(GatlingBump.CalVer))
 
   val defaultBumpVersion = Def.inputTaskDyn {
     val bump = bumpParser.parsed
