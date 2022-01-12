@@ -19,7 +19,7 @@ package io.gatling.build.versioning
 import java.time.Clock
 
 import com.typesafe.sbt.GitVersioning
-import com.typesafe.sbt.SbtGit.git
+import com.typesafe.sbt.SbtGit.{ git, GitKeys }
 
 import sbt._
 import sbt.Keys._
@@ -44,6 +44,14 @@ object GatlingVersioningPlugin extends AutoPlugin {
     git.gitDescribePatterns := Seq("v*"),
     git.useGitDescribe := true,
     git.uncommittedSignifier := Some("dirty"),
+    git.gitDescribedVersion := {
+      implicit val clock: Clock = Clock.systemUTC()
+      for {
+        current <- GitKeys.gitReader.value.withGit(_.describedVersion(git.gitDescribePatterns.value)).map(v => git.gitTagToVersionNumber.value(v).getOrElse(v))
+        onlyTag = current.split("-").toList.reverse.drop(2).reverse.mkString("-")
+        oldGatlingVersion <- GatlingVersion(onlyTag)
+      } yield GatlingBump.Patch.bump(oldGatlingVersion).string
+    },
     version := {
       if (isSnapshot.value) s"${version.value}-SNAPSHOT" else version.value
     },
