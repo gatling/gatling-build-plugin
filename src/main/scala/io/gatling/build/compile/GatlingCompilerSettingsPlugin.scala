@@ -61,7 +61,7 @@ object GatlingCompilerSettingsPlugin extends AutoPlugin {
         "-source",
         "1.8"
       ),
-      resolvers := Seq(DefaultMavenRepository, Resolver.jcenterRepo),
+      resolvers := Seq(DefaultMavenRepository),
       scalacOptions := ScalacOptions
     )
 
