@@ -18,8 +18,11 @@ package io.gatling.build.versioning
 
 import java.time.Clock
 
+import scala.util.Try
+
 import com.typesafe.sbt.GitVersioning
 import com.typesafe.sbt.SbtGit.{ git, GitKeys }
+import com.typesafe.sbt.git.JGit
 
 import sbt._
 import sbt.Keys._
@@ -40,14 +43,28 @@ object GatlingVersioningPlugin extends AutoPlugin {
 
   import autoImport._
 
+  private val gitInternalDescribedVersion = SettingKey.local[Option[String]]
+
   override def buildSettings: Seq[Def.Setting[_]] = Seq(
     git.gitDescribePatterns := Seq("v*"),
     git.useGitDescribe := true,
     git.uncommittedSignifier := Some("dirty"),
+    gitInternalDescribedVersion := {
+      Try(
+        Option(
+          JGit(baseDirectory.value).porcelain
+            .describe()
+            .setTags(false) // Only annotated tags not any tags
+            .call()
+        )
+      )
+        .getOrElse(None)
+        .map(v => git.gitTagToVersionNumber.value(v).getOrElse(v))
+    },
     git.gitDescribedVersion := {
       implicit val clock: Clock = Clock.systemUTC()
       for {
-        current <- GitKeys.gitReader.value.withGit(_.describedVersion(git.gitDescribePatterns.value)).map(v => git.gitTagToVersionNumber.value(v).getOrElse(v))
+        current <- gitInternalDescribedVersion.value
         onlyTag = current.split("-").toList.reverse.drop(2).reverse.mkString("-")
         oldGatlingVersion <- GatlingVersion(onlyTag)
       } yield GatlingBump.Patch.bump(oldGatlingVersion).string
