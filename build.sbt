@@ -41,7 +41,7 @@ lazy val root = (project in file("."))
     addSbtPlugin("de.heikoseeberger" % "sbt-header"   % "5.6.0"),
     addSbtPlugin("org.xerial.sbt"    % "sbt-sonatype" % "3.9.10"),
     addSbtPlugin("com.typesafe.sbt"  % "sbt-git"      % "1.0.2"),
-    libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.10" % Test
+    libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.11" % Test
   )
 
 addCommandAlias(
