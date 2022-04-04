@@ -20,9 +20,9 @@ import java.time.Clock
 
 import scala.util.Try
 
-import com.typesafe.sbt.GitVersioning
-import com.typesafe.sbt.SbtGit.{ git, GitKeys }
-import com.typesafe.sbt.git.JGit
+import com.github.sbt.git.GitVersioning
+import com.github.sbt.git.JGit
+import com.github.sbt.git.SbtGit.git
 
 import sbt._
 import sbt.Keys._
