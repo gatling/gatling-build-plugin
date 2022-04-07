@@ -21,30 +21,26 @@ import io.gatling.build.config.GatlingBuildConfigPlugin
 import scalafix.sbt.ScalafixPlugin
 import scalafix.sbt.ScalafixPlugin.autoImport._
 
-import sbt._
-import sbt.Keys._
+import sbt.{ Def, _ }
 
 object GatlingAutomatedScalafixPlugin extends AutoPlugin {
 
   override def requires: Plugins = ScalafixPlugin && GatlingBuildConfigPlugin
 
-  trait GatlingAutomatedScalafixKeys {
-    val gatlingScalafixCheck = taskKey[Unit]("Check that gatling scalafix rules have been applied")
+  private val gatlingScalafixWriteTask = TaskKey.local[File]
 
-    def automateScalafixBeforeCompile(configurations: Configuration*): Seq[Setting[_]] =
-      configurations.foldLeft(List.empty[Setting[_]]) {
-        _ ++ inConfig(_)(
+  trait GatlingAutomatedScalafixKeys {
+    val gatlingScalafixConfigFile = settingKey[File]("Location of the scalafix configuration file")
+
+    def automateScalafixBeforeCompile(configurations: Configuration*): Seq[Setting[_]] = {
+      configurations.toSeq.flatMap(
+        inConfig(_)(
           Seq(
-            compile := {
-              if (scalafixOnCompile.value) {
-                compile.dependsOn(scalafix.toTask("").dependsOn(scalafixWriteConfigFile)).value
-              } else {
-                compile.value
-              }
-            }
+            scalafix := scalafix.dependsOn(gatlingScalafixWriteTask).evaluated
           )
         )
-      }
+      )
+    }
   }
   object GatlingAutomatedScalafixKeys extends GatlingAutomatedScalafixKeys
   object autoImport extends GatlingAutomatedScalafixKeys
@@ -52,18 +48,22 @@ object GatlingAutomatedScalafixPlugin extends AutoPlugin {
   import GatlingBuildConfigPlugin.GatlingBuildConfigKeys._
   import autoImport._
 
-  private lazy val scalafixConfigFileSetting = Def.setting { gatlingBuildConfigDirectory.value / ".scalafix.conf" }
-  private lazy val scalafixWriteConfigFile = writeResourceOnConfigDirectoryFile(
-    path = "/default.scalafix.conf",
-    to = scalafixConfigFileSetting
-  )
-
   override def projectSettings: Seq[sbt.Setting[_]] =
     automateScalafixBeforeCompile(Test, Compile) ++
       Seq(
+        scalafixAll := scalafixAll.dependsOn(gatlingScalafixWriteTask).evaluated,
         scalafixOnCompile := !sys.env.getOrElse("CI", "false").toBoolean,
-        ThisBuild / scalafixDependencies += "com.nequissimus" %% "sort-imports" % "0.6.1",
-        scalafixConfig := Some(scalafixConfigFileSetting.value),
-        gatlingScalafixCheck := scalafixAll.toTask(" --check").dependsOn(scalafixWriteConfigFile).value
+        scalafixConfig := Some(gatlingScalafixConfigFile.value),
+        gatlingScalafixConfigFile := gatlingBuildConfigDirectory.value / ".scalafix.conf",
+        gatlingScalafixWriteTask := {
+          writeResourceOnConfigDirectoryFile(
+            path = "/default.scalafix.conf",
+            to = gatlingScalafixConfigFile.value
+          )
+        }
       )
+
+  override def buildSettings: Seq[Def.Setting[_]] = {
+    ThisBuild / scalafixDependencies += "com.nequissimus" %% "sort-imports" % "0.6.1"
+  }
 }
