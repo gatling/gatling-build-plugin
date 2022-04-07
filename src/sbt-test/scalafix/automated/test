@@ -1,5 +1,5 @@
 # Ensure that our CI will refuse the PR as is.
--> gatlingScalafixCheck
+-> scalafixAll --check
 # Ensure files were not changed
 -$ must-mirror src/main/scala/Hello.scala Hello.scala.expected
 
@@ -10,4 +10,4 @@
 $ must-mirror src/main/scala/Hello.scala Hello.scala.expected
 
 # Ensure that our CI will accept after the change
-> gatlingScalafixCheck
+> scalafixAll --check

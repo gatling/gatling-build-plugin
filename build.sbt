@@ -43,14 +43,3 @@ lazy val root = (project in file("."))
     addSbtPlugin("com.github.sbt"    % "sbt-git"      % "2.0.0"),
     libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.11" % Test
   )
-
-addCommandAlias(
-  "ci-checks",
-  List(
-    "all clean",
-    "all scalafmtSbtCheck scalafmtCheckAll",
-    "all gatlingScalafixCheck",
-    "test",
-    "scripted"
-  ).mkString(";", ";", "")
-)

@@ -27,16 +27,26 @@ object GatlingAutomatedScalafmtPlugin extends AutoPlugin {
 
   override def requires: Plugins = ScalafmtPlugin && GatlingBuildConfigPlugin
 
-  import GatlingBuildConfigPlugin.GatlingBuildConfigKeys._
+  private val gatlingScalafmtWriteConfigFileTask = TaskKey.local[File]
 
-  private lazy val scalafmtConfigFileSetting = Def.setting { gatlingBuildConfigDirectory.value / ".scalafmt.conf" }
-  private lazy val scalafmtWriteConfigFile = writeResourceOnConfigDirectoryFile(
-    path = "/default.scalafmt.conf",
-    to = scalafmtConfigFileSetting
-  )
+  trait GatlingAutomatedScalafmtKeys {
+    val gatlingScalafmtConfileFile = settingKey[File]("Location of the configuration file for scalafmt")
+  }
+  object GatlingAutomatedScalafmtKeys extends GatlingAutomatedScalafmtKeys
+  object autoImport extends GatlingAutomatedScalafmtKeys
+
+  import GatlingBuildConfigPlugin.GatlingBuildConfigKeys._
+  import autoImport._
 
   override def projectSettings: Seq[Def.Setting[_]] = Seq(
     scalafmtOnCompile := !sys.env.getOrElse("CI", "false").toBoolean,
-    scalafmtConfig := scalafmtWriteConfigFile.value
+    scalafmtConfig := gatlingScalafmtWriteConfigFileTask.value,
+    gatlingScalafmtConfileFile := gatlingBuildConfigDirectory.value / ".scalafmt.conf",
+    gatlingScalafmtWriteConfigFileTask := {
+      writeResourceOnConfigDirectoryFile(
+        path = "/default.scalafmt.conf",
+        to = gatlingScalafmtConfileFile.value
+      )
+    }
   )
 }

@@ -16,7 +16,7 @@
 
 package io.gatling.build.config
 
-import sbt._
+import sbt.{ Def, _ }
 import sbt.Keys._
 
 object GatlingBuildConfigPlugin extends AutoPlugin {
@@ -25,11 +25,10 @@ object GatlingBuildConfigPlugin extends AutoPlugin {
   trait GatlingBuildConfigKeys {
     val gatlingBuildConfigDirectory = settingKey[File]("Location where to put configuration from gatling-build-plugin. Defaults to target/gatling-build-config")
 
-    def writeResourceOnConfigDirectoryFile(path: String, to: Def.Initialize[File]): Def.Initialize[Task[File]] = Def.task {
+    def writeResourceOnConfigDirectoryFile(path: String, to: File): File = {
       val resourceInputStream = getClass.getResourceAsStream(path)
-      val file = to.value
-      IO.transfer(resourceInputStream, file)
-      file
+      IO.transfer(resourceInputStream, to)
+      to
     }
   }
   object GatlingBuildConfigKeys extends GatlingBuildConfigKeys

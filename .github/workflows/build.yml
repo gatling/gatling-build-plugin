@@ -49,6 +49,6 @@ jobs:
             "all clean" \
             "all headerCheck" \
             "all scalafmtSbtCheck scalafmtCheckAll" \
-            "all gatlingScalafixCheck" \
+            "all scalafixAll --check" \
             "test" \
             "scripted"
