@@ -25,16 +25,34 @@ object GatlingCompilerSettingsPlugin extends AutoPlugin {
 
   override def trigger = allRequirements
 
+  trait GatlingCompilerSettingsKeys {
+    val javaReleaseVersion = settingKey[String]("Java release releaseVersion")
+  }
+
+  object GatlingCompilerSettingsKeys extends GatlingCompilerSettingsKeys
+  object autoImport extends GatlingCompilerSettingsKeys
+
+  import autoImport._
+
+  private val DefaultJavaReleaseVersion = "1.8"
   private val isJava8 = scala.util.Properties.javaVersion.startsWith("1.8")
 
-  private val JavacOptions =
-    if (isJava8) {
-      Seq("-source", "1.8", "-target", "1.8")
+  private val JavacOptions = Def.setting {
+    val version = javaReleaseVersion.value
+    if (version == DefaultJavaReleaseVersion) {
+      if (isJava8) {
+        Seq("-source", "1.8", "-target", "1.8")
+      } else {
+        Seq("--release", "1.8")
+      }
     } else {
-      Seq("--release", "8")
+      // When user overwrite java release version, we leave him the responsibility
+      Seq.empty
     }
+  }
 
-  private val ScalacOptions = {
+  private val ScalacOptions = Def.setting {
+    val releaseVersion = javaReleaseVersion.value
     val base =
       Seq(
         "-encoding",
@@ -42,27 +60,33 @@ object GatlingCompilerSettingsPlugin extends AutoPlugin {
         "-deprecation",
         "-feature",
         "-unchecked",
-        "-language:implicitConversions",
-        "-target:jvm-1.8"
+        "-language:implicitConversions"
       )
 
-    if (isJava8) {
+    if (releaseVersion != DefaultJavaReleaseVersion) {
+      // When user overwrite java release version, we leave him the responsibility
       base
     } else {
-      base ++ Seq("-release", "8")
+      val baseWithTarget = base :+ "-target:jvm-1.8"
+      if (isJava8) {
+        baseWithTarget
+      } else {
+        baseWithTarget ++ Seq("-release", "8")
+      }
     }
   }
 
   override def projectSettings =
     Seq(
       updateOptions := configureUpdateOptions(updateOptions.value),
-      javacOptions := JavacOptions,
+      javacOptions := JavacOptions.value,
       Compile / doc / javacOptions := Seq(
         "-source",
         "1.8"
       ),
       resolvers := Seq(DefaultMavenRepository),
-      scalacOptions := ScalacOptions
+      scalacOptions := ScalacOptions.value,
+      javaReleaseVersion := DefaultJavaReleaseVersion
     )
 
   private def configureUpdateOptions(options: UpdateOptions): UpdateOptions =
