@@ -19,6 +19,7 @@ package io.gatling.build
 import io.gatling.build.automated.{ GatlingAutomatedScalafixPlugin, GatlingAutomatedScalafmtPlugin }
 import io.gatling.build.basic.GatlingBasicInfoPlugin
 import io.gatling.build.compile.GatlingCompilerSettingsPlugin
+import io.gatling.build.environment.GatlingEnvPlugin
 import io.gatling.build.license._
 import io.gatling.build.publish.GatlingPublishPlugin
 import io.gatling.build.release.GatlingReleasePlugin
@@ -39,7 +40,8 @@ object GatlingCorpPlugin extends AutoPlugin {
       GatlingCompilerSettingsPlugin &&
       GatlingPublishPlugin &&
       GatlingReleasePlugin &&
-      AutomateHeaderPlugin
+      AutomateHeaderPlugin &&
+      GatlingEnvPlugin
 
   override def projectSettings: Seq[Def.Setting[_]] = Seq(
     headerLicense := AllRightsReservedLicense,
