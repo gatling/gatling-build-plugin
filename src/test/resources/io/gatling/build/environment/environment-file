@@ -1,0 +1,13 @@
+frontline.postgres.jdbc=jdbc:postgresql://localhost:5432/frontline?user=postgres&password=alreadychanged
+#Comments
+BLA=BLI
+REDIRECT_URL=https://auth.cloud.gatling.io/login#register
+question=answer
+antislash=\ok
+
+FOO=$BAR
+
+doublequoted="doublequoted"
+singlequoted='singlequoted'
+
+#commented=unexisting
