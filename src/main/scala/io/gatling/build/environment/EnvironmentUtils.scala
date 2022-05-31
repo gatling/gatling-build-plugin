@@ -38,13 +38,13 @@ object EnvironmentUtils {
     """.r
 
   /**
-   * Expects each line in an env file to be in VAR=VAL format.
-   * Lines beginning with # are processed as comments and ignored.
-   * Blank lines are ignored.
-   * There is no special handling of quotation marks. This means that they are part of the VAL.
+   * Expects each line in an env file to be in VAR=VAL format. Lines beginning with # are processed as comments and ignored. Blank lines are ignored. There is
+   * no special handling of quotation marks. This means that they are part of the VAL.
    *
-   * @param file the env file
-   * @return all env value as a map
+   * @param file
+   *   the env file
+   * @return
+   *   all env value as a map
    */
   def readEnvFile(file: File): Try[Map[String, String]] =
     Using(Source.fromFile(file)) { source =>
