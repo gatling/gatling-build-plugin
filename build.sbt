@@ -35,7 +35,7 @@ lazy val root = (project in file("."))
 // -- DEPENDENCIES -- //
 // ------------------ //
     addSbtPlugin("org.scalameta"     % "sbt-scalafmt" % "2.4.4"),
-    addSbtPlugin("ch.epfl.scala"     % "sbt-scalafix" % "0.10.0"),
+    addSbtPlugin("ch.epfl.scala"     % "sbt-scalafix" % "0.10.1"),
     addSbtPlugin("com.github.sbt"    % "sbt-release"  % "1.1.0"),
     addSbtPlugin("com.github.sbt"    % "sbt-pgp"      % "2.1.2"),
     addSbtPlugin("de.heikoseeberger" % "sbt-header"   % "5.7.0"),
