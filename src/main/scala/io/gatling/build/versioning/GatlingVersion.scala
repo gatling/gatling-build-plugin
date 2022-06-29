@@ -28,13 +28,12 @@ object GatlingVersion {
   private[GatlingVersion] def milestoneFormatter = DateTimeFormatter.ofPattern(MilestoneFormatterPattern)
   private[this] val GatlingVersionR = "(\\d+)\\.(\\d+)\\.(\\d+)(\\..*?)?(-.*)?".r
 
-  def apply(str: String): Option[GatlingVersion] = {
+  def apply(str: String): Option[GatlingVersion] =
     str match {
       case GatlingVersionR(major, minor, patch, marker, qualifier) =>
         Some(GatlingVersion(major.toInt, minor.toInt, patch.toInt, Option(marker).filterNot(_.isEmpty), Option(qualifier).filterNot(_.isEmpty)))
       case _ => None
     }
-  }
 }
 
 case class GatlingVersion(major: Int, minor: Int, patch: Int, marker: Option[String] = None, qualifier: Option[String] = None) {

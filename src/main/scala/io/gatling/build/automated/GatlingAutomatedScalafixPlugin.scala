@@ -33,7 +33,7 @@ object GatlingAutomatedScalafixPlugin extends AutoPlugin {
 
     val gatlingScalafixConfigFile = settingKey[File]("Location of the scalafix configuration file")
 
-    def automateScalafixBeforeCompile(configurations: Configuration*): Seq[Setting[_]] = {
+    def automateScalafixBeforeCompile(configurations: Configuration*): Seq[Setting[_]] =
       configurations.toSeq.flatMap(
         inConfig(_)(
           Seq(
@@ -41,7 +41,6 @@ object GatlingAutomatedScalafixPlugin extends AutoPlugin {
           )
         )
       )
-    }
   }
   object GatlingAutomatedScalafixKeys extends GatlingAutomatedScalafixKeys
   object autoImport extends GatlingAutomatedScalafixKeys
@@ -64,7 +63,6 @@ object GatlingAutomatedScalafixPlugin extends AutoPlugin {
         }
       )
 
-  override def buildSettings: Seq[Def.Setting[_]] = {
+  override def buildSettings: Seq[Def.Setting[_]] =
     ThisBuild / scalafixDependencies += "com.nequissimus" %% "sort-imports" % "0.6.1"
-  }
 }
