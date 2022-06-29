@@ -30,6 +30,7 @@ object GatlingAutomatedScalafixPlugin extends AutoPlugin {
   private val gatlingScalafixWriteTask = TaskKey.local[File]
 
   trait GatlingAutomatedScalafixKeys {
+
     val gatlingScalafixConfigFile = settingKey[File]("Location of the scalafix configuration file")
 
     def automateScalafixBeforeCompile(configurations: Configuration*): Seq[Setting[_]] = {

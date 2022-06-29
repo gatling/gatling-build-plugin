@@ -20,6 +20,7 @@ import java.time.{ Clock, ZoneId, ZonedDateTime }
 import java.time.temporal.WeekFields
 
 object GatlingBump {
+
   object Minor extends GatlingBump {
     override def bump(gatlingVersion: GatlingVersion)(implicit clock: Clock): GatlingVersion =
       if (gatlingVersion.qualifier.isDefined && gatlingVersion.patch == 0)

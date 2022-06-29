@@ -20,9 +20,11 @@ import sbt.{ Def, _ }
 import sbt.Keys._
 
 object GatlingBuildConfigPlugin extends AutoPlugin {
+
   override def requires = empty
 
   trait GatlingBuildConfigKeys {
+
     val gatlingBuildConfigDirectory = settingKey[File]("Location where to put configuration from gatling-build-plugin. Defaults to target/gatling-build-config")
 
     def writeResourceOnConfigDirectoryFile(path: String, to: File): File = {

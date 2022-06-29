@@ -30,9 +30,11 @@ import sbt.complete.DefaultParsers._
 import sbt.complete.Parser
 
 object GatlingVersioningPlugin extends AutoPlugin {
+
   override def requires: Plugins = GitVersioning
 
   trait GatlingVersioningKeys {
+
     val gatlingBumpVersion = inputKey[String]("What will be the version")
     val gatlingWriteBumpVersion = inputKey[File]("Write what will be the version in target/gatlingNextVersion")
     val isMilestone = settingKey[Boolean]("Indicate if release process is milestone")
