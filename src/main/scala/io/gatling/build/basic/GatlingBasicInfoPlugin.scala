@@ -58,11 +58,11 @@ object GatlingBasicInfoPlugin extends AutoPlugin {
     gatlingDevelopers := Seq.empty
   )
 
-  private def developersXml(devs: Seq[GatlingDeveloper]) = {
+  private def developersXml(devs: Seq[GatlingDeveloper]) =
     <developers>
       {
-      for (dev <- devs) yield {
-        <developer>
+      for (dev <- devs)
+        yield <developer>
           <id>{dev.emailAddress}</id>
           <name>{dev.name}</name>
           {
@@ -72,9 +72,7 @@ object GatlingBasicInfoPlugin extends AutoPlugin {
           }
         }
         </developer>
-      }
     }
     </developers>
-  }
 
 }
