@@ -22,6 +22,7 @@ import java.time.format.DateTimeFormatter
 import scala.util.Try
 
 object GatlingVersion {
+
   private[GatlingVersion] lazy val MilestoneFormatterPattern = "'-M'yyyyMMddHHmmss"
   // def as SimpleDateFormat is not Thread safe
   private[GatlingVersion] def milestoneFormatter = DateTimeFormatter.ofPattern(MilestoneFormatterPattern)
@@ -37,6 +38,7 @@ object GatlingVersion {
 }
 
 case class GatlingVersion(major: Int, minor: Int, patch: Int, marker: Option[String] = None, qualifier: Option[String] = None) {
+
   import GatlingVersion._
 
   def isMilestone: Boolean = qualifier.exists(qual => Try(milestoneFormatter.parse(qual)).isSuccess)

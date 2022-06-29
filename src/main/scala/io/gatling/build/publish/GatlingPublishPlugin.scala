@@ -22,6 +22,7 @@ import sbt._
 import sbt.Keys._
 
 object GatlingPublishPlugin extends AutoPlugin {
+
   override def requires: Plugins = plugins.JvmPlugin
 
   trait GatlingPublishKeys {
