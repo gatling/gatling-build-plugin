@@ -30,6 +30,7 @@ object GatlingPublishPlugin extends AutoPlugin {
   }
 
   object GatlingPublishKeys extends GatlingPublishKeys
+
   object autoImport extends GatlingPublishKeys
 
   import autoImport._
@@ -42,8 +43,6 @@ object GatlingPublishPlugin extends AutoPlugin {
   )
 
   private def sonatypeRepositories: Seq[Resolver] =
-    Seq(
-      envOrNone("CI").map(_ => Opts.resolver.sonatypeSnapshots),
-      propOrNone("release").map(_ => Opts.resolver.sonatypeReleases)
-    ).flatten
+    envOrNone("CI").map(_ => Opts.resolver.sonatypeOssSnapshots).getOrElse(Seq.empty) ++
+      propOrNone("release").map(_ => Opts.resolver.sonatypeOssReleases).getOrElse(Seq.empty)
 }
