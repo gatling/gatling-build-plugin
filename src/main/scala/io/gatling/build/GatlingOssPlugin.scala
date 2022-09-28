@@ -49,6 +49,7 @@ object GatlingOssPlugin extends AutoPlugin {
       GatlingPublishPlugin &&
       GatlingReleasePlugin &&
       AutomateHeaderPlugin &&
+      Apache2LicenseFilePlugin &&
       Sonatype
 
   trait GatlingOssKeys {
