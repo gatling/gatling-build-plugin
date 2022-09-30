@@ -43,7 +43,8 @@ object GatlingCompilerSettingsPlugin extends AutoPlugin {
         "-feature",
         "-unchecked",
         "-language:implicitConversions",
-        "-target:jvm-1.8"
+        "-release",
+        "8"
       )
 
     if (isJava8) {
