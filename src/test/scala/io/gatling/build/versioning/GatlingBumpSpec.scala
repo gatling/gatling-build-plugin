@@ -21,7 +21,6 @@ import org.scalatest.prop.TableDrivenPropertyChecks._
 import org.scalatest.wordspec.AnyWordSpec
 
 class GatlingBumpSpec extends AnyWordSpec with Matchers with FixedClock {
-
   import GatlingBump._
   private val Reference = Table(
     // format: OFF

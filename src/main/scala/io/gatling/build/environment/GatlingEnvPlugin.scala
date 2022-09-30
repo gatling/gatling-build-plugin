@@ -23,9 +23,7 @@ import sbt.nio.Keys.fileInputs
 import sbt.nio.file.Glob
 
 object GatlingEnvPlugin extends AutoPlugin {
-
   trait GatlingEnvPluginKeys {
-
     val gatlingEnvFiles = settingKey[Seq[File]]("Environment files to load")
     val gatlingEnvVars = taskKey[Map[String, String]]("Environment variables loaded from environment files")
   }

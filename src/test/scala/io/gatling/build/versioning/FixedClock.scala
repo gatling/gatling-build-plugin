@@ -19,7 +19,6 @@ package io.gatling.build.versioning
 import java.time.{ Clock, Instant, ZoneId }
 
 trait FixedClock {
-
   // 20210401041810 - 2021-04-01 04:18:10
   implicit val clock: Clock = Clock.fixed(Instant.ofEpochSecond(1617250690L), ZoneId.of("UTC"))
   val YYYY = 2021

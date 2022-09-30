@@ -1,4 +1,4 @@
-object Hello extends App { // append new line after object declaration
+object Hello extends App {
   final implicit val a: Long = 0L
   val b: Int = { 1 } // Remove useless curly braces
 

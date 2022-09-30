@@ -22,7 +22,6 @@ import scala.io.Source
 import scala.util.{ Try, Using }
 
 object EnvironmentUtils {
-
   private val LINE_REGEX =
     """(?xms)
        (?:^|\A)           # start of line

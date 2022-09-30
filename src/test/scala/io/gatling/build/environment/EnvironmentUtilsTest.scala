@@ -22,7 +22,6 @@ import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
 
 class EnvironmentUtilsTest extends AnyFunSpec with Matchers {
-
   private val envs = EnvironmentUtils.readEnvFile(new File(getClass.getResource("environment-file").getFile)).get
 
   describe("A gatling environment file") {

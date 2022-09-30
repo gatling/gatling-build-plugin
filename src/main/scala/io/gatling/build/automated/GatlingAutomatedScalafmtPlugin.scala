@@ -24,7 +24,6 @@ import org.scalafmt.sbt.ScalafmtPlugin.autoImport._
 import sbt._
 
 object GatlingAutomatedScalafmtPlugin extends AutoPlugin {
-
   override def requires: Plugins = ScalafmtPlugin && GatlingBuildConfigPlugin
 
   private val gatlingScalafmtWriteConfigFileTask = TaskKey.local[File]

@@ -21,7 +21,6 @@ import java.util.Calendar
 import de.heikoseeberger.sbtheader._
 
 package object license {
-
   private def currentYear = Calendar.getInstance.get(Calendar.YEAR)
 
   val ApacheV2License = Some(
