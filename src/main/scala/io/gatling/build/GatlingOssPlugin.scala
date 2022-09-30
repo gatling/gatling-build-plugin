@@ -39,7 +39,6 @@ import sbt._
 import sbt.Keys._
 
 object GatlingOssPlugin extends AutoPlugin {
-
   override def requires =
     GatlingAutomatedScalafixPlugin &&
       GatlingAutomatedScalafmtPlugin &&

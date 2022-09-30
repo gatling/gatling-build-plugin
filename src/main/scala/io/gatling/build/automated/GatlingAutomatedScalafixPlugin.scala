@@ -24,13 +24,11 @@ import scalafix.sbt.ScalafixPlugin.autoImport._
 import sbt.{ Def, _ }
 
 object GatlingAutomatedScalafixPlugin extends AutoPlugin {
-
   override def requires: Plugins = ScalafixPlugin && GatlingBuildConfigPlugin
 
   private val gatlingScalafixWriteTask = TaskKey.local[File]
 
   trait GatlingAutomatedScalafixKeys {
-
     val gatlingScalafixConfigFile = settingKey[File]("Location of the scalafix configuration file")
 
     def automateScalafixBeforeCompile(configurations: Configuration*): Seq[Setting[_]] =

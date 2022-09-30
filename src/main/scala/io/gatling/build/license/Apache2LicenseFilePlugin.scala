@@ -22,7 +22,6 @@ import sbt.*
 import sbt.Keys.*
 
 object Apache2LicenseFilePlugin extends AutoPlugin {
-
   trait Apache2LicenseFileKeys {
     val gatlingApache2LicenseTask = taskKey[Seq[File]]("Copy Apache2 License to managed resources META-INF/LICENSE")
   }

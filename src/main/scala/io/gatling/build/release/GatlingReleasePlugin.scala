@@ -27,7 +27,6 @@ import sbt._
 import sbt.Keys._
 
 object GatlingReleasePlugin extends AutoPlugin {
-
   override def requires: Plugins = GatlingPublishPlugin && ReleasePlugin
 
   trait GatlingReleaseKeys {

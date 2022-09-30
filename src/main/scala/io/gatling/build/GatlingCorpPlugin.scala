@@ -32,7 +32,6 @@ import sbtrelease.ReleasePlugin.autoImport.releasePublishArtifactsAction
 import sbt._
 
 object GatlingCorpPlugin extends AutoPlugin {
-
   override def requires =
     GatlingAutomatedScalafixPlugin &&
       GatlingAutomatedScalafmtPlugin &&

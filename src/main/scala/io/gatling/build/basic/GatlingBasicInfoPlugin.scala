@@ -20,13 +20,11 @@ import sbt._
 import sbt.Keys._
 
 object GatlingBasicInfoPlugin extends AutoPlugin {
-
   override def requires = empty
 
   override def trigger = allRequirements
 
   trait GatlingBasicInfoKeys {
-
     val githubPath = settingKey[String]("Project path on Github")
     val gatlingDevelopers = settingKey[Seq[GatlingDeveloper]]("List of contributors for this project")
 

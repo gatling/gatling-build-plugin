@@ -20,7 +20,6 @@ import sbt._
 import sbt.Keys._
 
 object GatlingCompilerSettingsPlugin extends AutoPlugin {
-
   override def requires = plugins.JvmPlugin
 
   override def trigger = allRequirements
