@@ -24,45 +24,41 @@ object GatlingCompilerSettingsPlugin extends AutoPlugin {
 
   override def trigger = allRequirements
 
-  private val isJava8 = scala.util.Properties.javaVersion.startsWith("1.8")
-
-  private val JavacOptions =
-    if (isJava8) {
-      Seq("-source", "1.8", "-target", "1.8")
-    } else {
-      Seq("--release", "8")
-    }
-
-  private val ScalacOptions = {
-    val base =
-      Seq(
-        "-encoding",
-        "UTF-8",
-        "-deprecation",
-        "-feature",
-        "-unchecked",
-        "-language:implicitConversions",
-        "-release",
-        "8"
-      )
-
-    if (isJava8) {
-      base
-    } else {
-      base ++ Seq("-release", "8")
-    }
+  trait GatlingCompilerSettingsKey {
+    val gatlingCompilerRelease = settingKey[Option[Int]]("target release option")
   }
 
-  override def projectSettings =
+  object GatlingCompilerSettingsKey extends GatlingCompilerSettingsKey
+  object autoImport extends GatlingCompilerSettingsKey
+
+  import autoImport._
+
+  private val isJava8 = scala.util.Properties.javaVersion.startsWith("1.8")
+
+  override def projectSettings: Seq[Setting[_]] =
     Seq(
       updateOptions := configureUpdateOptions(updateOptions.value),
-      javacOptions := JavacOptions,
+      javacOptions := {
+        if (isJava8) {
+          Seq("-source", "1.8", "-target", "1.8")
+        } else {
+          gatlingCompilerRelease.value.toList.flatMap(v => List("--release", v.toString))
+        }
+      },
       Compile / doc / javacOptions := Seq(
         "-source",
         "1.8"
       ),
       resolvers := Seq(DefaultMavenRepository),
-      scalacOptions := ScalacOptions
+      gatlingCompilerRelease := Some(8).filterNot(_ => isJava8),
+      scalacOptions := Seq(
+        "-encoding",
+        "UTF-8",
+        "-deprecation",
+        "-feature",
+        "-unchecked",
+        "-language:implicitConversions"
+      ) ++ gatlingCompilerRelease.value.toList.flatMap(v => List("-release", v.toString))
     )
 
   private def configureUpdateOptions(options: UpdateOptions): UpdateOptions =
