@@ -27,6 +27,17 @@ object GatlingVersion {
   private[GatlingVersion] def milestoneFormatter = DateTimeFormatter.ofPattern(MilestoneFormatterPattern)
   private[this] val GatlingVersionR = "(\\d+)\\.(\\d+)\\.(\\d+)(\\..*?)?(-.*)?".r
 
+  private implicit val qualifierOptionOrdering: Ordering[Option[String]] = {
+    case (None, None) => 0
+    case (None, _) => 1
+    case (_, None) => -1
+    case (Some(x), Some(y)) => x.compare(y)
+  }
+
+  implicit val ordering: Ordering[GatlingVersion] = Ordering.by {
+    case GatlingVersion(major, minor, patch, _, qualifier) => (major, minor, patch, qualifier)
+  }
+
   def apply(str: String): Option[GatlingVersion] =
     str match {
       case GatlingVersionR(major, minor, patch, marker, qualifier) =>

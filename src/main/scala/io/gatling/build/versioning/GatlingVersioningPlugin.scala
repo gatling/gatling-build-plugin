@@ -45,6 +45,19 @@ object GatlingVersioningPlugin extends AutoPlugin {
 
   private val gitInternalDescribedVersion = SettingKey.local[Option[String]]
 
+  private def gatlingReleaseVersion(currentTags: Seq[String], releaseTagVersion: String => Option[String], suffix: String): Option[String] = {
+    val versions =
+      for {
+        tag <- currentTags
+        version <- releaseTagVersion(tag)
+        gatlingVersion <- GatlingVersion(version)
+      } yield gatlingVersion
+
+    // NOTE - Selecting the last tag or the first tag should be an option.
+    val highestVersion = versions.sorted.lastOption
+    highestVersion.map(_.string + suffix)
+  }
+
   override def buildSettings: Seq[Def.Setting[_]] = Seq(
     git.gitDescribePatterns := Seq("v*"),
     git.useGitDescribe := true,
@@ -68,6 +81,25 @@ object GatlingVersioningPlugin extends AutoPlugin {
         onlyTag = current.split("-").toList.reverse.drop(2).reverse.mkString("-")
         oldGatlingVersion <- GatlingVersion(onlyTag)
       } yield GatlingBump.Patch.bump(oldGatlingVersion).string
+    },
+    version := {
+      val overrideVersion =
+        git.overrideVersion(git.versionProperty.value)
+      val uncommittedSuffix =
+        git.makeUncommittedSignifierSuffix(git.gitUncommittedChanges.value, git.uncommittedSignifier.value)
+      val releaseVersion =
+        gatlingReleaseVersion(git.gitCurrentTags.value, git.gitTagToVersionNumber.value, uncommittedSuffix)
+      val describedVersion =
+        git.flaggedOptional(git.useGitDescribe.value, git.describeVersion(git.gitDescribedVersion.value, uncommittedSuffix))
+      val datedVersion = git.formattedDateVersion.value
+      val commitVersion = git.formattedShaVersion.value
+      //Now we fall through the potential version numbers...
+      git.makeVersion(Seq(
+        overrideVersion,
+        releaseVersion,
+        describedVersion,
+        commitVersion
+      )) getOrElse datedVersion // For when git isn't there at all.
     },
     version := {
       if (isSnapshot.value) s"${version.value}-SNAPSHOT" else version.value
