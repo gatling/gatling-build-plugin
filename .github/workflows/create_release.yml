@@ -52,6 +52,7 @@ jobs:
         run: |
           sbt "gatlingWriteBumpVersion ${{ github.event.inputs.releaseType }}"
           export CURRENT_TAG="v$(cat target/gatlingNextVersion)"
+          echo "tag=$CURRENT_TAG"
           echo "tag=$CURRENT_TAG" >> $GITHUB_OUTPUT
 
       - name: Git tag

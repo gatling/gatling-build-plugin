@@ -55,6 +55,7 @@ jobs:
           PGP_PASSPHRASE: ${{ secrets.SONATYPE_PGP_PASSPHRASE }}
         run: |
           sbt "release with-defaults"
+          echo "version=$(cat target/release-info)" # DO NOT REMOVE, because of bad parsing for outputs
           echo "version=$(cat target/release-info)" >> $GITHUB_OUTPUT
 
       - name: Publish on CodeArtifact
