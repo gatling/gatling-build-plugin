@@ -17,10 +17,10 @@ jobs:
       JVM_OPTS: "-Xmx6G"
       SBT_OPTS: "-Dsbt.ci=true"
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Setup JDK
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
           distribution: 'zulu'
           java-version: '8'
@@ -52,8 +52,7 @@ jobs:
           PGP_PASSPHRASE: ${{ secrets.SONATYPE_PGP_PASSPHRASE }}
         run: |
           sbt "release with-defaults"
-          echo "version=$(cat target/release-info)" # DO NOT REMOVE, because of bad parsing for outputs
-          echo "::set-output name=version::$(cat target/release-info)"
+          echo "version=$(cat target/release-info)" >> $GITHUB_OUTPUT
 
       - name: Publish on CodeArtifact
         run: |

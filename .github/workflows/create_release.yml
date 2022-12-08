@@ -4,7 +4,12 @@ on:
   workflow_dispatch:
     inputs:
       releaseType:
-        description: 'patch-milestone|minor-milestone|patch|minor'
+        description: Release type
+        options:
+          - patch-milestone
+          - minor-milestone
+          - patch
+          - minor
         required: true
 
 defaults:
@@ -19,27 +24,19 @@ jobs:
       JVM_OPTS: "-Xmx6G"
       SBT_OPTS: "-Dsbt.ci=true"
     steps:
-      - name: Validate inputs
-        run: exit 1
-        if: |
-          github.event.inputs.releaseType != 'minor' &&
-          github.event.inputs.releaseType != 'patch' &&
-          github.event.inputs.releaseType != 'minor-milestone' &&
-          github.event.inputs.releaseType != 'patch-milestone'
-
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0 # indicates all history for all branches and tags
           token: ${{ secrets.GATLING_CI_TOKEN }} # for tag to trigger other workflows (release)
 
       - name: Setup JDK
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
           distribution: 'zulu'
           java-version: '8'
 
       - name: Cache SBT
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: |
             ~/.m2/repository
@@ -55,8 +52,7 @@ jobs:
         run: |
           sbt "gatlingWriteBumpVersion ${{ github.event.inputs.releaseType }}"
           export CURRENT_TAG="v$(cat target/gatlingNextVersion)"
-          echo "tag='$CURRENT_TAG'"
-          echo "::set-output name=tag::$CURRENT_TAG"
+          echo "tag=$CURRENT_TAG" >> $GITHUB_OUTPUT
 
       - name: Git tag
         run: |
