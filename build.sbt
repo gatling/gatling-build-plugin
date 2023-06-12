@@ -9,7 +9,7 @@ lazy val root = (project in file("."))
     organizationHomepage := Some(new URL("https://gatling.io")),
     startYear := Some(2011),
     licenses := Seq("Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0.html")),
-    scalaVersion := "2.12.17",
+    scalaVersion := "2.12.18",
     scalacOptions := Seq(
       "-encoding",
       "UTF-8",
