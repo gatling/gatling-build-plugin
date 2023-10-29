@@ -26,10 +26,9 @@ import sbt.{ Def, _ }
 object GatlingAutomatedScalafixPlugin extends AutoPlugin {
   override def requires: Plugins = ScalafixPlugin && GatlingBuildConfigPlugin
 
-  private val gatlingScalafixWriteTask = TaskKey.local[File]
-
   trait GatlingAutomatedScalafixKeys {
     val gatlingScalafixConfigFile = settingKey[File]("Location of the scalafix configuration file")
+    val gatlingScalafixWriteTask = taskKey[File]("write scalafix file")
 
     def automateScalafixBeforeCompile(configurations: Configuration*): Seq[Setting[_]] =
       configurations.toSeq.flatMap(
