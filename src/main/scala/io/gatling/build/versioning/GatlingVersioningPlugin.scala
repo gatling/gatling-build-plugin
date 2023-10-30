@@ -18,11 +18,8 @@ package io.gatling.build.versioning
 
 import java.time.Clock
 
-import scala.util.Try
-
-import com.github.sbt.git.GitVersioning
-import com.github.sbt.git.JGit
-import com.github.sbt.git.SbtGit.git
+import sbtdynver.DynVerPlugin
+import sbtdynver.DynVerPlugin.autoImport._
 
 import sbt._
 import sbt.Keys._
@@ -30,7 +27,7 @@ import sbt.complete.DefaultParsers._
 import sbt.complete.Parser
 
 object GatlingVersioningPlugin extends AutoPlugin {
-  override def requires: Plugins = GitVersioning
+  override def requires: Plugins = DynVerPlugin
 
   trait GatlingVersioningKeys {
     val gatlingBumpVersion = inputKey[String]("What will be the version")
@@ -43,35 +40,8 @@ object GatlingVersioningPlugin extends AutoPlugin {
 
   import autoImport._
 
-  private val gitInternalDescribedVersion = SettingKey.local[Option[String]]
-
   override def buildSettings: Seq[Def.Setting[_]] = Seq(
-    git.gitDescribePatterns := Seq("v*"),
-    git.useGitDescribe := true,
-    git.uncommittedSignifier := Some("dirty"),
-    gitInternalDescribedVersion := {
-      Try(
-        Option(
-          JGit(baseDirectory.value).porcelain
-            .describe()
-            .setTags(false) // Only annotated tags not any tags
-            .call()
-        )
-      )
-        .getOrElse(None)
-        .map(v => git.gitTagToVersionNumber.value(v).getOrElse(v))
-    },
-    git.gitDescribedVersion := {
-      implicit val clock: Clock = Clock.systemUTC()
-      for {
-        current <- gitInternalDescribedVersion.value
-        onlyTag = current.split("-").toList.reverse.drop(2).reverse.mkString("-")
-        oldGatlingVersion <- GatlingVersion(onlyTag)
-      } yield GatlingBump.Patch.bump(oldGatlingVersion).string
-    },
-    version := {
-      if (isSnapshot.value) s"${version.value}-SNAPSHOT" else version.value
-    },
+    dynverSonatypeSnapshots := true,
     isMilestone := version(GatlingVersion(_).exists(_.isMilestone)).value
   )
 
