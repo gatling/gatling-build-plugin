@@ -62,8 +62,8 @@ object GatlingVersioningPlugin extends AutoPlugin {
     val bump = bumpParser.parsed
     Def.task[String] {
       implicit val clock: Clock = Clock.systemUTC()
-      val currentVersion = (ThisBuild / version).value
-      GatlingVersion(currentVersion)
+      val currentVersion = (ThisBuild / dynverGitDescribeOutput).value.map(_.ref.dropPrefix)
+      currentVersion.flatMap(GatlingVersion.apply)
         .map(bump.bump)
         .map(_.string)
         .getOrElse(throw new IllegalStateException(s"Cannot bump unparsable version (got: '$currentVersion')"))
