@@ -1,4 +1,4 @@
-val SCALA_VERSION = "2.13.7"
+val SCALA_VERSION = "2.13.12"
 
 githubPath := "user/repository"
 
