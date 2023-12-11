@@ -44,3 +44,10 @@ lazy val root = (project in file("."))
     addSbtPlugin("com.github.sbt"    % "sbt-dynver"   % "5.0.1"),
     libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.17" % Test
   )
+
+ThisBuild / dependencyOverrides ++= Seq(
+  "org.eclipse.jgit"          % "org.eclipse.jgit" % "6.8.0.202311291450-r", // sbt-scalafix
+  "ch.qos.logback"            % "logback-core"     % "1.4.7", // sbt-sonatype
+  "com.google.guava"          % "guava"            % "23.0", // sbt-sonatype
+  "org.apache.httpcomponents" % "httpclient"       % "4.5.14" // sbt-sonatype
+)

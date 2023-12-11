@@ -1,8 +1,9 @@
 // ------------------ //
 // -- DEPENDENCIES -- //
 // ------------------ //
-addSbtPlugin("org.scalameta"     % "sbt-scalafmt" % "2.5.2")
-addSbtPlugin("ch.epfl.scala"     % "sbt-scalafix" % "0.11.1")
+addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.5.2")
+addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.11.1")
+
 addSbtPlugin("com.github.sbt"    % "sbt-release"  % "1.1.0")
 addSbtPlugin("com.github.sbt"    % "sbt-pgp"      % "2.2.1")
 addSbtPlugin("de.heikoseeberger" % "sbt-header"   % "5.10.0")
@@ -12,3 +13,10 @@ addSbtPlugin("com.github.sbt"    % "sbt-dynver"   % "5.0.1")
 // This project is its own plugin :)
 Compile / unmanagedSourceDirectories += baseDirectory.value.getParentFile / "src" / "main" / "scala"
 Compile / unmanagedResourceDirectories += baseDirectory.value.getParentFile / "src" / "main" / "resources"
+
+dependencyOverrides ++= Seq(
+  "org.eclipse.jgit"          % "org.eclipse.jgit" % "6.8.0.202311291450-r", // sbt-scalafix
+  "ch.qos.logback"            % "logback-core"     % "1.4.7", // sbt-sonatype
+  "com.google.guava"          % "guava"            % "23.0", // sbt-sonatype
+  "org.apache.httpcomponents" % "httpclient"       % "4.5.14" // sbt-sonatype
+)
