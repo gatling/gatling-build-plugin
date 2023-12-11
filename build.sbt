@@ -4,11 +4,11 @@ lazy val root = (project in file("."))
   .enablePlugins(SbtPlugin, GatlingOssPlugin)
   .settings(
     name := "gatling-build-plugin",
-    homepage := Some(new URL("https://gatling.io")),
+    homepage := Some(new URI("https://gatling.io").toURL),
     organization := "io.gatling",
-    organizationHomepage := Some(new URL("https://gatling.io")),
+    organizationHomepage := Some(new URI("https://gatling.io").toURL),
     startYear := Some(2011),
-    licenses := Seq("Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0.html")),
+    licenses := Seq("Apache-2.0" -> new URI("http://www.apache.org/licenses/LICENSE-2.0.html").toURL),
     scalaVersion := "2.12.18",
     scalacOptions := Seq(
       "-encoding",
@@ -18,7 +18,7 @@ lazy val root = (project in file("."))
       "-deprecation",
       "-feature",
       "-unchecked"
-    ) ++ (if (scala.util.Properties.javaVersion.startsWith("1.8")) Nil else Seq("-release", "8")),
+    ),
     scriptedLaunchOpts := {
       scriptedLaunchOpts.value ++
         Seq("-Xmx1024M", "-Dplugin.version=" + version.value)
