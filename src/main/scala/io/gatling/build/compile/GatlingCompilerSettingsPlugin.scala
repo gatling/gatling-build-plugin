@@ -25,7 +25,7 @@ object GatlingCompilerSettingsPlugin extends AutoPlugin {
   override def trigger = allRequirements
 
   trait GatlingCompilerSettingsKey {
-    val gatlingCompilerRelease = settingKey[Option[Int]]("target release option")
+    val gatlingCompilerRelease = settingKey[Int]("target release option")
   }
 
   object GatlingCompilerSettingsKey extends GatlingCompilerSettingsKey
@@ -33,32 +33,28 @@ object GatlingCompilerSettingsPlugin extends AutoPlugin {
 
   import autoImport._
 
-  private val isJava8 = scala.util.Properties.javaVersion.startsWith("1.8")
+  private def validReleaseOption(value: Int): String = {
+    require(value >= 11, "gatlingCompilerRelease must be >= 11")
+    value.toString
+  }
 
   override def projectSettings: Seq[Setting[_]] =
     Seq(
       updateOptions := configureUpdateOptions(updateOptions.value),
-      javacOptions := {
-        if (isJava8) {
-          Seq("-source", "1.8", "-target", "1.8")
-        } else {
-          gatlingCompilerRelease.value.toList.flatMap(v => List("--release", v.toString))
-        }
-      },
-      Compile / doc / javacOptions := Seq(
-        "-source",
-        "1.8"
-      ),
+      javacOptions := Seq("--release", validReleaseOption(gatlingCompilerRelease.value)),
+      Compile / doc / javacOptions := Seq("--release", validReleaseOption(gatlingCompilerRelease.value)),
       resolvers := Seq(DefaultMavenRepository),
-      gatlingCompilerRelease := Some(8).filterNot(_ => isJava8),
+      gatlingCompilerRelease := 11,
       scalacOptions := Seq(
         "-encoding",
         "UTF-8",
         "-deprecation",
         "-feature",
         "-unchecked",
-        "-language:implicitConversions"
-      ) ++ gatlingCompilerRelease.value.toList.flatMap(v => List("-release", v.toString))
+        "-language:implicitConversions",
+        "-release",
+        validReleaseOption(gatlingCompilerRelease.value)
+      )
     )
 
   private def configureUpdateOptions(options: UpdateOptions): UpdateOptions =
