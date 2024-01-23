@@ -18,12 +18,8 @@ package io.gatling.build.license
 
 import sbt._
 
-object Apache2LicenseFilePlugin extends AutoPlugin {
-  object autoImport extends GatlingLicenseFileKeys
-
-  import autoImport._
-
-  override def projectSettings: Seq[Def.Setting[_]] = GatlingLicenseFileCommon.projectSettings ++ Seq(
-    Compile / gatlingLicenseFile := "Apache2.license"
-  )
+trait GatlingLicenseFileKeys {
+  val gatlingLicenseFile = settingKey[String]("Name of the license file copied by gatlingLicenseFileTask")
+  val gatlingLicenseFileTask = taskKey[Seq[File]]("Copy License file to managed resources META-INF/LICENSE")
 }
+object GatlingLicenseFileKeys extends GatlingLicenseFileKeys

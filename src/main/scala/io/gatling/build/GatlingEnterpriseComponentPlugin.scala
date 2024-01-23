@@ -16,9 +16,9 @@
 
 package io.gatling.build
 
-import io.gatling.build.automated.GatlingAutomatedScalafixPlugin
-import io.gatling.build.automated.GatlingAutomatedScalafmtPlugin
+import io.gatling.build.automated.{ GatlingAutomatedScalafixPlugin, GatlingAutomatedScalafmtPlugin }
 import io.gatling.build.compile.GatlingCompilerSettingsPlugin
+import io.gatling.build.environment.GatlingEnvPlugin
 import io.gatling.build.license._
 import io.gatling.build.sonatype.GatlingSonatypePlugin
 import io.gatling.build.versioning.GatlingVersioningPlugin
@@ -29,18 +29,22 @@ import de.heikoseeberger.sbtheader.HeaderPlugin.autoImport.headerLicense
 import sbt._
 import sbt.Keys._
 
-object GatlingOssPlugin extends AutoPlugin {
+/**
+ * Used for external components for Gatling Enterprise (closed source components published under the Gatling Enterprise Components License).
+ */
+object GatlingEnterpriseComponentPlugin extends AutoPlugin {
   override def requires =
     GatlingAutomatedScalafixPlugin &&
       GatlingAutomatedScalafmtPlugin &&
       GatlingVersioningPlugin &&
       GatlingCompilerSettingsPlugin &&
       AutomateHeaderPlugin &&
-      Apache2LicenseFilePlugin &&
+      GatlingEnvPlugin &&
+      GatlingEnterpriseComponentLicenseFilePlugin &&
       GatlingSonatypePlugin
 
   override def projectSettings: Seq[Def.Setting[_]] = Seq(
-    licenses := Seq("Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0.html")),
-    headerLicense := ApacheV2License
+    licenses := Seq("Gatling Enterprise Component License" -> url("https://gatling.io/docs/gatling/reference/current/project/licenses/enterprise-component")),
+    headerLicense := AllRightsReservedLicense
   )
 }
