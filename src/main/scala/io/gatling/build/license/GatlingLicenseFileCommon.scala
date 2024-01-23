@@ -16,14 +16,24 @@
 
 package io.gatling.build.license
 
+import java.nio.charset.Charset
+
 import sbt._
+import sbt.Keys._
 
-object Apache2LicenseFilePlugin extends AutoPlugin {
-  object autoImport extends GatlingLicenseFileKeys
+private[license] object GatlingLicenseFileCommon {
+  import GatlingLicenseFileKeys._
 
-  import autoImport._
-
-  override def projectSettings: Seq[Def.Setting[_]] = GatlingLicenseFileCommon.projectSettings ++ Seq(
-    Compile / gatlingLicenseFile := "Apache2.license"
+  def projectSettings: Seq[Def.Setting[_]] = Seq(
+    Compile / gatlingLicenseFileTask := {
+      val file = (Compile / resourceManaged).value / "META-INF" / "LICENSE"
+      val license = (Compile / gatlingLicenseFile).value
+      IO.transfer(
+        getClass.getClassLoader.getResourceAsStream(license),
+        file
+      )
+      Seq(file)
+    },
+    Compile / resourceGenerators += (Compile / gatlingLicenseFileTask).taskValue
   )
 }

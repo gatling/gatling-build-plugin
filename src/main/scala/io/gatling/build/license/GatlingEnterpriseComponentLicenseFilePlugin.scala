@@ -18,12 +18,12 @@ package io.gatling.build.license
 
 import sbt._
 
-object Apache2LicenseFilePlugin extends AutoPlugin {
+object GatlingEnterpriseComponentLicenseFilePlugin extends AutoPlugin {
   object autoImport extends GatlingLicenseFileKeys
 
   import autoImport._
 
   override def projectSettings: Seq[Def.Setting[_]] = GatlingLicenseFileCommon.projectSettings ++ Seq(
-    Compile / gatlingLicenseFile := "Apache2.license"
+    Compile / gatlingLicenseFile := "GatlingEnterpriseComponent.license"
   )
 }
