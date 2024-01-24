@@ -46,11 +46,8 @@ object GatlingSonatypePlugin extends AutoPlugin {
 
   import autoImport._
 
-  override def buildSettings: Seq[Def.Setting[_]] = Seq(
-    gatlingPublishToSonatype := ensurePublishableVersion(version.value)
-  )
-
   override def projectSettings: Seq[Def.Setting[_]] = Seq(
+    gatlingPublishToSonatype := ensurePublishableVersion(version.value),
     sonatypeProfileName := "io.gatling",
     publishTo := {
       if (gatlingPublishToSonatype.value) {
