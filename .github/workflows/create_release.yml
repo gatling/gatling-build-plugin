@@ -30,22 +30,11 @@ jobs:
           token: ${{ secrets.GATLING_CI_TOKEN }} # for tag to trigger other workflows (release)
 
       - name: Setup JDK
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
-          java-version: '8'
-
-      - name: Cache SBT
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.m2/repository
-            ~/.ivy2/cache
-            ~/.cache/coursier
-            ~/.sbt/launchers
-            ~/.sbt/boot
-            ~/.sbt/preloaded
-          key: ${{ runner.os }}-sbt-${{ hashFiles('**/build.sbt', '**/plugins.sbt', '**/build.properties') }}
+          java-version: '21'
+          cache: 'sbt'
 
       - name: Next version
         id: tag
