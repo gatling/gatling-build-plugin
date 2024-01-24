@@ -32,6 +32,7 @@ lazy val root = (project in file("."))
       GatlingDeveloper("tpetillot@gatling.io", "Thomas Petillot", true),
       GatlingDeveloper("sbrevet@gatling.io", "Sébastien Brevet", true)
     ),
+    gatlingPublishToSonatype := false,
 // ------------------ //
 // -- DEPENDENCIES -- //
 // ------------------ //
