@@ -5,6 +5,8 @@ on:
     inputs:
       releaseType:
         description: Release type
+        default: patch-milestone
+        type: choice
         options:
           - patch-milestone
           - minor-milestone
