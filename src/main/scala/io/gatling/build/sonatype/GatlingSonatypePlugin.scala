@@ -68,7 +68,11 @@ object GatlingSonatypePlugin extends AutoPlugin {
   )
 
   val conditionalPublishStep: ReleaseStep = { state: State =>
-    if (Project.extract(state).get(gatlingPublishToSonatype)) {
+    val extractedState = Project.extract(state)
+    val publishToSonatype = extractedState.get(gatlingPublishToSonatype)
+    val (_, publishSkip) = extractedState.runTask(publish / skip, state)
+
+    if (publishToSonatype && !publishSkip) {
       publishStep(state)
     } else {
       GatlingReleasePlugin.publishStep(state)
