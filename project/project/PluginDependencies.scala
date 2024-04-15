@@ -15,7 +15,7 @@ object PluginDependencies {
     addSbtPlugin("com.github.sbt"    % "sbt-dynver"   % "5.0.1"),
     libraryDependencies ++= Seq(
       "org.eclipse.jgit"          % "org.eclipse.jgit" % "6.9.0.202403050737-r", // sbt-scalafix
-      "ch.qos.logback"            % "logback-core"     % "1.5.3", // sbt-sonatype
+      "ch.qos.logback"            % "logback-core"     % "1.5.5", // sbt-sonatype
       "com.google.guava"          % "guava"            % "33.1.0-jre", // sbt-sonatype
       "org.apache.httpcomponents" % "httpclient"       % "4.5.14" // sbt-sonatype
     )
