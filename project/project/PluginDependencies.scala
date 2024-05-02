@@ -7,7 +7,7 @@ object PluginDependencies {
     // -- DEPENDENCIES -- //
     // ------------------ //
     addSbtPlugin("org.scalameta"     % "sbt-scalafmt" % "2.5.2"),
-    addSbtPlugin("ch.epfl.scala"     % "sbt-scalafix" % "0.12.0"),
+    addSbtPlugin("ch.epfl.scala"     % "sbt-scalafix" % "0.12.1"),
     addSbtPlugin("com.github.sbt"    % "sbt-release"  % "1.4.0"),
     addSbtPlugin("com.github.sbt"    % "sbt-pgp"      % "2.2.1"),
     addSbtPlugin("de.heikoseeberger" % "sbt-header"   % "5.10.0"),
