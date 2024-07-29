@@ -11,7 +11,7 @@ object PluginDependencies {
     addSbtPlugin("com.github.sbt"    % "sbt-release"  % "1.4.0"),
     addSbtPlugin("com.github.sbt"    % "sbt-pgp"      % "2.2.1"),
     addSbtPlugin("de.heikoseeberger" % "sbt-header"   % "5.10.0"),
-    addSbtPlugin("org.xerial.sbt"    % "sbt-sonatype" % "3.11.0"),
+    addSbtPlugin("org.xerial.sbt"    % "sbt-sonatype" % "3.11.1"),
     addSbtPlugin("com.github.sbt"    % "sbt-dynver"   % "5.0.1"),
     libraryDependencies ++= Seq(
       "org.eclipse.jgit"          % "org.eclipse.jgit" % "6.10.0.202406032230-r", // sbt-scalafix
