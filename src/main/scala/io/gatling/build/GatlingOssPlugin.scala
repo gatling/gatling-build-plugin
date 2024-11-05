@@ -18,6 +18,7 @@ package io.gatling.build
 
 import io.gatling.build.automated.GatlingAutomatedScalafixPlugin
 import io.gatling.build.automated.GatlingAutomatedScalafmtPlugin
+import io.gatling.build.basic.GatlingCompileAllPlugin
 import io.gatling.build.compile.GatlingCompilerSettingsPlugin
 import io.gatling.build.license._
 import io.gatling.build.sonatype.GatlingSonatypePlugin
@@ -35,6 +36,7 @@ object GatlingOssPlugin extends AutoPlugin {
       GatlingAutomatedScalafmtPlugin &&
       GatlingVersioningPlugin &&
       GatlingCompilerSettingsPlugin &&
+      GatlingCompileAllPlugin &&
       AutomateHeaderPlugin &&
       Apache2LicenseFilePlugin &&
       GatlingSonatypePlugin
