@@ -17,7 +17,7 @@
 package io.gatling.build
 
 import io.gatling.build.automated.{ GatlingAutomatedScalafixPlugin, GatlingAutomatedScalafmtPlugin }
-import io.gatling.build.basic.GatlingBasicInfoPlugin
+import io.gatling.build.basic.{ GatlingBasicInfoPlugin, GatlingCompileAllPlugin }
 import io.gatling.build.compile.GatlingCompilerSettingsPlugin
 import io.gatling.build.environment.GatlingEnvPlugin
 import io.gatling.build.license._
@@ -37,6 +37,7 @@ object GatlingCorpPlugin extends AutoPlugin {
       GatlingAutomatedScalafmtPlugin &&
       GatlingVersioningPlugin &&
       GatlingBasicInfoPlugin &&
+      GatlingCompileAllPlugin &&
       GatlingCompilerSettingsPlugin &&
       GatlingPublishPlugin &&
       GatlingReleasePlugin &&
