@@ -46,7 +46,7 @@ object GatlingEnterpriseComponentPlugin extends AutoPlugin {
       GatlingSonatypePlugin
 
   override def projectSettings: Seq[Def.Setting[_]] = Seq(
-    licenses := Seq("Gatling Enterprise Component License" -> url("https://gatling.io/docs/gatling/reference/current/project/licenses/enterprise-component")),
+    licenses := Seq("Gatling Enterprise Component License" -> url("https://docs.gatling.io/project/licenses/enterprise-component/")),
     headerLicense := AllRightsReservedLicense
   )
 }
