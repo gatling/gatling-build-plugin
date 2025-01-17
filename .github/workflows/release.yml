@@ -29,6 +29,9 @@ jobs:
           distribution: 'zulu'
           java-version: '21'
 
+      - name: Setup sbt
+        uses: sbt/setup-sbt@v1
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
