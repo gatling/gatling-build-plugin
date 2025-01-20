@@ -91,7 +91,7 @@ object GatlingSonatypePlugin extends AutoPlugin {
      *  - inject it to the state needed by publishSigned task
      *  - call sonatypeClose command with full state from sonatypeOpen
      */
-    state.log.info(s"Opening sonatype staging")
+    state.log.info("Opening sonatype staging")
     val sonatypeOpenState = releaseStepCommandAndRemaining("sonatypeOpen")(state)
     val sonatypeTargetRepositoryProfileValue = sonatypeOpenState.getSetting(sonatypeTargetRepositoryProfile).get
 
