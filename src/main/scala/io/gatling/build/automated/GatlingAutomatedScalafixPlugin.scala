@@ -21,7 +21,8 @@ import io.gatling.build.config.GatlingBuildConfigPlugin
 import scalafix.sbt.ScalafixPlugin
 import scalafix.sbt.ScalafixPlugin.autoImport._
 
-import sbt.{ Def, _ }
+import sbt._
+import sbt.Keys._
 
 object GatlingAutomatedScalafixPlugin extends AutoPlugin {
   override def requires: Plugins = ScalafixPlugin && GatlingBuildConfigPlugin
@@ -60,6 +61,8 @@ object GatlingAutomatedScalafixPlugin extends AutoPlugin {
         }
       )
 
-  override def buildSettings: Seq[Def.Setting[_]] =
-    ThisBuild / scalafixDependencies += "com.nequissimus" %% "sort-imports" % "0.6.1"
+  override def buildSettings: Seq[Def.Setting[_]] = Seq(
+    semanticdbEnabled := true,
+    semanticdbVersion := scalafixSemanticdb.revision
+  )
 }

@@ -1,4 +1,4 @@
-scalaVersion := "2.13.12"
+scalaVersion := "2.13.16"
 githubPath := "user/repository"
 
 lazy val root = (project in file("."))
