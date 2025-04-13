@@ -16,7 +16,7 @@ object PluginDependencies {
     libraryDependencies ++= Seq(
       "org.eclipse.jgit"          % "org.eclipse.jgit" % "7.2.0.202503040940-r", // sbt-scalafix
       "ch.qos.logback"            % "logback-core"     % "1.5.18", // sbt-sonatype
-      "com.google.guava"          % "guava"            % "33.4.6-jre", // sbt-sonatype
+      "com.google.guava"          % "guava"            % "33.4.7-jre", // sbt-sonatype
       "org.apache.httpcomponents" % "httpclient"       % "4.5.14" // sbt-sonatype
     )
   )
