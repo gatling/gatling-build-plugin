@@ -60,19 +60,3 @@ jobs:
           sbt "release with-defaults"
           echo "version=$(cat target/release-info)" # DO NOT REMOVE, because of bad parsing for outputs
           echo "version=$(cat target/release-info)" >> $GITHUB_OUTPUT
-
-      - name: Publish on CodeArtifact
-        run: |
-          if [[ "${{ steps.release.outputs.version }}" =~ .*-M[0-9]+ ]]; then
-            aws \
-              --region us-east-1 \
-              codeartifact update-package-versions-status \
-              --domain ${{ secrets.AWS_CODEARTIFACT_DOMAIN }} \
-              --domain-owner ${{ secrets.AWS_CODEARTIFACT_OWNER }} \
-              --repository milestones \
-              --format maven \
-              --namespace io.gatling \
-              --package gatling-build-plugin_2.12_1.0 \
-              --versions "${{ steps.release.outputs.version }}" \
-              --target-status Published
-          fi
