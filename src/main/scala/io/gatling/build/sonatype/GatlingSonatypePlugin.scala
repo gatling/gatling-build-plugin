@@ -51,11 +51,12 @@ object GatlingSonatypePlugin extends AutoPlugin {
     sonatypeProfileName := "io.gatling",
     publishTo := {
       if (gatlingPublishToSonatype.value) {
-        sonatypePublishTo.value
+        sonatypePublishToBundle.value
       } else {
         publishTo.value
       }
     },
+    sonatypeCredentialHost := Sonatype.sonatypeCentralHost,
     sonatypeSessionName := s"[sbt-sonatype] ${githubPath.value} ${(ThisBuild / version).value}",
     releasePublishArtifactsAction := {
       if (gatlingPublishToSonatype.value) {
@@ -81,41 +82,17 @@ object GatlingSonatypePlugin extends AutoPlugin {
   }
 
   val publishStep: ReleaseStep = { state: State =>
-    /*
-     * Issues:
-     *  - sbt-sonatype plugin only declares commands (not tasks)
-     *  - sonatypeOpen command calls appendWithoutSession, and release version is reset to its -SNAPSHOT
-     *
-     * Workaround:
-     *  - retrieve sonatypePublishTo settings after applying sonatypeOpen command
-     *  - inject it to the state needed by publishSigned task
-     *  - call sonatypeClose command with full state from sonatypeOpen
-     */
-    state.log.info("Opening sonatype staging")
-    val sonatypeOpenState = releaseStepCommandAndRemaining("sonatypeOpen")(state)
-    val sonatypeTargetRepositoryProfileValue = sonatypeOpenState.getSetting(sonatypeTargetRepositoryProfile).get
-
-    val startStateWithSonatypeConf = reapply(
-      Project.extract(state).currentProject.referenced.flatMap { ref =>
-        ref / sonatypeTargetRepositoryProfile := sonatypeTargetRepositoryProfileValue
-      } ++
-        Seq(
-          sonatypeTargetRepositoryProfile := sonatypeTargetRepositoryProfileValue
-        ),
-      state
-    )
-
     state.log.info("compile, package, sign and publish")
     val endState = {
-      val extracted = Project.extract(startStateWithSonatypeConf)
+      val extracted = Project.extract(state)
       extracted.runAggregated(
         extracted.currentRef / releasePublishArtifactsAction,
-        startStateWithSonatypeConf
+        state
       )
     }
 
-    state.log.info("Closing sonatype staging")
-    Def.unit(releaseStepCommandAndRemaining("sonatypeClose")(sonatypeOpenState))
+    state.log.info("Upload to sonatype")
+    releaseStepCommandAndRemaining("sonatypeCentralUpload")(endState)
     endState
   }
 
