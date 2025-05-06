@@ -51,11 +51,12 @@ object GatlingSonatypePlugin extends AutoPlugin {
     sonatypeProfileName := "io.gatling",
     publishTo := {
       if (gatlingPublishToSonatype.value) {
-        sonatypePublishTo.value
+        sonatypePublishToBundle.value
       } else {
         publishTo.value
       }
     },
+    sonatypeCredentialHost := Sonatype.sonatypeCentralHost,
     sonatypeSessionName := s"[sbt-sonatype] ${githubPath.value} ${(ThisBuild / version).value}",
     releasePublishArtifactsAction := {
       if (gatlingPublishToSonatype.value) {
