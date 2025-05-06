@@ -75,52 +75,26 @@ object GatlingSonatypePlugin extends AutoPlugin {
 
     // publishStep(state) will fail when not actually publishing, hence the additional condition on publishSkip
     if (publishToSonatype && !publishSkip) {
-      val publishedState = GatlingReleasePlugin.publishStep(state)
-      releaseStepCommandAndRemaining("sonatypeCentralUpload")(publishedState)
-      // publishStep(state)
+      publishStep(state)
     } else {
       GatlingReleasePlugin.publishStep(state)
     }
   }
-  /*
+
   val publishStep: ReleaseStep = { state: State =>
-    /*
-   * Issues:
-   *  - sbt-sonatype plugin only declares commands (not tasks)
-   *  - sonatypeOpen command calls appendWithoutSession, and release version is reset to its -SNAPSHOT
-   *
-   * Workaround:
-   *  - retrieve sonatypePublishTo settings after applying sonatypeOpen command
-   *  - inject it to the state needed by publishSigned task
-   *  - call sonatypeClose command with full state from sonatypeOpen
-   */
-    state.log.info("Opening sonatype staging")
-    val sonatypeOpenState = releaseStepCommandAndRemaining("sonatypeOpen")(state)
-    val sonatypeTargetRepositoryProfileValue = sonatypeOpenState.getSetting(sonatypeTargetRepositoryProfile).get
-
-    val startStateWithSonatypeConf = reapply(
-      Project.extract(state).currentProject.referenced.flatMap { ref =>
-        ref / sonatypeTargetRepositoryProfile := sonatypeTargetRepositoryProfileValue
-      } ++
-        Seq(
-          sonatypeTargetRepositoryProfile := sonatypeTargetRepositoryProfileValue
-        ),
-      state
-    )
-
     state.log.info("compile, package, sign and publish")
     val endState = {
-      val extracted = Project.extract(startStateWithSonatypeConf)
+      val extracted = Project.extract(state)
       extracted.runAggregated(
         extracted.currentRef / releasePublishArtifactsAction,
-        startStateWithSonatypeConf
+        state
       )
     }
 
-    state.log.info("Closing sonatype staging")
-    Def.unit(releaseStepCommandAndRemaining("sonatypeClose")(sonatypeOpenState))
+    state.log.info("Upload to sonatype")
+    releaseStepCommandAndRemaining("sonatypeCentralUpload")(endState)
     endState
-  }*/
+  }
 
   def ensurePublishableVersion(str: String): Boolean = str.matches("""\d+\.\d+\.\d+(\.\d+)?(-M\d+)?""")
 }
