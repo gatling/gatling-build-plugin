@@ -75,24 +75,25 @@ object GatlingSonatypePlugin extends AutoPlugin {
 
     // publishStep(state) will fail when not actually publishing, hence the additional condition on publishSkip
     if (publishToSonatype && !publishSkip) {
-      releaseStepCommandAndRemaining("sonatypeCentralUpload")(state)
-      //publishStep(state)
+      val publishedState = GatlingReleasePlugin.publishStep(state)
+      releaseStepCommandAndRemaining("sonatypeCentralUpload")(publishedState)
+      // publishStep(state)
     } else {
       GatlingReleasePlugin.publishStep(state)
     }
   }
-/*
+  /*
   val publishStep: ReleaseStep = { state: State =>
     /*
-     * Issues:
-     *  - sbt-sonatype plugin only declares commands (not tasks)
-     *  - sonatypeOpen command calls appendWithoutSession, and release version is reset to its -SNAPSHOT
-     *
-     * Workaround:
-     *  - retrieve sonatypePublishTo settings after applying sonatypeOpen command
-     *  - inject it to the state needed by publishSigned task
-     *  - call sonatypeClose command with full state from sonatypeOpen
-     */
+   * Issues:
+   *  - sbt-sonatype plugin only declares commands (not tasks)
+   *  - sonatypeOpen command calls appendWithoutSession, and release version is reset to its -SNAPSHOT
+   *
+   * Workaround:
+   *  - retrieve sonatypePublishTo settings after applying sonatypeOpen command
+   *  - inject it to the state needed by publishSigned task
+   *  - call sonatypeClose command with full state from sonatypeOpen
+   */
     state.log.info("Opening sonatype staging")
     val sonatypeOpenState = releaseStepCommandAndRemaining("sonatypeOpen")(state)
     val sonatypeTargetRepositoryProfileValue = sonatypeOpenState.getSetting(sonatypeTargetRepositoryProfile).get
