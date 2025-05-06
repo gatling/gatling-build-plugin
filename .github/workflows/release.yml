@@ -32,12 +32,6 @@ jobs:
       - name: Setup sbt
         uses: sbt/setup-sbt@v1
 
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          role-to-assume: ${{ secrets.AWS_ROLE_PROD_BUILDPLUGIN }}
-          aws-region: us-east-1
-
       - name: Prepare environment
         env:
           PRIVATE_REPOSITORY_SBT: ${{ secrets.PRIVATE_REPOSITORY_SBT }}
@@ -60,19 +54,3 @@ jobs:
           sbt "release with-defaults"
           echo "version=$(cat target/release-info)" # DO NOT REMOVE, because of bad parsing for outputs
           echo "version=$(cat target/release-info)" >> $GITHUB_OUTPUT
-
-      - name: Publish on CodeArtifact
-        run: |
-          if [[ "${{ steps.release.outputs.version }}" =~ .*-M[0-9]+ ]]; then
-            aws \
-              --region us-east-1 \
-              codeartifact update-package-versions-status \
-              --domain ${{ secrets.AWS_CODEARTIFACT_DOMAIN }} \
-              --domain-owner ${{ secrets.AWS_CODEARTIFACT_OWNER }} \
-              --repository milestones \
-              --format maven \
-              --namespace io.gatling \
-              --package gatling-build-plugin_2.12_1.0 \
-              --versions "${{ steps.release.outputs.version }}" \
-              --target-status Published
-          fi
