@@ -75,12 +75,13 @@ object GatlingSonatypePlugin extends AutoPlugin {
 
     // publishStep(state) will fail when not actually publishing, hence the additional condition on publishSkip
     if (publishToSonatype && !publishSkip) {
-      publishStep(state)
+      releaseStepCommandAndRemaining("sonatypeCentralUpload")(state)
+      //publishStep(state)
     } else {
       GatlingReleasePlugin.publishStep(state)
     }
   }
-
+/*
   val publishStep: ReleaseStep = { state: State =>
     /*
      * Issues:
@@ -118,7 +119,7 @@ object GatlingSonatypePlugin extends AutoPlugin {
     state.log.info("Closing sonatype staging")
     Def.unit(releaseStepCommandAndRemaining("sonatypeClose")(sonatypeOpenState))
     endState
-  }
+  }*/
 
   def ensurePublishableVersion(str: String): Boolean = str.matches("""\d+\.\d+\.\d+(\.\d+)?(-M\d+)?""")
 }
