@@ -90,7 +90,7 @@ object GatlingSonatypePlugin extends AutoPlugin {
     }
 
     state.log.info("Upload to sonatype")
-    releaseStepCommandAndRemaining("sonatypeCentralUpload")(endState)
+    releaseStepCommandAndRemaining("sonatypeCentralRelease")(endState)
     endState
   }
 
