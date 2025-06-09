@@ -14,7 +14,7 @@ object PluginDependencies {
     addSbtPlugin("org.xerial.sbt"    % "sbt-sonatype" % "3.12.2"),
     addSbtPlugin("com.github.sbt"    % "sbt-dynver"   % "5.1.0"),
     libraryDependencies ++= Seq(
-      "org.eclipse.jgit"          % "org.eclipse.jgit" % "7.2.1.202505142326-r", // sbt-scalafix
+      "org.eclipse.jgit"          % "org.eclipse.jgit" % "7.3.0.202506031305-r", // sbt-scalafix
       "ch.qos.logback"            % "logback-core"     % "1.5.18", // sbt-sonatype
       "com.google.guava"          % "guava"            % "33.4.8-jre", // sbt-sonatype
       "org.apache.httpcomponents" % "httpclient"       % "4.5.14" // sbt-sonatype
