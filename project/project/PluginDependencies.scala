@@ -12,7 +12,7 @@ object PluginDependencies {
     addSbtPlugin("com.github.sbt"    % "sbt-pgp"      % "2.3.1"),
     addSbtPlugin("de.heikoseeberger" % "sbt-header"   % "5.10.0"),
     addSbtPlugin("org.xerial.sbt"    % "sbt-sonatype" % "3.12.2"),
-    addSbtPlugin("com.github.sbt"    % "sbt-dynver"   % "5.1.0"),
+    addSbtPlugin("com.github.sbt"    % "sbt-dynver"   % "5.1.1"),
     libraryDependencies ++= Seq(
       "org.eclipse.jgit"          % "org.eclipse.jgit" % "7.3.0.202506031305-r", // sbt-scalafix
       "ch.qos.logback"            % "logback-core"     % "1.5.18", // sbt-sonatype
