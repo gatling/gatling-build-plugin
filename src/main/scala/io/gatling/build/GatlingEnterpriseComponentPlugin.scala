@@ -24,8 +24,8 @@ import io.gatling.build.license._
 import io.gatling.build.sonatype.GatlingSonatypePlugin
 import io.gatling.build.versioning.GatlingVersioningPlugin
 
-import de.heikoseeberger.sbtheader.AutomateHeaderPlugin
-import de.heikoseeberger.sbtheader.HeaderPlugin.autoImport.headerLicense
+import sbtheader.AutomateHeaderPlugin
+import sbtheader.HeaderPlugin.autoImport.headerLicense
 
 import sbt._
 import sbt.Keys._

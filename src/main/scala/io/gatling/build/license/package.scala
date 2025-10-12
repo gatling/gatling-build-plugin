@@ -18,7 +18,7 @@ package io.gatling.build
 
 import java.util.Calendar
 
-import de.heikoseeberger.sbtheader._
+import sbtheader._
 
 package object license {
   private def currentYear = Calendar.getInstance.get(Calendar.YEAR)
