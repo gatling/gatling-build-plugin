@@ -16,32 +16,15 @@
 
 package io.gatling.build.publish
 
-import scala.util.Properties.{ envOrNone, propOrNone }
-
 import sbt._
 import sbt.Keys._
 
 object GatlingPublishPlugin extends AutoPlugin {
   override def requires: Plugins = plugins.JvmPlugin
 
-  trait GatlingPublishKeys {
-    val gatlingPublishAddSonatypeResolvers = settingKey[Boolean]("Use Sonatype repositories for CI or during release process")
-  }
-
-  object GatlingPublishKeys extends GatlingPublishKeys
-
-  object autoImport extends GatlingPublishKeys
-
-  import autoImport._
-
   override def projectSettings: Seq[Setting[_]] = Seq(
     publishMavenStyle := true,
-    gatlingPublishAddSonatypeResolvers := false,
     crossPaths := false,
-    resolvers ++= (if (gatlingPublishAddSonatypeResolvers.value) sonatypeRepositories else Seq.empty) :+ Resolver.mavenLocal
+    resolvers += Resolver.mavenLocal
   )
-
-  private def sonatypeRepositories: Seq[Resolver] =
-    envOrNone("CI").map(_ => Opts.resolver.sonatypeOssSnapshots).getOrElse(Seq.empty) ++
-      propOrNone("release").map(_ => Opts.resolver.sonatypeOssReleases).getOrElse(Seq.empty)
 }
