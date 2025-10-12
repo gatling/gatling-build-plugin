@@ -16,8 +16,6 @@
 
 package io.gatling.build.license
 
-import java.nio.charset.Charset
-
 import sbt._
 import sbt.Keys._
 
