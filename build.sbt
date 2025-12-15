@@ -10,7 +10,7 @@ lazy val root = (project in file("."))
     startYear := Some(2011),
     licenses := Seq("Apache-2.0" -> new URI("http://www.apache.org/licenses/LICENSE-2.0.html").toURL),
     sbtPluginPublishLegacyMavenStyle := false,
-    scalaVersion := "2.12.20",
+    scalaVersion := "2.12.21",
     scalacOptions := Seq(
       "-encoding",
       "UTF-8",
