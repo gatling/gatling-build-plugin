@@ -41,7 +41,7 @@ object GatlingOssPlugin extends AutoPlugin {
       GatlingSonatypePlugin
 
   override def projectSettings: Seq[Def.Setting[_]] = Seq(
-    licenses := Seq("Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0.html")),
+    licenses := Seq("Apache-2.0" -> url("https://www.apache.org/licenses/LICENSE-2.0.html")),
     headerLicense := ApacheV2License
   )
 }
