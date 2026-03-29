@@ -37,5 +37,5 @@ lazy val root = (project in file("."))
 // -- DEPENDENCIES -- //
 // ------------------ //
     PluginDependencies.deps,
-    libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.19" % Test
+    libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.20" % Test
   )
