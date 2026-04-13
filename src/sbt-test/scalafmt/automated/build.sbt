@@ -1,5 +1,5 @@
 scalaVersion := "2.13.16"
-ThisBuild / scalafixDependencies += "org.scalameta" % "sbt-scalafmt" % "2.5.6"
+ThisBuild / scalafixDependencies += "org.scalameta" % "sbt-scalafmt" % "2.6.0"
 githubPath := "user/repository"
 
 lazy val root = (project in file("."))
