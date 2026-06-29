@@ -25,7 +25,7 @@ import sbt.nio.file.Glob
 object GatlingEnvPlugin extends AutoPlugin {
   trait GatlingEnvPluginKeys {
     val gatlingEnvFiles = settingKey[Seq[File]]("Environment files to load")
-    val gatlingEnvVars = taskKey[Map[String, String]]("Environment variables loaded from environment files")
+    @transient val gatlingEnvVars = taskKey[Map[String, String]]("Environment variables loaded from environment files")
   }
 
   object autoImport extends GatlingEnvPluginKeys
