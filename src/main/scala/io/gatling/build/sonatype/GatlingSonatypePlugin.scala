@@ -17,16 +17,12 @@
 package io.gatling.build.sonatype
 
 import io.gatling.build.basic.GatlingBasicInfoPlugin
-import io.gatling.build.basic.GatlingBasicInfoPlugin.GatlingBasicInfoKeys._
 import io.gatling.build.publish.GatlingPublishPlugin
 import io.gatling.build.release.GatlingReleasePlugin
 import io.gatling.build.release.GatlingReleasePlugin.GatlingReleaseKeys._
 
 import com.jsuereth.sbtpgp.PgpKeys.publishSigned
 import sbtrelease.ReleasePlugin.autoImport._
-import sbtrelease.ReleaseStateTransformations.reapply
-import xerial.sbt.Sonatype
-import xerial.sbt.Sonatype.SonatypeKeys._
 
 import sbt._
 import sbt.Keys._
@@ -35,11 +31,10 @@ object GatlingSonatypePlugin extends AutoPlugin {
   override def requires: Plugins =
     GatlingBasicInfoPlugin &&
       GatlingReleasePlugin &&
-      GatlingPublishPlugin &&
-      Sonatype
+      GatlingPublishPlugin
 
   trait GatlingSonatypeKeys {
-    val gatlingPublishToSonatype = settingKey[Boolean]("true to publish to sonatype")
+    val gatlingPublishToSonatype = settingKey[Boolean]("true to publish to sonatype central")
   }
   object GatlingSonatypeKeys extends GatlingSonatypeKeys
   object autoImport extends GatlingSonatypeKeys
@@ -48,49 +43,31 @@ object GatlingSonatypePlugin extends AutoPlugin {
 
   override def projectSettings: Seq[Def.Setting[_]] = Seq(
     gatlingPublishToSonatype := ensurePublishableVersion(version.value),
-    sonatypeProfileName := "io.gatling",
     publishTo := {
-      if (gatlingPublishToSonatype.value) {
-        sonatypePublishToBundle.value
-      } else {
-        publishTo.value
-      }
+      if (gatlingPublishToSonatype.value) localStaging.value
+      else publishTo.value
     },
-    sonatypeCredentialHost := Sonatype.sonatypeCentralHost,
-    sonatypeSessionName := s"[sbt-sonatype] ${githubPath.value} ${(ThisBuild / version).value}",
     releasePublishArtifactsAction := {
-      if (gatlingPublishToSonatype.value) {
-        publishSigned.value
-      } else {
-        Keys.publish.value
-      }
+      if (gatlingPublishToSonatype.value) publishSigned.value
+      else Keys.publish.value
     },
     gatlingReleasePublishStep := conditionalPublishStep
   )
 
-  val conditionalPublishStep: ReleaseStep = { state: State =>
+  val conditionalPublishStep: ReleaseStep = { (state: State) =>
     val extractedState = Project.extract(state)
-    val publishToSonatype = extractedState.get(gatlingPublishToSonatype)
-
-    if (publishToSonatype) {
-      publishStep(state)
-    } else {
-      GatlingReleasePlugin.publishStep(state)
-    }
+    if (extractedState.get(gatlingPublishToSonatype)) publishStep(state)
+    else GatlingReleasePlugin.publishStep(state)
   }
 
-  val publishStep: ReleaseStep = { state: State =>
+  val publishStep: ReleaseStep = { (state: State) =>
     state.log.info("compile, package, sign and publish")
     val endState = {
       val extracted = Project.extract(state)
-      extracted.runAggregated(
-        extracted.currentRef / releasePublishArtifactsAction,
-        state
-      )
+      extracted.runAggregated(extracted.currentRef / releasePublishArtifactsAction, state)
     }
-
-    state.log.info("Upload to sonatype")
-    releaseStepCommandAndRemaining("sonatypeCentralRelease")(endState)
+    state.log.info("upload and release to Sonatype Central")
+    releaseStepCommandAndRemaining("sonaRelease")(endState)
     endState
   }
 
