@@ -19,8 +19,6 @@ package io.gatling.build.environment
 import java.io.File
 
 import sbt.{ settingKey, taskKey, AutoPlugin, Def }
-import sbt.nio.Keys.fileInputs
-import sbt.nio.file.Glob
 
 object GatlingEnvPlugin extends AutoPlugin {
   trait GatlingEnvPluginKeys {
@@ -38,9 +36,8 @@ object GatlingEnvPlugin extends AutoPlugin {
   )
 
   override lazy val projectSettings: Seq[Def.Setting[_]] = Seq(
-    gatlingEnvVars / fileInputs ++= gatlingEnvFiles.value.map(Glob.apply),
-    gatlingEnvVars := gatlingEnvVars.inputFiles
-      .map(path => EnvironmentUtils.readEnvFile(path.toFile).fold(throw _, identity))
+    gatlingEnvVars := gatlingEnvFiles.value
+      .map(f => EnvironmentUtils.readEnvFile(f).fold(throw _, identity))
       .foldLeft(Map.empty[String, String])(_ ++ _)
   )
 }
