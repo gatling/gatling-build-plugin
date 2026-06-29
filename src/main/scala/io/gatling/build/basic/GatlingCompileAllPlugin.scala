@@ -33,10 +33,8 @@ object GatlingCompileAllPlugin extends AutoPlugin {
   import autoImport._
 
   override def projectSettings: Seq[Def.Setting[_]] = Seq(
-    compileAll := compile.?.all(
-      ScopeFilter(
-        configurations = inAnyConfiguration
-      )
-    ).value
+    compileAll := {
+      val _ = compile.?.all(ScopeFilter(configurations = inAnyConfiguration)).value
+    }
   )
 }
