@@ -20,6 +20,6 @@ import sbt._
 
 trait GatlingLicenseFileKeys {
   val gatlingLicenseFile = settingKey[String]("Name of the license file copied by gatlingLicenseFileTask")
-  val gatlingLicenseFileTask = taskKey[Seq[File]]("Copy License file to managed resources META-INF/LICENSE")
+  @transient val gatlingLicenseFileTask = taskKey[Seq[File]]("Copy License file to managed resources META-INF/LICENSE")
 }
 object GatlingLicenseFileKeys extends GatlingLicenseFileKeys

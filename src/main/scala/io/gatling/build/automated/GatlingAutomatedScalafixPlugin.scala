@@ -29,7 +29,7 @@ object GatlingAutomatedScalafixPlugin extends AutoPlugin {
 
   trait GatlingAutomatedScalafixKeys {
     val gatlingScalafixConfigFile = settingKey[File]("Location of the scalafix configuration file")
-    val gatlingScalafixWriteTask = taskKey[File]("write scalafix file")
+    @transient val gatlingScalafixWriteTask = taskKey[File]("write scalafix file")
 
     def automateScalafixBeforeCompile(configurations: Configuration*): Seq[Setting[_]] =
       configurations.toSeq.flatMap(

@@ -26,7 +26,7 @@ import sbt._
 object GatlingAutomatedScalafmtPlugin extends AutoPlugin {
   override def requires: Plugins = ScalafmtPlugin && GatlingBuildConfigPlugin
 
-  private val gatlingScalafmtWriteConfigFileTask = TaskKey.local[File]
+  @transient private val gatlingScalafmtWriteConfigFileTask = TaskKey.local[File]
 
   trait GatlingAutomatedScalafmtKeys {
     val gatlingScalafmtConfileFile = settingKey[File]("Location of the configuration file for scalafmt")

@@ -25,7 +25,7 @@ object GatlingCompileAllPlugin extends AutoPlugin {
   override def trigger = allRequirements
 
   trait GatlingCompileAllKeys {
-    val compileAll = taskKey[Unit]("compile all configurations")
+    @transient val compileAll = taskKey[Unit]("compile all configurations")
   }
   object GatlingCompileAllKeys extends GatlingCompileAllKeys
   object autoImport extends GatlingCompileAllKeys
