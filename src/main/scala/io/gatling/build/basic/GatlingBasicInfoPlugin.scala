@@ -65,8 +65,8 @@ object GatlingBasicInfoPlugin extends AutoPlugin {
           <name>{dev.name}</name>
           {
           if (dev.isGatlingCorp) {
-            <organization>Gatling Corp</organization>
-            <organizationUrl>https://gatling.io</organizationUrl>
+            <organization>Gatling Corp</organization> ++
+              <organizationUrl>https://gatling.io</organizationUrl>
           }
         }
         </developer>

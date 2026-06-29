@@ -45,12 +45,12 @@ object GatlingReleasePlugin extends AutoPlugin {
     releaseVersion := identity
   )
 
-  val publishStep: ReleaseStep = ReleaseStep { state: State =>
+  val publishStep: ReleaseStep = ReleaseStep { (state: State) =>
     val extracted = Project.extract(state)
     extracted.runAggregated(extracted.currentRef / releasePublishArtifactsAction, state)
   }
 
-  lazy val writeCurrentVersion: ReleaseStep = { st: State =>
+  lazy val writeCurrentVersion: ReleaseStep = { (st: State) =>
     IO.write(st.extract.get(target) / "release-info", st.extract.get(version))
     st
   }
