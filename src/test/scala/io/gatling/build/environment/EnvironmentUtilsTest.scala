@@ -16,13 +16,14 @@
 
 package io.gatling.build.environment
 
-import java.io.File
+import scala.io.Source
+import scala.util.Using
 
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
 
 class EnvironmentUtilsTest extends AnyFunSpec with Matchers {
-  private val envs = EnvironmentUtils.readEnvFile(new File(getClass.getResource("environment-file").getFile)).get
+  private val envs = Using(Source.fromInputStream(getClass.getResourceAsStream("environment-file")))(source => EnvironmentUtils.readEnv(source.mkString)).get
 
   describe("A gatling environment file") {
     it("should be in VAR=VAL format") {
