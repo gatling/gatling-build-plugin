@@ -37,10 +37,4 @@ jobs:
 
       - name: Test
         run: |
-          sbt \
-            "all clean" \
-            "all headerCheck" \
-            "all scalafmtSbtCheck scalafmtCheckAll" \
-            "all scalafixAll --check" \
-            "test" \
-            "scripted"
+          sbt "clean; headerCheck; scalafmtSbtCheck; scalafmtCheckAll; scalafixAll --check; testFull; scripted"
