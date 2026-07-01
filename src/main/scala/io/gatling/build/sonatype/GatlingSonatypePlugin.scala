@@ -62,10 +62,9 @@ object GatlingSonatypePlugin extends AutoPlugin {
 
   val publishStep: ReleaseStep = { (state: State) =>
     state.log.info("compile, package, sign and publish")
-    val endState = {
-      val extracted = Project.extract(state)
-      extracted.runAggregated(extracted.currentRef / releasePublishArtifactsAction, state)
-    }
+    // releasePublishArtifactsAction must run once per scalaVersion in crossScalaVersions, so it gets
+    // published for both sbt 1.x (Scala 2.12) and sbt 2.x (Scala 3), per pluginCrossBuild / sbtVersion.
+    val endState = releaseStepCommandAndRemaining(s"+${releasePublishArtifactsAction.key.label}")(state)
     state.log.info("upload and release to Sonatype Central")
     releaseStepCommandAndRemaining("sonaRelease")(endState)
     endState
