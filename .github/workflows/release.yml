@@ -40,7 +40,7 @@ jobs:
 
       - name: Prepare environment
         env:
-          PRIVATE_REPOSITORY_SBT: ${{ secrets.PRIVATE_REPOSITORY_SBT }}
+          PRIVATE_REPOSITORY_SBT: ${{ secrets.PRIVATE_REPOSITORY_SBT_2 }}
           SONATYPE_SBT: ${{ secrets.SONATYPE_SBT }}
           SONATYPE_PGP_SECRET: ${{ secrets.SONATYPE_PGP_SECRET }}
         run: |
