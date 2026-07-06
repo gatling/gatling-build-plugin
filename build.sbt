@@ -60,7 +60,7 @@ lazy val root = (project in file("."))
     // In Scala 2.12 it is bundled with the language; in Scala 3 it must be explicit.
     libraryDependencies ++= {
       if (scalaBinaryVersion.value == "3")
-        Seq("org.scala-lang.modules" %% "scala-xml" % "2.3.0" % Provided)
+        Seq("org.scala-lang.modules" %% "scala-xml" % "2.4.0" % Provided)
       else Seq.empty
     }
   )
