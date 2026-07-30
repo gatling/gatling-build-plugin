@@ -25,7 +25,7 @@ object GatlingVersion {
   private[GatlingVersion] lazy val MilestoneFormatterPattern = "'-M'yyyyMMddHHmmss"
   // def as SimpleDateFormat is not Thread safe
   private[GatlingVersion] def milestoneFormatter = DateTimeFormatter.ofPattern(MilestoneFormatterPattern)
-  private[this] val GatlingVersionR = "(\\d+)\\.(\\d+)\\.(\\d+)(\\..*?)?(-.*)?".r
+  private val GatlingVersionR = "(\\d+)\\.(\\d+)\\.(\\d+)(\\..*?)?(-.*)?".r
 
   def apply(str: String): Option[GatlingVersion] =
     str match {

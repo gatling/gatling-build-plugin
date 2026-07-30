@@ -37,4 +37,11 @@ jobs:
 
       - name: Test
         run: |
-          sbt "clean; headerCheck; scalafmtSbtCheck; scalafmtCheckAll; scalafixAll --check; testFull; scripted"
+          sbt "headerCheckAll;" \
+            "scalafmtSbtCheck;" \
+            "scalafmtCheckAll;" \
+            "scalafixAll --check;" \
+            "testFull;" \
+            "+publishLocal;" \
+            "scripted"
+        # +publishLocal is now mandatory because we test (scripted) both sbt 1 and sbt 2 versions
