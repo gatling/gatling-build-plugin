@@ -16,7 +16,7 @@
 
 package io.gatling.build
 
-import io.gatling.build.automated.{ GatlingAutomatedScalafixPlugin, GatlingAutomatedScalafmtPlugin }
+import io.gatling.build.automated.{ GatlingAutomatedJavafmtPlugin, GatlingAutomatedScalafixPlugin, GatlingAutomatedScalafmtPlugin }
 import io.gatling.build.basic.GatlingCompileAllPlugin
 import io.gatling.build.compile.GatlingCompilerSettingsPlugin
 import io.gatling.build.license._
@@ -33,6 +33,7 @@ object GatlingOssPlugin extends AutoPlugin {
   override def requires =
     GatlingAutomatedScalafixPlugin &&
       GatlingAutomatedScalafmtPlugin &&
+      GatlingAutomatedJavafmtPlugin &&
       GatlingVersioningPlugin &&
       GatlingCompilerSettingsPlugin &&
       GatlingCompileAllPlugin &&
