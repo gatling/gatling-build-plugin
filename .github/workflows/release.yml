@@ -35,12 +35,12 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@e6de054238d6b7531b4efff3b6587d9aade6a06c # v6.2.3
         with:
-          role-to-assume: ${{ secrets.AWS_ROLE_PROD_BUILDPLUGIN }}
+          role-to-assume: ${{ vars.AWS_ROLE_PROD_BUILDPLUGIN }}
           aws-region: us-east-1
 
       - name: Prepare environment
         env:
-          PRIVATE_REPOSITORY_SBT: ${{ secrets.PRIVATE_REPOSITORY_SBT_2 }}
+          PRIVATE_REPOSITORY_SBT: ${{ vars.PRIVATE_REPOSITORY_SBT_2 }}
           SONATYPE_SBT: ${{ secrets.SONATYPE_SBT }}
           SONATYPE_PGP_SECRET: ${{ secrets.SONATYPE_PGP_SECRET }}
         run: |
