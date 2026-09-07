@@ -7,7 +7,7 @@ lazy val root = (project in file("."))
     sbtPluginPublishLegacyMavenStyle := false,
     // Scala version for SBT 2 must match what SBT 2 uses internally (3.8.x).
     // Using 3.6.x causes TASTy forward-incompatibility reading SBT's own class files.
-    crossScalaVersions := List("2.12.21", "3.8.4"),
+    crossScalaVersions := List("2.12.21", "3.9.0"),
     scalaVersion := "2.12.21",
     pluginCrossBuild / sbtVersion := {
       scalaBinaryVersion.value match {
