@@ -14,7 +14,7 @@ object PluginDependencies {
     addSbtPlugin("com.github.sbt" % "sbt-header"         % "5.11.0"),
     addSbtPlugin("com.github.sbt" % "sbt-dynver"         % "5.1.1"),
     libraryDependencies ++= Seq(
-      "org.eclipse.jgit" % "org.eclipse.jgit" % "7.7.1.202607240634-r" // sbt-scalafix
+      "org.eclipse.jgit" % "org.eclipse.jgit" % "7.8.0.202609011348-r" // sbt-scalafix
     )
   )
 }
