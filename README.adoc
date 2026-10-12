@@ -1,8 +1,10 @@
 = gatling-build-plugin
 
-image::https://github.com/gatling/gatling-build-plugin/workflows/test/badge.svg?branch=master[branch=master]
+image::https://github.com/gatling/gatling-build-plugin/actions/workflows/build.yml/badge.svg?branch=main[build]
 
 SBT plugins to share common settings across Gatling's projects' builds.
+
+Supports both sbt 1.x and sbt 2.x.
 
 == GatlingOssPlugin
 
@@ -33,25 +35,36 @@ lazy val root = (project in file("."))
 <2> developers and contributors for `pom.xml` developers
 <3> artifact name
 
-.version.sbt
-[source,sbt]
-----
-version := "0.0.1-SNAPSHOT"
-----
+=== Versioning
+
+The version is computed from git tags with link:https://github.com/sbt/sbt-dynver[sbt-dynver] (`v` prefixed tags, e.g. `v1.2.3`), so no `version.sbt` is needed.
 
 === New commands
 
-==== sbt gatling-release <release-type>
+==== sbt "gatlingBumpVersion <bump-type>"
 
-release-type:
+Computes the next version from the current git tag.
+`gatlingWriteBumpVersion <bump-type>` does the same and writes the result in `target/.../gatlingNextVersion`.
 
- - `minor`: only `master`, create a minor branch (`x.y`)
- - `patch`: only on minor branches (`x.y`)
- - `milestone`: on any branch, only a tag and a release on link:./CONTRIBUTORS.adoc#other_maven_repo[configured repository].
+bump-type:
+
+ - `patch`, `minor`, `calver`
+ - `patch-milestone`, `minor-milestone`, `calver-milestone`
+
+=== Releasing
+
+Releases are driven by tags:
+
+ . compute the next version with `gatlingWriteBumpVersion` and push the matching `v<version>` git tag
+ . on tag push, CI runs `sbt "release with-defaults"` to build and publish
 
 == GatlingCorpPlugin
 
 The purpose is internal only.
+
+== GatlingEnterpriseComponentPlugin
+
+For closed source components published under the Gatling Enterprise Component License.
 
 == License
 
