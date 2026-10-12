@@ -25,6 +25,8 @@ object GatlingPublishPlugin extends AutoPlugin {
   override def projectSettings: Seq[Setting[_]] = Seq(
     publishMavenStyle := true,
     crossPaths := false,
-    resolvers += Resolver.mavenLocal
+    resolvers += Resolver.mavenLocal,
+    // Maven Central requires a javadoc jar but its content is useless: publish an empty one and skip doc generation
+    Compile / packageDoc / mappings := Seq.empty
   )
 }
