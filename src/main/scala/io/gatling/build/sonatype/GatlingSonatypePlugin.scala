@@ -35,17 +35,28 @@ object GatlingSonatypePlugin extends AutoPlugin {
 
   trait GatlingSonatypeKeys {
     val gatlingPublishToSonatype = settingKey[Boolean]("true to publish to sonatype central")
+    val gatlingStagingRepositoryUrl = settingKey[Option[String]](
+      "when defined, signed artifacts are published to this staging repository, to be released to sonatype central later on, instead of being released directly"
+    )
   }
   object GatlingSonatypeKeys extends GatlingSonatypeKeys
   object autoImport extends GatlingSonatypeKeys
 
   import autoImport._
 
+  val StagingRepositoryUrlEnvVar = "GATLING_STAGING_REPOSITORY_URL"
+
   override def projectSettings: Seq[Def.Setting[_]] = Seq(
     gatlingPublishToSonatype := ensurePublishableVersion(version.value),
+    gatlingStagingRepositoryUrl := sys.env.get(StagingRepositoryUrlEnvVar).map(_.trim).filter(_.nonEmpty),
     publishTo := {
-      if (gatlingPublishToSonatype.value) localStaging.value
-      else publishTo.value
+      if (gatlingPublishToSonatype.value) {
+        gatlingStagingRepositoryUrl.value match {
+          // credentials are expected to be provided by the environment, eg global sbt settings
+          case Some(url) => Some("staging" at url)
+          case None      => localStaging.value
+        }
+      } else publishTo.value
     },
     releasePublishArtifactsAction := {
       if (gatlingPublishToSonatype.value) publishSigned.value
@@ -65,8 +76,13 @@ object GatlingSonatypePlugin extends AutoPlugin {
     // releasePublishArtifactsAction must run once per scalaVersion in crossScalaVersions, so it gets
     // published for both sbt 1.x (Scala 2.12) and sbt 2.x (Scala 3), per pluginCrossBuild / sbtVersion.
     val endState = releaseStepCommandAndRemaining(s"+${releasePublishArtifactsAction.key.label}")(state)
-    state.log.info("upload and release to Sonatype Central")
-    releaseStepCommandAndRemaining("sonaRelease")(endState)
+    Project.extract(state).get(gatlingStagingRepositoryUrl) match {
+      case Some(url) =>
+        state.log.info(s"published to staging repository $url, to be released to Sonatype Central later on")
+      case None =>
+        state.log.info("upload and release to Sonatype Central")
+        releaseStepCommandAndRemaining("sonaRelease")(endState)
+    }
     endState
   }
 
