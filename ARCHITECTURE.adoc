@@ -30,3 +30,32 @@ For javac options and scalac options.
 
 
 === GatlingReleasePlugin
+
+=== GatlingSonatypePlugin
+
+Required by `GatlingOssPlugin` and `GatlingEnterpriseComponentPlugin` (not by `GatlingCorpPlugin`).
+It decides where a release is published:
+
+[cols="1,1,1,1"]
+|===
+| Condition | `publishTo` | `releasePublishArtifactsAction` | Release publish step
+
+| `gatlingPublishToStaging` is `true`
+| `gatlingStagingRepository`
+| `publishSigned`
+| `+publishSigned`
+
+| `gatlingPublishToSonatype` is `true` (default: version matches `x.y.z[.w][-Mn]` and not staging)
+| `localStaging`
+| `publishSigned`
+| `+publishSigned` then `sonaRelease`
+
+| otherwise
+| inherited `publishTo` (e.g. `Global / publishTo` from the environment)
+| `publish`
+| `GatlingReleasePlugin` default (`publish`, not cross-built)
+|===
+
+`gatlingStagingRepository` is intentionally not defined by the plugin: its location depends on the environment (local, CI, customer CI).
+The environment's global `.sbt` declares a key with the same name and type (`settingKey[Option[Resolver]]("gatlingStagingRepository")`),
+which sbt treats as the same key, and sets `Global / gatlingStagingRepository`.
