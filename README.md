@@ -39,18 +39,6 @@ lazy val root = (project in file("."))
 
 The version is computed from git tags with [sbt-dynver](https://github.com/sbt/sbt-dynver) (`v` prefixed tags, e.g. `v1.2.3`), so no `version.sbt` is needed.
 
-### New commands
-
-#### sbt "gatlingBumpVersion <bump-type>"
-
-Computes the next version from the current git tag.
-`gatlingWriteBumpVersion <bump-type>` does the same and writes the result in `target/.../gatlingNextVersion`.
-
-bump-type:
-
-- `patch`, `minor`, `calver`
-- `patch-milestone`, `minor-milestone`, `calver-milestone`
-
 ### Releasing
 
 Releases are driven by tags:
