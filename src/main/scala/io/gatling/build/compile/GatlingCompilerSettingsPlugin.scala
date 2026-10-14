@@ -39,8 +39,7 @@ object GatlingCompilerSettingsPlugin extends AutoPlugin {
   }
 
   override def projectSettings: Seq[Setting[_]] =
-    Seq(
-      updateOptions := configureUpdateOptions(updateOptions.value),
+    UpdateOptionsHelper.settings ++ Seq(
       javacOptions := Seq("--release", validReleaseOption(gatlingCompilerRelease.value)),
       Compile / doc / javacOptions := Seq("--release", validReleaseOption(gatlingCompilerRelease.value)),
       resolvers := Seq(DefaultMavenRepository),
@@ -56,10 +55,4 @@ object GatlingCompilerSettingsPlugin extends AutoPlugin {
         validReleaseOption(gatlingCompilerRelease.value)
       )
     )
-
-  private def configureUpdateOptions(options: UpdateOptions): UpdateOptions =
-    options
-      .withCachedResolution(true)
-      .withGigahorse(false)
-      .withLatestSnapshots(false)
 }
