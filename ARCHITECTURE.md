@@ -1,32 +1,32 @@
-= gatling-build-plugin architecture
+# gatling-build-plugin architecture
 
 This project is divided in multiple plugins that call each other.
 
-== Main plugins
+## Main plugins
 
 These plugins are meant to be use directly by other projects.
 
-=== GatlingOssPlugin
-=== GatlingCorpPlugin
+### GatlingOssPlugin
 
-== Helper Plugins
+### GatlingCorpPlugin
 
-=== Basic Info
+## Helper Plugins
+
+### Basic Info
 
 `GatlingBasicInfoPlugin` groups all basic information for gatling hierarchy project.
 Mainly to configure common links and names.
 
-=== Formatters
+### Formatters
 
 `GatlingAutomatedScalafixPlugin` and `GatlingAutomatedScalafmtPlugin` configure auto formatters.
 
 As scalafix or scalafmt needs real file (not only strings nor resources), we had to write those files with `GatlingBuildConfigPlugin`.
 
-=== GatlingCompilerSettingsPlugin
+### GatlingCompilerSettingsPlugin
 
 For javac options and scalac options.
 
-=== GatlingPublishPlugin
+### GatlingPublishPlugin
 
-
-=== GatlingReleasePlugin
+### GatlingReleasePlugin
