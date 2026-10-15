@@ -21,6 +21,7 @@ import io.gatling.build.basic.GatlingCompileAllPlugin
 import io.gatling.build.compile.GatlingCompilerSettingsPlugin
 import io.gatling.build.environment.GatlingEnvPlugin
 import io.gatling.build.license._
+import io.gatling.build.publish.GatlingPublishPlugin
 import io.gatling.build.sonatype.GatlingSonatypePlugin
 import io.gatling.build.versioning.GatlingVersioningPlugin
 
@@ -47,6 +48,7 @@ object GatlingEnterpriseComponentPlugin extends AutoPlugin {
 
   override def projectSettings: Seq[Def.Setting[_]] = Seq(
     licenses := Seq(LicenseHelper.enterpriseComponent),
+    GatlingPublishPlugin.gatlingPublicArtifact := true,
     headerLicense := AllRightsReservedLicense
   )
 }

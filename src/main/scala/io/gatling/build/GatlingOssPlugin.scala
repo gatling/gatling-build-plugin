@@ -20,6 +20,7 @@ import io.gatling.build.automated.{ GatlingAutomatedJavafmtPlugin, GatlingAutoma
 import io.gatling.build.basic.GatlingCompileAllPlugin
 import io.gatling.build.compile.GatlingCompilerSettingsPlugin
 import io.gatling.build.license._
+import io.gatling.build.publish.GatlingPublishPlugin
 import io.gatling.build.sonatype.GatlingSonatypePlugin
 import io.gatling.build.versioning.GatlingVersioningPlugin
 
@@ -43,6 +44,7 @@ object GatlingOssPlugin extends AutoPlugin {
 
   override def projectSettings: Seq[Def.Setting[_]] = Seq(
     licenses := Seq(LicenseHelper.apache),
+    GatlingPublishPlugin.gatlingPublicArtifact := true,
     headerLicense := ApacheV2License
   )
 }

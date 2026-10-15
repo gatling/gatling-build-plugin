@@ -54,6 +54,32 @@ The purpose is internal only.
 
 For closed source components published under the Gatling Enterprise Component License.
 
+## Publishing repositories
+
+`publishTo` is computed from the kind of artifact and its version:
+
+| Artifact | Version | Repository |
+|---|---|---|
+| any | snapshot | none: never published |
+| public (`GatlingOssPlugin`, `GatlingEnterpriseComponentPlugin`) | `x.y.z` or `x.y.z.w`, optionally followed by `-M<n>` | `gatlingStagingRepository` |
+| any other | ending with `-M<n>` | `gatlingMilestonesRepository` |
+| any other | any other | `gatlingReleasesRepository` |
+
+These repositories depend on the environment (CI, local machine...), so they all default to `None` and must be provided, typically by a global `.sbt` file (`~/.sbt/1.0/` for sbt 1, `~/.config/sbt/2/` for sbt 2).
+Global `.sbt` files do not see the keys of the build's plugins: redeclare them with the same name and type.
+
+```scala
+val gatlingStagingRepository = settingKey[Option[Resolver]]("")
+val gatlingMilestonesRepository = settingKey[Option[Resolver]]("")
+val gatlingReleasesRepository = settingKey[Option[Resolver]]("")
+
+Global / gatlingStagingRepository := Some("staging" at "https://repository.example.com/maven/staging")
+Global / gatlingMilestonesRepository := Some("milestones" at "https://repository.example.com/maven/milestones")
+Global / gatlingReleasesRepository := Some("releases" at "https://repository.example.com/maven/releases")
+
+credentials += Credentials("realm", "repository.example.com", "user", "password")
+```
+
 ## License
 
 This project is licensed under Apache License version 2, see [LICENSE.txt](./LICENSE.txt).
