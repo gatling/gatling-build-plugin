@@ -22,8 +22,35 @@ import sbt.Keys._
 object GatlingPublishPlugin extends AutoPlugin {
   override def requires: Plugins = plugins.JvmPlugin
 
+  trait GatlingPublishKeys {
+    val gatlingStagingRepository = settingKey[Option[Resolver]]("Repository for public artifacts with a Maven Central compatible version")
+    val gatlingMilestonesRepository = settingKey[Option[Resolver]]("Repository for other milestones (version ending with -M<n>)")
+    val gatlingReleasesRepository = settingKey[Option[Resolver]]("Repository for other releases")
+  }
+  object GatlingPublishKeys extends GatlingPublishKeys
+  object autoImport extends GatlingPublishKeys
+
+  import autoImport._
+
+  // Set to true by the plugins of public artifacts (OSS and Enterprise Component)
+  val gatlingPublicArtifact = settingKey[Boolean]("true for an artifact meant for Maven Central")
+
   // A check must run on every call: never cached by sbt 2
   @transient val gatlingCheckSnapshotDependencies = taskKey[Unit]("Fails if a runtime dependency has a SNAPSHOT or changing version")
+
+  sealed abstract class PublishRoute
+  object PublishRoute {
+    case object Staging extends PublishRoute
+    case object Milestones extends PublishRoute
+    case object Releases extends PublishRoute
+  }
+
+  // Repositories depend on the environment (CI, local, customer): none is defined here
+  override def globalSettings: Seq[Setting[_]] = Seq(
+    gatlingStagingRepository := None,
+    gatlingMilestonesRepository := None,
+    gatlingReleasesRepository := None
+  )
 
   override def projectSettings: Seq[Setting[_]] = Seq(
     publishMavenStyle := true,
@@ -31,6 +58,17 @@ object GatlingPublishPlugin extends AutoPlugin {
     resolvers += Resolver.mavenLocal,
     // Maven Central requires a javadoc jar but its content is useless: publish an empty one and skip doc generation
     Compile / packageDoc / mappings := Seq.empty,
+    gatlingPublicArtifact := false,
+    publishTo := {
+      val staging = gatlingStagingRepository.value
+      val milestones = gatlingMilestonesRepository.value
+      val releases = gatlingReleasesRepository.value
+      route(gatlingPublicArtifact.value, version.value, isSnapshot.value).flatMap {
+        case PublishRoute.Staging    => staging
+        case PublishRoute.Milestones => milestones
+        case PublishRoute.Releases   => releases
+      }
+    },
     gatlingCheckSnapshotDependencies := {
       val snapshots = SnapshotDependenciesCompat.runtimeModuleIds.value.filter(isSnapshotDependency)
       if (snapshots.nonEmpty) {
@@ -38,6 +76,16 @@ object GatlingPublishPlugin extends AutoPlugin {
       }
     }
   )
+
+  private val MavenCentralVersion = """\d+\.\d+\.\d+(\.\d+)?(-M\d+)?""".r
+  private val MilestoneVersion = """.*-M\d+""".r
+
+  // Snapshots are never published
+  def route(publicArtifact: Boolean, version: String, snapshot: Boolean): Option[PublishRoute] =
+    if (snapshot) None
+    else if (publicArtifact && MavenCentralVersion.pattern.matcher(version).matches) Some(PublishRoute.Staging)
+    else if (MilestoneVersion.pattern.matcher(version).matches) Some(PublishRoute.Milestones)
+    else Some(PublishRoute.Releases)
 
   // Same rule as sbt-release's releaseSnapshotDependencies
   private def isSnapshotDependency(module: ModuleID): Boolean =
