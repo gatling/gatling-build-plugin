@@ -22,11 +22,24 @@ import sbt.Keys._
 object GatlingPublishPlugin extends AutoPlugin {
   override def requires: Plugins = plugins.JvmPlugin
 
+  // A check must run on every call: never cached by sbt 2
+  @transient val gatlingCheckSnapshotDependencies = taskKey[Unit]("Fails if a runtime dependency has a SNAPSHOT or changing version")
+
   override def projectSettings: Seq[Setting[_]] = Seq(
     publishMavenStyle := true,
     crossPaths := false,
     resolvers += Resolver.mavenLocal,
     // Maven Central requires a javadoc jar but its content is useless: publish an empty one and skip doc generation
-    Compile / packageDoc / mappings := Seq.empty
+    Compile / packageDoc / mappings := Seq.empty,
+    gatlingCheckSnapshotDependencies := {
+      val snapshots = SnapshotDependenciesCompat.runtimeModuleIds.value.filter(isSnapshotDependency)
+      if (snapshots.nonEmpty) {
+        sys.error(s"Snapshot dependencies detected in ${thisProject.value.id}:\n${snapshots.mkString("\n")}")
+      }
+    }
   )
+
+  // Same rule as sbt-release's releaseSnapshotDependencies
+  private def isSnapshotDependency(module: ModuleID): Boolean =
+    module.isChanging || module.revision.endsWith("-SNAPSHOT")
 }
