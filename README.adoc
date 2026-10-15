@@ -58,6 +58,12 @@ Releases are driven by tags:
  . compute the next version with `gatlingWriteBumpVersion` and push the matching `v<version>` git tag
  . on tag push, CI runs `sbt "release with-defaults"` to build and publish
 
+By default, release versions are signed and released to Sonatype Central directly.
+If the `GATLING_STAGING_REPOSITORY_URL` environment variable is defined, they are signed and published to this staging repository instead, to be released to Sonatype Central later on.
+Credentials for this repository must be provided by the environment, eg global sbt settings.
+
+Generated poms never contain `<repositories>`, so environment specific resolvers can't leak into published artifacts.
+
 == GatlingCorpPlugin
 
 The purpose is internal only.

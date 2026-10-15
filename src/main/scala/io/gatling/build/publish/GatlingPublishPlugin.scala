@@ -27,6 +27,8 @@ object GatlingPublishPlugin extends AutoPlugin {
     crossPaths := false,
     resolvers += Resolver.mavenLocal,
     // Maven Central requires a javadoc jar but its content is useless: publish an empty one and skip doc generation
-    Compile / packageDoc / mappings := Seq.empty
+    Compile / packageDoc / mappings := Seq.empty,
+    // resolvers are environment specific (eg private repositories) and must never leak into published poms
+    pomIncludeRepository := { _ => false }
   )
 }
