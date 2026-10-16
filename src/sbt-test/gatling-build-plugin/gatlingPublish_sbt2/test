@@ -1,0 +1,27 @@
+# The version comes from git tags, read when the build is loaded
+$ exec git init
+$ exec git add build.sbt marker.txt
+$ exec git -c user.name=Test -c user.email=test@example.com -c commit.gpgsign=false commit -m initial
+> reload
+
+# HEAD is not a release tag: nothing is published
+> gatlingPublish
+$ absent repo
+
+# Modified working tree: fails and nothing is published, except for a project never published
+$ exec git tag v1.2.3
+$ copy-file changes/marker.txt marker.txt
+> reload
+-> gatlingPublish
+$ absent repo
+> skipped/gatlingPublish
+
+# Clean release tag: published with maven-metadata.xml, unsigned as an internal artifact
+$ exec git checkout -- marker.txt
+> reload
+> gatlingPublish
+$ exists repo/io/gatling/publish-corp/1.2.3/publish-corp-1.2.3.jar
+$ exists repo/io/gatling/publish-corp/1.2.3/publish-corp-1.2.3.pom
+$ exists repo/io/gatling/publish-corp/maven-metadata.xml
+$ absent repo/io/gatling/publish-corp/1.2.3/publish-corp-1.2.3.jar.asc
+$ absent repo/io/gatling/skipped
