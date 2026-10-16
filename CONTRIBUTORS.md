@@ -1,14 +1,14 @@
-= gatling-build-plugin tips and tricks
+# gatling-build-plugin tips and tricks
 
-[#other_maven_repo]
-== Using another maven repository
+<a id="other_maven_repo"></a>
+## Using another maven repository
 
-.~/.sbt/1.0/otherRepository.sbt
-[source,sbt]
-----
+`~/.sbt/1.0/otherRepository.sbt`:
+
+```scala
 val otherRepo = "Repo name" at "https://other.repo.example.com"
 
-Global / publishTo := Some(otherRepo) // <1>
+Global / publishTo := Some(otherRepo) // (1)
 
 credentials += Credentials(
   "Repo realm",
@@ -18,43 +18,44 @@ credentials += Credentials(
 )
 
 resolvers += otherRepo
-----
+```
 
-<1> Do not forget to put `Global /` otherwise you won't be able to push to Sonatype in case of `GatlingOssPlugin` usage.
+1. Do not forget to put `Global /` otherwise you won't be able to push to Sonatype in case of `GatlingOssPlugin` usage.
 
 As this file lie in your global SBT configuration, there is no mean to commit it by mistake.
 
-== PGP configuration
+## PGP configuration
 
-.~/.sbt/1.0/plugins/gpg.sbt
-[source, sbt]
-----
+`~/.sbt/1.0/plugins/gpg.sbt`:
+
+```scala
 addSbtPlugin("com.jsuereth" % "sbt-pgp" % "2.0.2")
-----
+```
 
-.~/.sbt/1.0/gpg.sbt
-----
+`~/.sbt/1.0/gpg.sbt`:
+
+```scala
 credentials += Credentials(
-  "GPG sign key", // <1>
-  "pgp", // <2>
-  "5470DFCDA4CB06EE1890118B28BE55DFA0E95B3D", // <3>
-  "ignored" // <4>
+  "GPG sign key", // (1)
+  "pgp", // (2)
+  "5470DFCDA4CB06EE1890118B28BE55DFA0E95B3D", // (3)
+  "ignored" // (4)
 )
 
 useGpgPinentry := true
 useGpgAgent := false
-----
+```
 
-<1> Must be unique
-<2> Must be `pgp`
-<3> The key id to use
-<4> The passphrase will lie in `PGP_PASSPHRASE` environment variable.
+1. Must be unique
+2. Must be `pgp`
+3. The key id to use
+4. The passphrase will lie in `PGP_PASSPHRASE` environment variable.
 
-For more information, see link:https://github.com/sbt/sbt-pgp[sbt-pgp].
+For more information, see [sbt-pgp](https://github.com/sbt/sbt-pgp).
 
-== IntelliJ IDEA configuration
+## IntelliJ IDEA configuration
 
-=== sbt-test
+### sbt-test
 
 IntelliJ doesn't derive sbt-test projects as SBT projects.
 Add each module as a project:
