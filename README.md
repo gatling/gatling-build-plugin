@@ -39,23 +39,11 @@ lazy val root = (project in file("."))
 
 The version is computed from git tags with [sbt-dynver](https://github.com/sbt/sbt-dynver) (`v` prefixed tags, e.g. `v1.2.3`), so no `version.sbt` is needed.
 
-### New commands
-
-#### sbt "gatlingBumpVersion <bump-type>"
-
-Computes the next version from the current git tag.
-`gatlingWriteBumpVersion <bump-type>` does the same and writes the result in `target/.../gatlingNextVersion`.
-
-bump-type:
-
-- `patch`, `minor`, `calver`
-- `patch-milestone`, `minor-milestone`, `calver-milestone`
-
 ### Releasing
 
 Releases are driven by tags:
 
-1. compute the next version with `gatlingWriteBumpVersion` and push the matching `v<version>` git tag
+1. the "Create release" workflow computes the next version with [version-bump](https://github.com/gatling/internal-actions/tree/main/version-bump) and pushes the matching `v<version>` git tag
 2. on tag push, CI runs `sbt "release with-defaults"` to build and publish
 
 ## GatlingCorpPlugin
