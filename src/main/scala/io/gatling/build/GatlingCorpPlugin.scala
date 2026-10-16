@@ -47,5 +47,5 @@ object GatlingCorpPlugin extends AutoPlugin {
   override def projectSettings: Seq[Def.Setting[_]] = Seq(
     headerLicense := AllRightsReservedLicense,
     releasePublishArtifactsAction := Keys.publish.value
-  )
+  ) ++ GatlingPublishPlugin.unsignedAetherArtifact
 }
