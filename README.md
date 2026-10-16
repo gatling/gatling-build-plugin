@@ -83,6 +83,17 @@ Global / gatlingReleasesRepository := Some("releases" at "https://repository.exa
 credentials += Credentials("realm", "repository.example.com", "user", "password")
 ```
 
+## Publishing a release
+
+`gatlingPublish` publishes the version of the current git tag, and is meant to run in CI on tag push:
+
+1. projects with `publish / skip := true` or `Compile / publishArtifact := false` publish nothing, whatever the git state
+2. a modified working tree (tracked files) fails, and nothing is published
+3. if HEAD is not a release tag, nothing is published
+4. otherwise, it fails if the repository is not defined or on snapshot dependencies, then runs `publishSigned` for public artifacts or `publish` for internal ones
+
+Projects without these plugins, such as aggregators, publish nothing.
+
 ## License
 
 This project is licensed under Apache License version 2, see [LICENSE.txt](./LICENSE.txt).

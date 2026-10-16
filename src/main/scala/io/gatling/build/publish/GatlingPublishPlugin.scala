@@ -17,6 +17,8 @@
 package io.gatling.build.publish
 
 import aether.{ AetherKeys, AetherPlugin, SignedAetherPlugin }
+import com.jsuereth.sbtpgp.PgpKeys.publishSigned
+import sbtdynver.DynVerPlugin.autoImport.dynverGitDescribeOutput
 
 import sbt._
 import sbt.Keys._
@@ -29,6 +31,9 @@ object GatlingPublishPlugin extends AutoPlugin {
     val gatlingStagingRepository = settingKey[Option[Resolver]]("Repository for public artifacts with a Maven Central compatible version")
     val gatlingMilestonesRepository = settingKey[Option[Resolver]]("Repository for other milestones (version ending with -M<n>)")
     val gatlingReleasesRepository = settingKey[Option[Resolver]]("Repository for other releases")
+
+    // Publishing must run on every call: never cached by sbt 2
+    @transient val gatlingPublish = taskKey[Unit]("Publishes the artifacts if HEAD is a release tag")
   }
   object GatlingPublishKeys extends GatlingPublishKeys
   object autoImport extends GatlingPublishKeys
@@ -50,6 +55,8 @@ object GatlingPublishPlugin extends AutoPlugin {
 
   // Repositories depend on the environment (CI, local, customer): none is defined here
   override def globalSettings: Seq[Setting[_]] = Seq(
+    // Projects without this plugin, such as aggregators, publish nothing
+    gatlingPublish := {},
     gatlingStagingRepository := None,
     gatlingMilestonesRepository := None,
     gatlingReleasesRepository := None
@@ -77,7 +84,38 @@ object GatlingPublishPlugin extends AutoPlugin {
       if (snapshots.nonEmpty) {
         sys.error(s"Snapshot dependencies detected in ${thisProject.value.id}:\n${snapshots.mkString("\n")}")
       }
-    }
+    },
+    gatlingPublish := Def.taskDyn {
+      // Every .value is evaluated before the body, whatever the branch
+      val log = streams.value.log
+      val git = dynverGitDescribeOutput.value
+      val module = s"${thisProject.value.id} ${version.value}"
+      val skipped = (publish / skip).value || !(Compile / publishArtifact).value
+      val repository = publishTo.value
+      val publicArtifact = gatlingPublicArtifact.value
+      val repositoryKey = route(publicArtifact, version.value, isSnapshot.value) match {
+        case Some(PublishRoute.Staging)    => gatlingStagingRepository.key.label
+        case Some(PublishRoute.Milestones) => gatlingMilestonesRepository.key.label
+        case _                             => gatlingReleasesRepository.key.label
+      }
+
+      // A project never meant to be published is not concerned by the git state
+      if (skipped) {
+        Def.task(())
+      } else if (git.exists(_.isDirty())) {
+        sys.error(s"Modified working tree: $module is not published")
+      } else if (!git.exists(_.isCleanAfterTag)) {
+        log.info(s"HEAD is not a release tag: $module is not published")
+        Def.task(())
+      } else if (repository.isEmpty) {
+        sys.error(s"No repository to publish $module: define $repositoryKey")
+      } else {
+        Def.taskDyn {
+          gatlingCheckSnapshotDependencies.value
+          if (publicArtifact) publishSigned else publish
+        }
+      }
+    }.value
   ) ++
     // Publish with Maven's deployer, which uploads maven-metadata.xml unlike sbt's
     AetherPlugin.autoImport.overridePublishSettings ++
