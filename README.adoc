@@ -58,6 +58,30 @@ Releases are driven by tags:
  . compute the next version with `gatlingWriteBumpVersion` and push the matching `v<version>` git tag
  . on tag push, CI runs `sbt "release with-defaults"` to build and publish
 
+=== Publishing to a staging repository
+
+By default, releases are published to Sonatype Central.
+To publish them (signed, for every `crossScalaVersions`) to a staging repository instead:
+
+[source,shell]
+----
+sbt 'set every gatlingPublishToStaging := true ; release with-defaults'
+# or, publish only
+sbt 'set every gatlingPublishToStaging := true ; +publishSigned'
+----
+
+The staging repository is not defined by this plugin, it must be provided by the environment, e.g. in a global `.sbt` file (`~/.config/sbt/2/`):
+
+[source,sbt]
+----
+// Same name and type as the key declared by gatling-build-plugin
+val gatlingStagingRepository = settingKey[Option[Resolver]]("Repository used when gatlingPublishToStaging is true")
+
+Global / gatlingStagingRepository := Some("My staging" at "https://my-repository/maven/staging")
+
+credentials += Credentials("<realm>", "my-repository", "<user>", "<password>")
+----
+
 == GatlingCorpPlugin
 
 The purpose is internal only.

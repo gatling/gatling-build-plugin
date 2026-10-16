@@ -35,20 +35,37 @@ object GatlingSonatypePlugin extends AutoPlugin {
 
   trait GatlingSonatypeKeys {
     val gatlingPublishToSonatype = settingKey[Boolean]("true to publish to sonatype central")
+    val gatlingPublishToStaging = settingKey[Boolean]("true to publish to gatlingStagingRepository instead of sonatype")
+    val gatlingStagingRepository = settingKey[Option[Resolver]]("Repository used when gatlingPublishToStaging is true")
   }
   object GatlingSonatypeKeys extends GatlingSonatypeKeys
   object autoImport extends GatlingSonatypeKeys
 
   import autoImport._
 
+  override def globalSettings: Seq[Def.Setting[_]] = Seq(
+    gatlingPublishToStaging := false
+  )
+
   override def projectSettings: Seq[Def.Setting[_]] = Seq(
-    gatlingPublishToSonatype := ensurePublishableVersion(version.value),
+    pomIncludeRepository := { _ => false },
+    gatlingPublishToSonatype := !gatlingPublishToStaging.value && ensurePublishableVersion(version.value),
     publishTo := {
-      if (gatlingPublishToSonatype.value) localStaging.value
-      else publishTo.value
+      // publishTo is a task in sbt 2: its lookup is always evaluated, so make it explicit outside the `if`
+      val inheritedPublishTo = publishTo.value
+      if (gatlingPublishToStaging.value) {
+        Some(
+          gatlingStagingRepository.?.value.flatten
+            .getOrElse(sys.error("gatlingPublishToStaging is true but gatlingStagingRepository is not defined"))
+        )
+      } else if (gatlingPublishToSonatype.value) {
+        localStaging.value
+      } else {
+        inheritedPublishTo
+      }
     },
     releasePublishArtifactsAction := {
-      if (gatlingPublishToSonatype.value) publishSigned.value
+      if (gatlingPublishToSonatype.value || gatlingPublishToStaging.value) publishSigned.value
       else Keys.publish.value
     },
     gatlingReleasePublishStep := conditionalPublishStep
@@ -56,15 +73,20 @@ object GatlingSonatypePlugin extends AutoPlugin {
 
   val conditionalPublishStep: ReleaseStep = { (state: State) =>
     val extractedState = Project.extract(state)
-    if (extractedState.get(gatlingPublishToSonatype)) publishStep(state)
+    if (extractedState.get(gatlingPublishToStaging)) crossPublishSignedStep(state)
+    else if (extractedState.get(gatlingPublishToSonatype)) publishStep(state)
     else GatlingReleasePlugin.publishStep(state)
   }
 
-  val publishStep: ReleaseStep = { (state: State) =>
+  val crossPublishSignedStep: ReleaseStep = { (state: State) =>
     state.log.info("compile, package, sign and publish")
     // releasePublishArtifactsAction must run once per scalaVersion in crossScalaVersions, so it gets
     // published for both sbt 1.x (Scala 2.12) and sbt 2.x (Scala 3), per pluginCrossBuild / sbtVersion.
-    val endState = releaseStepCommandAndRemaining(s"+${releasePublishArtifactsAction.key.label}")(state)
+    releaseStepCommandAndRemaining(s"+${releasePublishArtifactsAction.key.label}")(state)
+  }
+
+  val publishStep: ReleaseStep = { (state: State) =>
+    val endState = crossPublishSignedStep(state)
     state.log.info("upload and release to Sonatype Central")
     releaseStepCommandAndRemaining("sonaRelease")(endState)
     endState
