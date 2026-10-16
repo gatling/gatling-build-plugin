@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-package io.gatling.build.versioning
+package io.gatling.build.publish
 
-import java.time.{ Clock, Instant, ZoneId }
+import sbt._
+import sbt.Keys._
 
-trait FixedClock {
-  // 20210401041810 - 2021-04-01 04:18:10
-  implicit val clock: Clock = Clock.fixed(Instant.ofEpochSecond(1617250690L), ZoneId.of("UTC"))
-  val YYYY = 2021
-  val WW = 13
-  val YYYYMMDDHHMMSS = "20210401041810"
-  val FIXED_FORMATTED_BEFORE_TIME = "20210315062255"
+object SnapshotDependenciesCompat {
+  val runtimeModuleIds: Def.Initialize[Task[Seq[ModuleID]]] = Def.task(
+    (Runtime / managedClasspath).value.flatMap(_.get(moduleID.key))
+  )
 }

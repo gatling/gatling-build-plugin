@@ -22,12 +22,10 @@ import io.gatling.build.compile.GatlingCompilerSettingsPlugin
 import io.gatling.build.environment.GatlingEnvPlugin
 import io.gatling.build.license._
 import io.gatling.build.publish.GatlingPublishPlugin
-import io.gatling.build.release.GatlingReleasePlugin
 import io.gatling.build.versioning.GatlingVersioningPlugin
 
 import sbtheader.AutomateHeaderPlugin
 import sbtheader.HeaderPlugin.autoImport.headerLicense
-import sbtrelease.ReleasePlugin.autoImport.releasePublishArtifactsAction
 
 import sbt._
 
@@ -40,12 +38,10 @@ object GatlingCorpPlugin extends AutoPlugin {
       GatlingCompileAllPlugin &&
       GatlingCompilerSettingsPlugin &&
       GatlingPublishPlugin &&
-      GatlingReleasePlugin &&
       AutomateHeaderPlugin &&
       GatlingEnvPlugin
 
   override def projectSettings: Seq[Def.Setting[_]] = Seq(
-    headerLicense := AllRightsReservedLicense,
-    releasePublishArtifactsAction := Keys.publish.value
-  )
+    headerLicense := AllRightsReservedLicense
+  ) ++ GatlingPublishPlugin.unsignedAetherArtifact
 }

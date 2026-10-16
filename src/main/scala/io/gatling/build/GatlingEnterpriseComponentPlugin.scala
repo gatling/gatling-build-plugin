@@ -17,11 +17,11 @@
 package io.gatling.build
 
 import io.gatling.build.automated.{ GatlingAutomatedScalafixPlugin, GatlingAutomatedScalafmtPlugin }
-import io.gatling.build.basic.GatlingCompileAllPlugin
+import io.gatling.build.basic.{ GatlingBasicInfoPlugin, GatlingCompileAllPlugin }
 import io.gatling.build.compile.GatlingCompilerSettingsPlugin
 import io.gatling.build.environment.GatlingEnvPlugin
 import io.gatling.build.license._
-import io.gatling.build.sonatype.GatlingSonatypePlugin
+import io.gatling.build.publish.GatlingPublishPlugin
 import io.gatling.build.versioning.GatlingVersioningPlugin
 
 import sbtheader.AutomateHeaderPlugin
@@ -43,10 +43,12 @@ object GatlingEnterpriseComponentPlugin extends AutoPlugin {
       AutomateHeaderPlugin &&
       GatlingEnvPlugin &&
       GatlingEnterpriseComponentLicenseFilePlugin &&
-      GatlingSonatypePlugin
+      GatlingBasicInfoPlugin &&
+      GatlingPublishPlugin
 
   override def projectSettings: Seq[Def.Setting[_]] = Seq(
     licenses := Seq(LicenseHelper.enterpriseComponent),
+    GatlingPublishPlugin.gatlingPublicArtifact := true,
     headerLicense := AllRightsReservedLicense
   )
 }
