@@ -28,5 +28,3 @@ As scalafix or scalafmt needs real file (not only strings nor resources), we had
 For javac options and scalac options.
 
 ### GatlingPublishPlugin
-
-### GatlingReleasePlugin
