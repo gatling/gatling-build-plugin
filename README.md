@@ -56,6 +56,9 @@ For closed source components published under the Gatling Enterprise Component Li
 
 ## Publishing repositories
 
+`publish` and `publishSigned` deploy with [sbt-aether-deploy](https://github.com/arktekk/sbt-aether-deploy), which also uploads `maven-metadata.xml`, as Maven does.
+Public artifacts are signed, internal ones (`GatlingCorpPlugin`) are not.
+
 `publishTo` is computed from the kind of artifact and its version:
 
 | Artifact | Version | Repository |

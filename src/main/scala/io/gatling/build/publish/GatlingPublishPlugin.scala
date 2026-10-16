@@ -16,11 +16,14 @@
 
 package io.gatling.build.publish
 
+import aether.{ AetherKeys, AetherPlugin, SignedAetherPlugin }
+
 import sbt._
 import sbt.Keys._
 
 object GatlingPublishPlugin extends AutoPlugin {
-  override def requires: Plugins = plugins.JvmPlugin
+  // SignedAetherPlugin is triggered in every project: requiring it makes these settings override its own
+  override def requires: Plugins = plugins.JvmPlugin && SignedAetherPlugin
 
   trait GatlingPublishKeys {
     val gatlingStagingRepository = settingKey[Option[Resolver]]("Repository for public artifacts with a Maven Central compatible version")
@@ -75,7 +78,14 @@ object GatlingPublishPlugin extends AutoPlugin {
         sys.error(s"Snapshot dependencies detected in ${thisProject.value.id}:\n${snapshots.mkString("\n")}")
       }
     }
-  )
+  ) ++
+    // Publish with Maven's deployer, which uploads maven-metadata.xml unlike sbt's
+    AetherPlugin.autoImport.overridePublishSettings ++
+    SignedAetherPlugin.autoImport.overridePublishSignedSettings
+
+  // SignedAetherPlugin signs the deployed artifacts: restore AetherPlugin's unsigned definition
+  val unsignedAetherArtifact: Seq[Setting[_]] =
+    AetherPlugin.projectSettings.filter(_.key.key == AetherKeys.aetherArtifact.key)
 
   private val MavenCentralVersion = """\d+\.\d+\.\d+(\.\d+)?(-M\d+)?""".r
   private val MilestoneVersion = """.*-M\d+""".r
