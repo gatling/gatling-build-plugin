@@ -3,26 +3,9 @@
 <a id="other_maven_repo"></a>
 ## Using another maven repository
 
-`~/.sbt/1.0/otherRepository.sbt`:
+`publishTo` is computed by the plugins: define the repositories instead, in a global `.sbt` file, see [Publishing repositories](./README.md#publishing-repositories).
 
-```scala
-val otherRepo = "Repo name" at "https://other.repo.example.com"
-
-Global / publishTo := Some(otherRepo) // (1)
-
-credentials += Credentials(
-  "Repo realm",
-  "other.repo.example.com",
-  "user",
-  "password"
-)
-
-resolvers += otherRepo
-```
-
-1. Do not forget to put `Global /` otherwise you won't be able to push to Sonatype in case of `GatlingOssPlugin` usage.
-
-As this file lie in your global SBT configuration, there is no mean to commit it by mistake.
+As this file lies in your global SBT configuration, there is no means to commit it by mistake.
 
 ## PGP configuration
 

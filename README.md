@@ -44,7 +44,7 @@ The version is computed from git tags with [sbt-dynver](https://github.com/sbt/s
 Releases are driven by tags:
 
 1. the "Create release" workflow computes the next version with [version-bump](https://github.com/gatling/internal-actions/tree/main/version-bump) and pushes the matching `v<version>` git tag
-2. on tag push, CI runs `sbt "release with-defaults"` to build and publish
+2. on tag push, CI runs `sbt "test; gatlingPublish"` (`+gatlingPublish` for a cross-built project), see [Publishing a release](#publishing-a-release)
 
 ## GatlingCorpPlugin
 
