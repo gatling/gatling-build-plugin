@@ -35,17 +35,16 @@ object GatlingBuildConfigPlugin extends AutoPlugin {
      * don't reload it on every run. The write goes through a temporary file and an atomic move, as projects of the same build write the same file concurrently.
      */
     def writeResourceOnConfigDirectoryFile(path: String, to: File): File = {
-      val resourceInputStream = getClass.getResourceAsStream(path)
-      val content =
-        try IO.readBytes(resourceInputStream)
-        finally resourceInputStream.close()
+      val content = io.Using.urlInputStream(getClass.getResource(path))(IO.readBytes)
       if (!to.isFile || !java.util.Arrays.equals(IO.readBytes(to), content)) {
         IO.createDirectory(to.getParentFile)
         val tmp = Files.createTempFile(to.getParentFile.toPath, to.getName, ".tmp")
         try {
           Files.write(tmp, content)
           Files.move(tmp, to.toPath, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE)
-        } finally Files.deleteIfExists(tmp)
+        } finally {
+          Files.deleteIfExists(tmp)
+        }
       }
       to
     }
