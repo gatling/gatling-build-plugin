@@ -66,6 +66,9 @@ object GatlingPublishPlugin extends AutoPlugin {
     publishMavenStyle := true,
     crossPaths := false,
     resolvers += Resolver.mavenLocal,
+    // Never leak the resolvers in the published POMs, such as private repositories defined in a global .sbt file:
+    // consumers resolve from their own repositories, and Maven Central only accepts dependencies it hosts
+    pomIncludeRepository := (_ => false),
     // Maven Central requires a javadoc jar but its content is useless: publish an empty one and skip doc generation
     Compile / packageDoc / mappings := Seq.empty,
     gatlingPublicArtifact := false,

@@ -7,7 +7,9 @@ ThisBuild / gatlingReleasesRepository := Some("local" at ((ThisBuild / baseDirec
 lazy val root = rootProject
   .enablePlugins(GatlingCorpPlugin)
   .settings(
-    name := "publish-corp"
+    name := "publish-corp",
+    // Like the private repositories defined in a global .sbt file: must not end up in the published POM
+    resolvers += "Private Repository" at "https://private.example.com/maven/releases"
   )
 
 lazy val skipped = project

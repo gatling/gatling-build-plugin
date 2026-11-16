@@ -22,6 +22,8 @@ $ exec git checkout -- marker.txt
 > gatlingPublish
 $ exists repo/io/gatling/publish-corp/1.2.3/publish-corp-1.2.3.jar
 $ exists repo/io/gatling/publish-corp/1.2.3/publish-corp-1.2.3.pom
+-$ exec grep -q private.example.com repo/io/gatling/publish-corp/1.2.3/publish-corp-1.2.3.pom
+-$ exec grep -q repositories repo/io/gatling/publish-corp/1.2.3/publish-corp-1.2.3.pom
 $ exists repo/io/gatling/publish-corp/maven-metadata.xml
 $ absent repo/io/gatling/publish-corp/1.2.3/publish-corp-1.2.3.jar.asc
 $ absent repo/io/gatling/skipped
