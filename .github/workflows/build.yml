@@ -43,5 +43,6 @@ jobs:
             "scalafixAll --check;" \
             "testFull;" \
             "+publishLocal;" \
-            "scripted"
-        # +publishLocal is now mandatory because we test (scripted) both sbt 1 and sbt 2 versions
+            "+scripted"
+        # +publishLocal and +scripted are mandatory because we test (scripted) both sbt 1 and sbt 2 versions:
+        # each Scala version only runs the scripted tests of its own sbt major version
