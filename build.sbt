@@ -6,15 +6,14 @@ lazy val root = (project in file("."))
     startYear := Some(2011),
     sbtPluginPublishLegacyMavenStyle := false,
     // Scala version for SBT 2 must be readable by the oldest supported SBT 2 (see pluginCrossBuild / sbtVersion):
-    // SBT 2.0.x uses Scala 3.8.x and cannot read TASTy produced by a newer Scala 3 (pinned in .scala-steward.conf).
-    // Keep 3.8.x until SBT 2.1 is GA: then require SBT 2.1 (pluginCrossBuild / sbtVersion) and move to Scala 3.9.x.
-    // Using 3.6.x causes TASTy forward-incompatibility reading SBT's own class files.
-    crossScalaVersions := List("2.12.21", "3.8.4"),
+    // SBT 2.1.x uses Scala 3.9.x and cannot read TASTy produced by a newer Scala 3 (pinned in .scala-steward.conf).
+    // An older Scala 3 cannot read the TASTy of SBT 2.1 and of the SBT plugins we depend on, built with Scala 3.9.x.
+    crossScalaVersions := List("2.12.21", "3.9.0"),
     scalaVersion := "2.12.21",
     pluginCrossBuild / sbtVersion := {
       scalaBinaryVersion.value match {
         case "2.12" => "1.12.13"
-        case "3"    => "2.0.4"
+        case "3"    => "2.1.0"
       }
     },
     scalacOptions := {
