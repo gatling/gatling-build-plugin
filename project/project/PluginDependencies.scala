@@ -12,7 +12,7 @@ object PluginDependencies {
     addSbtPlugin("com.github.sbt" % "sbt-pgp"              % "2.3.2"),
     addSbtPlugin("no.arktekk.sbt" % "aether-deploy-signed" % "0.31.0"),
     addSbtPlugin("com.github.sbt" % "sbt-header"           % "5.11.0"),
-    addSbtPlugin("com.github.sbt" % "sbt-dynver"           % "5.1.1"),
+    addSbtPlugin("com.github.sbt" % "sbt-dynver"           % "5.2.0"),
     libraryDependencies ++= Seq(
       "org.eclipse.jgit" % "org.eclipse.jgit" % "7.8.1.202611041320-r" // sbt-scalafix
     )
